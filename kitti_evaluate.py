@@ -56,7 +56,9 @@ aspect_ratio = float(X_hat.shape[3]) / X_hat.shape[4]
 plt.figure(figsize = (nt, 2*aspect_ratio))
 gs = gridspec.GridSpec(2, nt)
 gs.update(wspace=0.025, hspace=0.05)
-if not os.path.exists(eval_save_dir): os.mkdir(eval_save_dir)
+if not os.path.exists(results_save_dir): os.mkdir(results_save_dir)
+plot_save_dir = os.path.join(results_save_dir, 'prediction_plots/')
+if not os.path.exists(plot_save_dir): os.mkdir(plot_save_dir)
 for i in range(n_plot):
     for t in range(nt):
         plt.subplot(gs[t])
@@ -69,5 +71,5 @@ for i in range(n_plot):
         plt.tick_params(axis='both', which='both', bottom='off', top='off', left='off', right='off', labelbottom='off', labelleft='off')
         if t==0: plt.ylabel('Predicted')
 
-    plt.savefig(os.path.join(eval_save_dir, 'plot_' + str(i) + '.png'))
+    plt.savefig(plot_save_dir +  'plot_' + str(i) + '.png')
     plt.clf()

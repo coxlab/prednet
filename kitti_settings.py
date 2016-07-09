@@ -6,5 +6,5 @@ data_dir = './kitti_data/'
 # If you directly download the trained weights, change to appropriate path.
 weights_dir = './'
 
-# Where evaluation results (prediction plots) will be saved.
-eval_save_dir = './'
+# Where results (prediction plots and evaluation file) will be saved.
+results_save_dir = './'

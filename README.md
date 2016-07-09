@@ -5,10 +5,7 @@ Code accompanying [Deep Predictive Coding Networks for Video Prediction and Unsu
 The PredNet is a deep recurrent convolutional neural network that is inspired by the neuroscience concept of predictive coding (Rao and Ballard, 1999; Friston, 2005).
 
 It is implemented as a custom layer in [Keras] (http://keras.io/) and is compatible with both [theano] (http://deeplearning.net/software/theano/) and [tensorflow] (https://www.tensorflow.org/) backends.
-
-
-## Requirements
-Need to put anything?  Just keras stuff?
+See http://keras.io/ for instructions on installing Keras and its list of dependencies.
 
 ## KITTI Demo
 
@@ -17,7 +14,7 @@ We include code for downloading and processing the dataset, as well as training 
 The preprocessed data can also be found [here] and the trained weights can be found [here].
 
 ### Steps
-*1. Download/process data*
+1. **Download/process data**
 	```bash
 	python process_kitti.py
 	```
@@ -26,7 +23,7 @@ The preprocessed data can also be found [here] and the trained weights can be fo
 	If directly downloaded, ... TODO:  make better process for filepath
 	<br/>
 
-*2. Train model*
+2. **Train model**
 	```bash
 	python kitti_train.py
 	```
@@ -34,7 +31,7 @@ The preprocessed data can also be found [here] and the trained weights can be fo
 	Alternatively, pretrained weights can be directly downloaded [here].
 	<br/>
 
-*3. Evaluate model*
+3. **Evaluate model**
 	```bash
 	python kitti_evaluate.py
 	```

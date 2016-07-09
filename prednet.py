@@ -68,7 +68,7 @@ class PredNet(Recurrent):
         self.A_filt_sizes = A_filt_sizes
         assert len(Ahat_filt_sizes) == self.nb_layers, 'len(Ahat_filt_sizes) must equal len(stack_sizes)'
         self.Ahat_filt_sizes = Ahat_filt_sizes
-        assert len(R_filt_sizes) == (self.nb_layers - 1), 'len(R_filt_sizes) must equal len(stack_sizes)'
+        assert len(R_filt_sizes) == (self.nb_layers), 'len(R_filt_sizes) must equal len(stack_sizes)'
         self.R_filt_sizes = R_filt_sizes
 
         self.pixel_max = pixel_max

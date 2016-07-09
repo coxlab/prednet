@@ -12,22 +12,20 @@ import hickle as hkl
 
 from keras import backend as K
 from keras.preprocessing.image import Iterator
+import kitti_settings
 
-np.random.seed(123)
 
-data_dir = './kitti_data/'
 desired_im_sz = (128, 160)
 n_val_by_cat = {'city': 1}  # number of recordings to use for validation out of each category
 n_test_by_cat = {'city': 1, 'residential': 1, 'road': 1}  # number of recordings for testing
-
 categories = ['city', 'residential', 'road']
 
-if data_dir[-1] != '/': data_dir += '/'
+np.random.seed(123)
 if not os.path.exists(data_dir): os.mkdir(data_dir)
 
 # Download raw zip files by scraping KITTI website
 def download_data():
-    base_dir = data_dir + 'raw/'
+    base_dir = os.path.join(data_dir, 'raw/')
     if not os.path.exists(base_dir): os.mkdir(base_dir)
     for c in categories:
         url = "http://www.cvlibs.net/datasets/kitti/raw_data.php?type=" + c
@@ -47,7 +45,7 @@ def download_data():
 # unzip images
 def extract_data():
     for c in categories:
-        c_dir = data_dir + 'raw/' + c + '/'
+        c_dir = os.path.join(data_dir, 'raw/', c + '/')
         _, _, zip_files = os.walk(c_dir).next()
         for f in zip_files:
             print 'unpacking: ' + f
@@ -61,7 +59,7 @@ def extract_data():
 def process_data():
     splits = {s: [] for s in ['train', 'test', 'val']}
     for c in categories:  # Randomly assign recordings to training and testing. Cross-validation done across entire recordings.
-        c_dir = data_dir + 'raw/' + c + '/'
+        c_dir = os.path.join(data_dir, 'raw', c + '/')
         _, folders, _ = os.walk(c_dir).next()
         folders = np.random.permutation(folders)
         n_val = 0 if c not in n_val_by_cat else n_val_by_cat[c]
@@ -74,7 +72,7 @@ def process_data():
         im_list = []
         source_list = []  # corresponds to recording that image came from
         for category, folder in splits[split]:
-            im_dir = data_dir + 'raw/' + category + '/' + folder + '/' + folder[:10] + '/' + folder + '/image_03/data/'
+            im_dir = os.path.join('raw/', category, folder, folder[:10], folder, '/image_03/data/')
             _, _, files = os.walk(im_dir).next()
             im_list += [im_dir + f for f in sorted(files)]
             source_list += [category + '-' + folder] * len(files)
@@ -85,8 +83,8 @@ def process_data():
             im = imread(im_file)
             X[i] = process_im(im, desired_im_sz)
 
-        hkl.dump(X, data_dir + 'X_' + split + '.hkl')
-        hkl.dump(source_list, data_dir + 'sources_' + split + '.hkl')
+        hkl.dump(X, os.path.join(data_dir, 'X_' + split + '.hkl'))
+        hkl.dump(source_list, os.path.join(data_dir, 'sources_' + split + '.hkl'))
 
 
 # resize and crop image
@@ -144,9 +142,9 @@ class SequenceGenerator(Iterator):
         for i, idx in enumerate(index_array):
             idx = self.possible_starts[idx]
             batch_x[i] = self.preprocess(self.X[idx:idx+self.nt])
-        if output_mode == 'error':  # model outputs errors, so y should be zeros
+        if self.output_mode == 'error':  # model outputs errors, so y should be zeros
             batch_y = np.zeros(current_batch_size, np.float32)
-        elif output_mode == 'prediction':  # output actual pixels
+        elif self.output_mode == 'prediction':  # output actual pixels
             batch_y = batch_x
         return batch_x, batch_y
 
@@ -161,9 +159,6 @@ class SequenceGenerator(Iterator):
 
 
 if __name__ == '__main__':
-    import time
-    t0 = time.time()
     download_data()
-    print 'time to download: ' + str( (time.time() - t0)/60 )
-    #extract_data()
-    #process_data()
+    extract_data()
+    process_data()

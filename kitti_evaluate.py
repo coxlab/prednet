@@ -3,8 +3,11 @@ Evaluate trained PredNet on KITTI sequences.
 Calculates mean-squared error and plots predictions.
 '''
 
+import os
 import numpy as np
 from six.moves import cPickle
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
@@ -14,17 +17,16 @@ from keras.layers import Input, Dense, Flatten
 
 from prednet import PredNet
 from process_kitti import SequenceGenerator
+import kitti_settings
 
-plot_save_dir = './kitti_plots/'
 n_plot = 20
-
-weights_file = 'prednet_weights.hdf5'
-config_file = 'prednet_config.pkl'
-test_file = './kitti_data/X_test.hkl'
-test_sources = './kitti_data/sources_test.hkl'
-
-batch_size = 5
+batch_size = 10
 nt = 10
+
+weights_file = os.path.join(weights_dir, 'prednet_kitti_weights.hdf5')
+config_file = os.path.join(weights_dir, 'prednet_kitti_config.pkl')
+test_file = os.path.join(data_dir, 'X_test.hkl')
+test_sources = os.path.join(data_dir, 'sources_test.hkl')
 
 # Load trained model
 config = cPickle.load(open(config_file))
@@ -54,7 +56,7 @@ aspect_ratio = float(X_hat.shape[3]) / X_hat.shape[4]
 plt.figure(figsize = (nt, 2*aspect_ratio))
 gs = gridspec.GridSpec(2, nt)
 gs.update(wspace=0.025, hspace=0.05)
-if not os.path.exists(plot_save_dir): os.mkdir(plot_save_dir)
+if not os.path.exists(eval_save_dir): os.mkdir(eval_save_dir)
 for i in range(n_plot):
     for t in range(nt):
         plt.subplot(gs[t])
@@ -67,5 +69,5 @@ for i in range(n_plot):
         plt.tick_params(axis='both', which='both', bottom='off', top='off', left='off', right='off', labelbottom='off', labelleft='off')
         if t==0: plt.ylabel('Predicted')
 
-    plt.savefig(plot_save_dir + 'plot_' + str(i) + '.png')
+    plt.savefig(os.path.join(eval_save_dir, 'plot_' + str(i) + '.png'))
     plt.clf()

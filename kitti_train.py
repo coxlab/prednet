@@ -2,6 +2,7 @@
 Train PredNet on KITTI sequences. (Geiger et al. 2013, http://www.cvlibs.net/datasets/kitti/)
 '''
 
+import os
 import numpy as np
 from six.moves import cPickle
 
@@ -11,25 +12,27 @@ from keras.layers import Input, Dense, Flatten
 from keras.layers.recurrent import LSTM
 from keras.layers.wrappers import TimeDistributed
 from keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras.optimizers import Adam
 
 from prednet import PredNet
 from process_kitti import SequenceGenerator
+import kitti_settings
 
-# Training parameters
-nb_epoch = 2
-batch_size = 5
-samples_per_epoch = 100 #500
-N_seq_val = 100  # number of sequences to use for validation
-use_early_stopping = True
-patience = 5
-save_model = True
-save_name = 'prednet_'
+save_model = True  # if weights will be saved
+weights_file = os.path.join(weights_dir, 'prednet_kitti_weights.hdf5')  # where weights will be saved
+config_file = os.path.join(weights_dir, 'prednet_kitti_config.pkl')
 
 # Data files
-train_file = './kitti_data/X_train.hkl'
-train_sources = './kitti_data/sources_train.hkl'
-val_file = './kitti_data/X_val.hkl'
-val_sources = './kitti_data/sources_val.hkl'
+train_file = os.path.join(data_dir, 'X_train.hkl')
+train_sources = os.path.join(data_dir, 'sources_train.hkl')
+val_file = os.path.join(data_dir, 'X_val.hkl')
+val_sources = os.path.join(data_dir, 'sources_val.hkl')
+
+# Training parameters
+nb_epoch = 100
+batch_size = 5
+samples_per_epoch = 500
+N_seq_val = 100  # number of sequences to use for validation
 
 # Model parameters
 nt = 10
@@ -55,23 +58,19 @@ errors_by_time = TimeDistributed(Dense(1, weights=[layer_loss_weights, np.zeros(
 errors_by_time = Flatten()(errors_by_time)  # will be (batch_size, nt)
 final_errors = Dense(1, weights=[time_loss_weights, np.zeros(1)], trainable=False)(errors_by_time)  # weight errors by time
 model = Model(input=inputs, output=final_errors)
-model.compile(loss='mean_absolute_error', optimizer='adam')
+optimizer = Adam(lr=0.0005)
+model.compile(loss='mean_absolute_error', optimizer=optimizer)
 
 train_generator = SequenceGenerator(train_file, train_sources, nt, batch_size=batch_size)
 val_generator = SequenceGenerator(val_file, val_sources, nt, batch_size=batch_size, N_seq=N_seq_val)
 callbacks = []
-if use_early_stopping:
-    callbacks.append(EarlyStopping(monitor='val_loss', patience=patience))
 if save_model:
-    callbacks.append(ModelCheckpoint(filepath=save_name + 'weights.hdf5', monitor='val_loss', save_best_only=True))
+    if not os.path.exists(weights_dir): os.mkdir(weights_dir)
+    callbacks.append(ModelCheckpoint(filepath=weights_file, monitor='val_loss', save_best_only=True))
 
-history = model.fit_generator(train_generator, samples_per_epoch, nb_epoch, callbacks=callbacks,
-                              validation_data=val_generator, nb_val_samples=val_generator.N_sequences/batch_size)
+model.fit_generator(train_generator, samples_per_epoch, nb_epoch, callbacks=callbacks,
+                    validation_data=val_generator, nb_val_samples=N_seq_val)
 
 if save_model:
     config = model.get_config()
-    cPickle.dump(config, open(save_name + '_config.pkl', 'w'))
-
-#TODO:  remove
-from helpers import plot_training_error
-plot_training_error(train_err = history.history['loss'], val_err = history.history['val_loss'], run_name = 'kitti', out_file = 'error_plot.jpg')
+    cPickle.dump(config, open(config_file, 'w'))

@@ -2,9 +2,9 @@ import numpy as np
 
 from keras import backend as K
 from keras import activations
-from keras.layers.recurrent import Recurrent
-from keras.layers.convolutional import Convolution2D, UpSampling2D, MaxPooling2D
-from keras.engine.topology import InputSpec
+from keras.layers import Recurrent
+from keras.layers import Convolution2D, UpSampling2D, MaxPooling2D
+from keras.engine import InputSpec
 
 
 class PredNet(Recurrent):
@@ -108,7 +108,7 @@ class PredNet(Recurrent):
     def get_initial_states(self, x):
         input_shape = self.input_spec[0].shape
         init_nb_row = input_shape[self.row_axis]
-        init_nb_col = input_shape[self.col_axis]
+        init_nb_col = input_shape[self.column_axis]
 
         base_initial_state = K.zeros_like(x)  # (samples, timesteps) + image_shape
         non_channel_axis = -1 if self.dim_ordering == 'th' else -2

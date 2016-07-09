@@ -9,10 +9,9 @@ import urllib
 import numpy as np
 from scipy.misc import imread, imresize
 import hickle as hkl
-
 from keras import backend as K
 from keras.preprocessing.image import Iterator
-import kitti_settings
+from kitti_settings import *
 
 
 desired_im_sz = (128, 160)

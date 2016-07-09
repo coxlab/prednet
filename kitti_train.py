@@ -7,16 +7,17 @@ import numpy as np
 from six.moves import cPickle
 
 from keras import backend as K
-from keras.engine.training import Model
+from keras.engine import Model
 from keras.layers import Input, Dense, Flatten
-from keras.layers.recurrent import LSTM
-from keras.layers.wrappers import TimeDistributed
+from keras.layers import LSTM
+from keras.layers import TimeDistributed
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 from keras.optimizers import Adam
 
 from prednet import PredNet
 from process_kitti import SequenceGenerator
-import kitti_settings
+from kitti_settings import *
+
 
 save_model = True  # if weights will be saved
 weights_file = os.path.join(weights_dir, 'prednet_kitti_weights.hdf5')  # where weights will be saved
@@ -29,9 +30,9 @@ val_file = os.path.join(data_dir, 'X_val.hkl')
 val_sources = os.path.join(data_dir, 'sources_val.hkl')
 
 # Training parameters
-nb_epoch = 150
+nb_epoch = 2 #150
 batch_size = 5
-samples_per_epoch = 500
+samples_per_epoch = 10 #500
 N_seq_val = 100  # number of sequences to use for validation
 
 # Model parameters
@@ -81,8 +82,8 @@ if save_model:
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-plt.plot(history['loss'])
-plt.plot(history['val_loss'])
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.savefig('error_curve.png')

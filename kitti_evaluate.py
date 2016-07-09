@@ -12,12 +12,13 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 from keras import backend as K
-from kers.engine.training import Model
+from kers.engine import Model
 from keras.layers import Input, Dense, Flatten
 
 from prednet import PredNet
 from process_kitti import SequenceGenerator
-import kitti_settings
+from kitti_settings import *
+
 
 n_plot = 20
 batch_size = 10

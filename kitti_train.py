@@ -11,7 +11,7 @@ from keras.engine.training import Model
 from keras.layers import Input, Dense, Flatten
 from keras.layers.recurrent import LSTM
 from keras.layers.wrappers import TimeDistributed
-from keras.callbacks import EarlyStopping, ModelCheckpoint
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 from keras.optimizers import Adam
 
 from prednet import PredNet
@@ -29,7 +29,7 @@ val_file = os.path.join(data_dir, 'X_val.hkl')
 val_sources = os.path.join(data_dir, 'sources_val.hkl')
 
 # Training parameters
-nb_epoch = 100
+nb_epoch = 150
 batch_size = 5
 samples_per_epoch = 500
 N_seq_val = 100  # number of sequences to use for validation
@@ -58,19 +58,31 @@ errors_by_time = TimeDistributed(Dense(1, weights=[layer_loss_weights, np.zeros(
 errors_by_time = Flatten()(errors_by_time)  # will be (batch_size, nt)
 final_errors = Dense(1, weights=[time_loss_weights, np.zeros(1)], trainable=False)(errors_by_time)  # weight errors by time
 model = Model(input=inputs, output=final_errors)
-optimizer = Adam(lr=0.0005)
-model.compile(loss='mean_absolute_error', optimizer=optimizer)
+model.compile(loss='mean_absolute_error', optimizer='adam')
 
 train_generator = SequenceGenerator(train_file, train_sources, nt, batch_size=batch_size)
 val_generator = SequenceGenerator(val_file, val_sources, nt, batch_size=batch_size, N_seq=N_seq_val)
-callbacks = []
+
+lr_schedule = lambda epoch: 0.001 if epoch < 75 else 0.0001    # start with lr of 0.001 and then drop to 0.0001 after 75 epochs
+callbacks = [LearningRateScheduler(lr_schedule)]
 if save_model:
     if not os.path.exists(weights_dir): os.mkdir(weights_dir)
     callbacks.append(ModelCheckpoint(filepath=weights_file, monitor='val_loss', save_best_only=True))
 
-model.fit_generator(train_generator, samples_per_epoch, nb_epoch, callbacks=callbacks,
+history = model.fit_generator(train_generator, samples_per_epoch, nb_epoch, callbacks=callbacks,
                     validation_data=val_generator, nb_val_samples=N_seq_val)
 
 if save_model:
     config = model.get_config()
     cPickle.dump(config, open(config_file, 'w'))
+
+
+# will remove this
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+plt.plot(history['loss'])
+plt.plot(history['val_loss'])
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.savefig('error_curve.png')

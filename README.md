@@ -4,7 +4,11 @@ Code accompanying [Deep Predictive Coding Networks for Video Prediction and Unsu
 
 The PredNet is a deep recurrent convolutional neural network that is inspired by the neuroscience concept of predictive coding (Rao and Ballard, 1999; Friston, 2005).
 
-We have implemented the architecture as a custom layer in [Keras] (http://keras.io/). It is compatible with both [theano] (http://deeplearning.net/software/theano/) and [tensorflow] (https://www.tensorflow.org/) backends.
+It is implemented as a custom layer in [Keras] (http://keras.io/) and is compatible with both [theano] (http://deeplearning.net/software/theano/) and [tensorflow] (https://www.tensorflow.org/) backends.
+
+
+## Requirements
+Need to put anything?  Just keras stuff?
 
 ## KITTI Demo
 
@@ -14,25 +18,22 @@ The preprocessed data can also be found [here] and the trained weights can be fo
 
 ### Steps
 1. Download/process data
-```bash
-python process_kitti.py
-```
-This will scrape the KITTI website to download the raw data from the city, residential, and road categories (~165 GB) and then process the data (cropping, downsampling).
-Alternatively, the processed data (~3 GB) can be directly downloaded [here] and this step can be skipped.
-If directly downloaded, ... TODO:  make better process for filepath
+	```bash
+	python process_kitti.py
+	```
+	This will scrape the KITTI website to download the raw data from the city, residential, and road categories (~165 GB) and then process the data (cropping, downsampling).
+	Alternatively, the processed data (~3 GB) can be directly downloaded [here] and this step can be skipped.
+	If directly downloaded, ... TODO:  make better process for filepath
 
 2. Train model
-```bash
-python kitti_train.py
-```
-See [Keras FAQ] (http://keras.io/getting-started/faq/#how-can-i-run-keras-on-gpu) on how to run using a GPU.
-Alternatively, pretrained weights can be directly downloaded [here].
+	```bash
+	python kitti_train.py
+	```
+	See [Keras FAQ] (http://keras.io/getting-started/faq/#how-can-i-run-keras-on-gpu) on how to run using a GPU.
+	Alternatively, pretrained weights can be directly downloaded [here].
 
 3. Evaluate model
-```bash
-python kitti_evaluate.py
-```
-This will output the mean-squared error for predictions as well as making prediction plots.
-
-## Requirements
-Need to put anything?  Just keras stuff?
+	```bash
+	python kitti_evaluate.py
+	```
+	This will output the mean-squared error for predictions as well as making prediction plots.

@@ -238,7 +238,6 @@ class PredNet(Recurrent):
                 output = K.concatenate((K.batch_flatten(frame_prediction), all_error), axis=-1)
 
         states = r + c + e
-
         return output, states
 
     def get_config(self):

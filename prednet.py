@@ -82,6 +82,8 @@ class PredNet(Recurrent):
         assert dim_ordering in {'tf', 'th'}, 'dim_ordering must be in {tf, th}'
         self.dim_ordering = dim_ordering
         self.channel_axis = -3 if dim_ordering == 'th' else -1
+        self.row_axis = -2 if dim_ordering == 'th' else -3
+        self.column_axis = -1 if dim_ordering == 'th' else -2
 
         super(PredNet, self).__init__(**kwargs)
         self.input_spec = [InputSpec(ndim=5)]
@@ -103,45 +105,35 @@ class PredNet(Recurrent):
             else:
                 return (input_shape[0], np.prod(input_shape[2:]) + self.nb_layers)
 
-
     def get_initial_states(self, x):
         input_shape = self.input_spec[0].shape
-        initial_states = []
-        if self.dim_ordering == 'th':
-            init_nb_row = input_shape[3]
-            init_nb_col = input_shape[4]
-        else:
-            init_nb_row = input_shape[2]
-            init_nb_col = input_shape[3]
+        init_nb_row = input_shape[self.row_axis]
+        init_nb_col = input_shape[self.col_axis]
 
-        base_initial_state = K.zeros_like(x)
+        base_initial_state = K.zeros_like(x)  # (samples, timesteps) + image_shape
+        non_channel_axis = -1 if self.dim_ordering == 'th' else -2
         for _ in range(2):
-            if self.dim_ordering == 'th':
-                base_initial_state = K.sum(base_initial_state, axis=-1)
-            else:
-                base_initial_state = K.sum(base_initial_state, axis=-2)
-        base_initial_state = K.sum(base_initial_state, axis=1)
+            base_initial_state = K.sum(base_initial_state, axis=non_channel_axis)
+        base_initial_state = K.sum(base_initial_state, axis=1)  # (samples, nb_channels)
 
+        initial_states = []
         for u in ['r', 'c', 'e']:
             for l in range(self.nb_layers):
                 ds_factor = 2 ** l
+                nb_row = init_nb_row // ds_factor
+                nb_col = init_nb_col // ds_factor
                 if u in ['r', 'c']:
-                    output_dim = self.R_stack_sizes[l] * (init_nb_row // ds_factor) * (init_nb_col // ds_factor)
-                    if self.dim_ordering == 'th':
-                        output_shp = (-1, self.R_stack_sizes[l], init_nb_row // ds_factor, init_nb_col // ds_factor)
-                    else:
-                        output_shp = (-1, init_nb_row // ds_factor, init_nb_col // ds_factor, self.R_stack_sizes[l])
+                    stack_size = self.R_stack_sizes[l]
                 else:
-                    output_dim = 2 * self.stack_sizes[l] * (init_nb_row // ds_factor) * (init_nb_col // ds_factor)
-                    if self.dim_ordering == 'th':
-                        output_shp = (-1, 2 * self.stack_sizes[l], init_nb_row // ds_factor, init_nb_col // ds_factor)
-                    else:
-                        output_shp = (-1, init_nb_row // ds_factor, init_nb_col // ds_factor, 2 * self.stack_sizes[l])
+                    stack_size = 2 * self.stack_sizes[l]
+                output_size = stack_size * nb_row * nb_col  # flattened size
 
-
-                reducer = K.zeros((input_shape[self.channel_axis], output_dim))
-
-                initial_state = K.dot(base_initial_state, reducer) # samples, output_dim
+                reducer = K.zeros((input_shape[self.channel_axis], output_size)) # (nb_channels, output_size)
+                initial_state = K.dot(base_initial_state, reducer) # (samples, output_size)
+                if self.dim_ordering == 'th':
+                    output_shp = (-1, stack_size, nb_row, nb_col)
+                else:
+                    output_shp = (-1, nb_row, nb_col, stack_size)
                 initial_state = K.reshape(initial_state, output_shp)
                 initial_states += [initial_state]
 

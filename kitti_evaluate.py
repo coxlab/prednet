@@ -16,7 +16,7 @@ from kers.engine import Model
 from keras.layers import Input, Dense, Flatten
 
 from prednet import PredNet
-from process_kitti import SequenceGenerator
+from data_utils import SequenceGenerator
 from kitti_settings import *
 
 

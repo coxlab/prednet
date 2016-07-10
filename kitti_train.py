@@ -15,7 +15,7 @@ from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 from keras.optimizers import Adam
 
 from prednet import PredNet
-from process_kitti import SequenceGenerator
+from data_utils import SequenceGenerator
 from kitti_settings import *
 
 
@@ -30,9 +30,9 @@ val_file = os.path.join(data_dir, 'X_val.hkl')
 val_sources = os.path.join(data_dir, 'sources_val.hkl')
 
 # Training parameters
-nb_epoch = 2 #150
+nb_epoch = 150
 batch_size = 5
-samples_per_epoch = 10 #500
+samples_per_epoch = 500
 N_seq_val = 100  # number of sequences to use for validation
 
 # Model parameters

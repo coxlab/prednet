@@ -7,6 +7,8 @@ The PredNet is a deep recurrent convolutional neural network that is inspired by
 The architecture is implemented as a custom layer in [Keras] (http://keras.io/). It is compatible with both [theano] (http://deeplearning.net/software/theano/) and [tensorflow] (https://www.tensorflow.org/) backends.
 See http://keras.io/ for instructions on installing Keras and its list of dependencies.
 
+Note on implementation:  PredNet inherits from the Recurrent layer class, i.e. it has an internal state and a step function. Given the top-down then bottom-up update algorithm, it must be implemented in Keras as essentially a 'super' layer where all layers in the PredNet are in one PredNet layer.
+
 ## KITTI Demo
 
 Code is included for training the PredNet on the raw [KITTI] (http://www.cvlibs.net/datasets/kitti/) dataset.
@@ -18,9 +20,9 @@ The preprocessed data can also be found [here] and the trained weights can be fo
 	```bash
 	python process_kitti.py
 	```
-	This will scrape the KITTI website to download the raw data from the city, residential, and road categories (~165 GB) and then process the imagse (cropping, downsampling).
+	This will scrape the KITTI website to download the raw data from the city, residential, and road categories (~165 GB) and then process the images (cropping, downsampling).
 	Alternatively, the processed data (~3 GB) can be directly downloaded [here] and this step can be skipped.
-	If directly downloaded, ... TODO:  make better process for filepath
+	To directly download...
 	<br>
 
 2. **Train model**
@@ -29,7 +31,7 @@ The preprocessed data can also be found [here] and the trained weights can be fo
 	```
 	See [Keras FAQ] (http://keras.io/getting-started/faq/#how-can-i-run-keras-on-gpu) on how to run using a GPU.
 	Alternatively, pretrained weights can be directly downloaded [here].
-	TODO:  say about downloading config and changing filepath
+	To directly download...
 	<br>
 
 3. **Evaluate model**

@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 from keras import backend as K
-from kers.engine import Model
+from keras.engine import Model
 from keras.layers import Input, Dense, Flatten
 
 from prednet import PredNet
@@ -45,10 +45,13 @@ test_model = Model(input=inputs, output=predictions)
 test_generator = SequenceGenerator(test_file, test_sources, nt, sequence_start_mode='unique')
 X_test = test_generator.create_all()
 X_hat = test_model.predict(X_test, batch_size)
+if K.image_dim_ordering() == 'th':
+    X_test = np.transpose(X_test, (1, 2, 0))
+    X_hat = np.transpose(X_hat, (1, 2, 0))
 
 # Compare MSE of PredNet predictions vs. using last frame.
-mse_model = np.mean( (X[:, 1:] - X_hat[:, 1:])**2 )  # look at all timesteps except the first
-mse_prev = np.mean( (X[:, :-1] - X[:, 1:])**2 )
+mse_model = np.mean( (X_test[:, 1:] - X_hat[:, 1:])**2 )  # look at all timesteps except the first
+mse_prev = np.mean( (X_test[:, :-1] - X_test[:, 1:])**2 )
 print "Model MSE: %f" % mse_model
 print "Previous Frame MSE: %f" % mse_prev
 
@@ -63,12 +66,12 @@ if not os.path.exists(plot_save_dir): os.mkdir(plot_save_dir)
 for i in range(n_plot):
     for t in range(nt):
         plt.subplot(gs[t])
-        plt.imshow(np.transpose(X_test[i,t], (1, 2, 0)), interpolation='none')
+        plt.imshow(X_test[i,t], interpolation='none')
         plt.tick_params(axis='both', which='both', bottom='off', top='off', left='off', right='off', labelbottom='off', labelleft='off')
         if t==0: plt.ylabel('Actual')
 
         plt.subplot(gs[t + nt])
-        plt.imshow(np.transpose(X_hat[i,t], (1, 2, 0)), interpolation='none')
+        plt.imshow(X_hat[i,t], (1, 2, 0)), interpolation='none')
         plt.tick_params(axis='both', which='both', bottom='off', top='off', left='off', right='off', labelbottom='off', labelleft='off')
         if t==0: plt.ylabel('Predicted')
 

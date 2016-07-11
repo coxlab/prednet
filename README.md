@@ -38,4 +38,4 @@ The preprocessed data can also be found [here] and the trained weights can be fo
 	```bash
 	python kitti_evaluate.py
 	```
-	This will output the mean-squared error for predictions as well as making prediction plots.
+	This will output the mean-squared error for predictions as well as make plots comparing predictions to ground-truth.

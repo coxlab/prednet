@@ -46,8 +46,8 @@ test_generator = SequenceGenerator(test_file, test_sources, nt, sequence_start_m
 X_test = test_generator.create_all()
 X_hat = test_model.predict(X_test, batch_size)
 if K.image_dim_ordering() == 'th':
-    X_test = np.transpose(X_test, (1, 2, 0))
-    X_hat = np.transpose(X_hat, (1, 2, 0))
+    X_test = np.transpose(X_test, (0, 1, 3, 4, 2))
+    X_hat = np.transpose(X_hat, (0, 1, 3, 4, 2))
 
 # Compare MSE of PredNet predictions vs. using last frame.  Write results to prediction_scores.txt
 mse_model = np.mean( (X_test[:, 1:] - X_hat[:, 1:])**2 )  # look at all timesteps except the first
@@ -73,7 +73,7 @@ for i in range(n_plot):
         if t==0: plt.ylabel('Actual')
 
         plt.subplot(gs[t + nt])
-        plt.imshow(X_hat[i,t], (1, 2, 0)), interpolation='none')
+        plt.imshow(X_hat[i,t], interpolation='none')
         plt.tick_params(axis='both', which='both', bottom='off', top='off', left='off', right='off', labelbottom='off', labelleft='off')
         if t==0: plt.ylabel('Predicted')
 

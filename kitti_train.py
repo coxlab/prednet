@@ -31,7 +31,7 @@ val_sources = os.path.join(data_dir, 'sources_val.hkl')
 
 # Training parameters
 nb_epoch = 150
-batch_size = 5
+batch_size = 4
 samples_per_epoch = 500
 N_seq_val = 100  # number of sequences to use for validation
 

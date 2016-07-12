@@ -37,15 +37,16 @@ train_model.load_weights(weights_file)
 # Create testing model (to output predictions)
 layer_config = train_model.layers[1].get_config()
 layer_config['output_mode'] = 'prediction'
+dim_ordering = layer_config['dim_ordering']
 test_prednet = PredNet(weights=train_model.layers[1].get_weights(), **layer_config)
 inputs = Input(shape=train_model.layers[0].batch_input_shape[1:])
 predictions = test_prednet(inputs)
 test_model = Model(input=inputs, output=predictions)
 
-test_generator = SequenceGenerator(test_file, test_sources, nt, sequence_start_mode='unique')
+test_generator = SequenceGenerator(test_file, test_sources, nt, sequence_start_mode='unique', dim_ordering=dim_ordering)
 X_test = test_generator.create_all()
 X_hat = test_model.predict(X_test, batch_size)
-if K.image_dim_ordering() == 'th':
+if dim_ordering == 'th':
     X_test = np.transpose(X_test, (0, 1, 3, 4, 2))
     X_hat = np.transpose(X_hat, (0, 1, 3, 4, 2))
 
@@ -59,10 +60,10 @@ f.write("Previous Frame MSE: %f" % mse_prev)
 f.close()
 
 # Plot some predictions
-aspect_ratio = float(X_hat.shape[3]) / X_hat.shape[4]
+aspect_ratio = float(X_hat.shape[2]) / X_hat.shape[3]
 plt.figure(figsize = (nt, 2*aspect_ratio))
 gs = gridspec.GridSpec(2, nt)
-gs.update(wspace=0.025, hspace=0.05)
+gs.update(wspace=0., hspace=0.)
 plot_save_dir = os.path.join(results_save_dir, 'prediction_plots/')
 if not os.path.exists(plot_save_dir): os.mkdir(plot_save_dir)
 for i in range(n_plot):
@@ -70,12 +71,12 @@ for i in range(n_plot):
         plt.subplot(gs[t])
         plt.imshow(X_test[i,t], interpolation='none')
         plt.tick_params(axis='both', which='both', bottom='off', top='off', left='off', right='off', labelbottom='off', labelleft='off')
-        if t==0: plt.ylabel('Actual')
+        if t==0: plt.ylabel('Actual', fontsize=10)
 
         plt.subplot(gs[t + nt])
         plt.imshow(X_hat[i,t], interpolation='none')
         plt.tick_params(axis='both', which='both', bottom='off', top='off', left='off', right='off', labelbottom='off', labelleft='off')
-        if t==0: plt.ylabel('Predicted')
+        if t==0: plt.ylabel('Predicted', fontisize=10)
 
     plt.savefig(plot_save_dir +  'plot_' + str(i) + '.png')
     plt.clf()

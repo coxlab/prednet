@@ -42,6 +42,8 @@ class PredNet(Recurrent):
             If 'prediction', the frame prediction will be outputted.
             If 'all', the output will be the frame prediction concatenated with the mean layer errors.
                 The frame prediction is flattened before concatenation.
+        extrap_start_time: time step for which model will start extrapolating.
+            Starting at this time step, the prediction from the previous time step will be treated as the "actual"
         dim_ordering: 'th' or 'tf'. In 'th' mode, the channels dimension
             (the depth) is at index 1, in 'tf' mode is it at index 3.
             It defaults to the `image_dim_ordering` value found in your
@@ -58,7 +60,7 @@ class PredNet(Recurrent):
                  A_filt_sizes, Ahat_filt_sizes, R_filt_sizes,
                  pixel_max=1., error_activation='relu',
                  LSTM_activation='tanh', LSTM_inner_activation='hard_sigmoid',
-                 output_mode='error',
+                 output_mode='error', extrap_start_time = None,
                  dim_ordering=K.image_dim_ordering(), **kwargs):
         self.stack_sizes = stack_sizes
         self.nb_layers = len(stack_sizes)
@@ -78,6 +80,7 @@ class PredNet(Recurrent):
 
         assert output_mode in {'prediction', 'error', 'all'}, 'output_mode must be in {prediction, error, all}'
         self.output_mode = output_mode
+        self.extrap_start_time = extrap_start_time
 
         assert dim_ordering in {'tf', 'th'}, 'dim_ordering must be in {tf, th}'
         self.dim_ordering = dim_ordering
@@ -117,15 +120,22 @@ class PredNet(Recurrent):
         base_initial_state = K.sum(base_initial_state, axis=1)  # (samples, nb_channels)
 
         initial_states = []
-        for u in ['r', 'c', 'e']:
-            for l in range(self.nb_layers):
+        states_to_pass = ['r', 'c', 'e']
+        nlayers_to_pass = {u: self.nb_layers for u in states_to_pass}
+        if self.extrap_start_time is not None:
+           states_to_pass.append('ahat')  # pass prediction in states so can use as actual for t+1 when extrapolating
+           nlayers_to_pass['ahat'] = 1
+        for u in states_to_pass:
+            for l in range(nlayers_to_pass[u]):
                 ds_factor = 2 ** l
                 nb_row = init_nb_row // ds_factor
                 nb_col = init_nb_col // ds_factor
                 if u in ['r', 'c']:
                     stack_size = self.R_stack_sizes[l]
-                else:
+                elif u == 'e':
                     stack_size = 2 * self.stack_sizes[l]
+                elif u == 'ahat':
+                    stack_size = self.stack_sizes[l]
                 output_size = stack_size * nb_row * nb_col  # flattened size
 
                 reducer = K.zeros((input_shape[self.channel_axis], output_size)) # (nb_channels, output_size)
@@ -142,6 +152,9 @@ class PredNet(Recurrent):
             # There is a known issue in the Theano scan op when dealing with inputs whose shape is 1 along a dimension.
             # In our case, this is a problem when training on grayscale images, and the below line fixes it.
             initial_states = [T.unbroadcast(init_state, 0, 1) for init_state in initial_states]
+
+        if self.extrap_start_time is not None:
+            initial_states += [K.variable(0, int)]  # the last state will correspond to the current timestep
         return initial_states
 
     def build(self, input_shape):
@@ -183,11 +196,17 @@ class PredNet(Recurrent):
 
         self.states = [None] * self.nb_layers*3
 
+        if self.extrap_start_time is not None:
+            self.t_extrap = K.variable(self.extrap_start_time, int)
 
     def step(self, a, states):
         r_tm1 = states[:self.nb_layers]
         c_tm1 = states[self.nb_layers:2*self.nb_layers]
-        e_tm1 = states[2*self.nb_layers:]
+        e_tm1 = states[2*self.nb_layers:3*self.nb_layers]
+
+        if self.extrap_start_time is not None:
+            t = states[-1]
+            a = K.switch(t >= self.t_extrap, states[-2], a)  # if past self.extrap_start_time, the previous prediction will be treated as the actual
 
         c = []
         r = []
@@ -238,6 +257,8 @@ class PredNet(Recurrent):
                 output = K.concatenate((K.batch_flatten(frame_prediction), all_error), axis=-1)
 
         states = r + c + e
+        if self.extrap_start_time is not None:
+            states += [frame_prediction, t + 1]
         return output, states
 
     def get_config(self):

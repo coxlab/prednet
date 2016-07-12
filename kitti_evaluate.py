@@ -76,7 +76,7 @@ for i in range(n_plot):
         plt.subplot(gs[t + nt])
         plt.imshow(X_hat[i,t], interpolation='none')
         plt.tick_params(axis='both', which='both', bottom='off', top='off', left='off', right='off', labelbottom='off', labelleft='off')
-        if t==0: plt.ylabel('Predicted', fontisize=10)
+        if t==0: plt.ylabel('Predicted', fontsize=10)
 
     plt.savefig(plot_save_dir +  'plot_' + str(i) + '.png')
     plt.clf()

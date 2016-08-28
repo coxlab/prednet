@@ -4,6 +4,7 @@ Train PredNet on KITTI sequences. (Geiger et al. 2013, http://www.cvlibs.net/dat
 
 import os
 import numpy as np
+np.random.seed(123)
 from six.moves import cPickle
 
 from keras import backend as K

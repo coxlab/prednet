@@ -7,7 +7,7 @@ import numpy as np
 from six.moves import cPickle
 
 from keras import backend as K
-from keras.engine import Model
+from keras.models import Model
 from keras.layers import Input, Dense, Flatten
 from keras.layers import LSTM
 from keras.layers import TimeDistributed
@@ -20,14 +20,14 @@ from kitti_settings import *
 
 
 save_model = True  # if weights will be saved
-weights_file = os.path.join(weights_dir, 'prednet_kitti_weights.hdf5')  # where weights will be saved
-config_file = os.path.join(weights_dir, 'prednet_kitti_config.pkl')
+weights_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_weights.hdf5')  # where weights will be saved
+json_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_model.json')
 
 # Data files
-train_file = os.path.join(data_dir, 'X_train.hkl')
-train_sources = os.path.join(data_dir, 'sources_train.hkl')
-val_file = os.path.join(data_dir, 'X_val.hkl')
-val_sources = os.path.join(data_dir, 'sources_val.hkl')
+train_file = os.path.join(DATA_DIR, 'X_train.hkl')
+train_sources = os.path.join(DATA_DIR, 'sources_train.hkl')
+val_file = os.path.join(DATA_DIR, 'X_val.hkl')
+val_sources = os.path.join(DATA_DIR, 'sources_val.hkl')
 
 # Training parameters
 nb_epoch = 150
@@ -67,15 +67,16 @@ val_generator = SequenceGenerator(val_file, val_sources, nt, batch_size=batch_si
 lr_schedule = lambda epoch: 0.001 if epoch < 75 else 0.0001    # start with lr of 0.001 and then drop to 0.0001 after 75 epochs
 callbacks = [LearningRateScheduler(lr_schedule)]
 if save_model:
-    if not os.path.exists(weights_dir): os.mkdir(weights_dir)
+    if not os.path.exists(WEIGHTS_DIR): os.mkdir(WEIGHTS_DIR)
     callbacks.append(ModelCheckpoint(filepath=weights_file, monitor='val_loss', save_best_only=True))
 
 history = model.fit_generator(train_generator, samples_per_epoch, nb_epoch, callbacks=callbacks,
                     validation_data=val_generator, nb_val_samples=N_seq_val)
 
 if save_model:
-    config = model.get_config()
-    cPickle.dump(config, open(config_file, 'w'))
+    json_string = model.to_json()
+    with open(f, "w") as f:
+        f.write(json_string)
 
 
 # will remove this

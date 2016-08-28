@@ -13,11 +13,13 @@ from kitti_settings import *
 
 
 desired_im_sz = (128, 160)
-n_val_by_cat = {'city': 1}  # number of recordings to use for validation out of each category
-n_test_by_cat = {'city': 1, 'residential': 1, 'road': 1}  # number of recordings for testing
 categories = ['city', 'residential', 'road']
 
-np.random.seed(123)
+# Recordings used for validation and testing.
+# Were initially chosen randomly such that one of the city recordings was used for validation and one of each category was used for testing.
+val_recordings = [('city', '2011_09_26_drive_0005_sync')]
+test_recordings = [('city', '2011_09_26_drive_0104_sync'), ('residential', '2011_09_26_drive_0079_sync'), ('road', '2011_09_26_drive_0070_sync')]
+
 if not os.path.exists(DATA_DIR): os.mkdir(DATA_DIR)
 
 # Download raw zip files by scraping KITTI website
@@ -55,15 +57,13 @@ def extract_data():
 # Processes images and saves them in train, val, test splits.
 def process_data():
     splits = {s: [] for s in ['train', 'test', 'val']}
+    splits['val'] = val_recordings
+    splits['test'] = test_recordings
+    not_train = splits['val'] + splits['test']
     for c in categories:  # Randomly assign recordings to training and testing. Cross-validation done across entire recordings.
         c_dir = os.path.join(DATA_DIR, 'raw', c + '/')
         _, folders, _ = os.walk(c_dir).next()
-        folders = np.random.permutation(folders)
-        n_val = 0 if c not in n_val_by_cat else n_val_by_cat[c]
-        n_test = 0 if c not in n_test_by_cat else n_test_by_cat[c]
-        splits['val'] += [(c, f) for f in folders[:n_val]]
-        splits['test'] += [(c, f) for f in folders[n_val:n_val+n_test]]
-        splits['train'] += [(c, f) for f in folders[n_val+n_test:]]
+        splits['train'] += [(c, f) for f in folders if (c, f) not in not_train]
 
     for split in splits:
         im_list = []

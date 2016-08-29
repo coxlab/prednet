@@ -1,6 +1,6 @@
 # prednet
 
-Code accompanying [Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning] (https://arxiv.org/abs/1605.08104) by Bill Lotter, Gabriel Kreiman, and David Cox.
+Code and models accompanying [Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning] (https://arxiv.org/abs/1605.08104) by Bill Lotter, Gabriel Kreiman, and David Cox.
 
 The PredNet is a deep recurrent convolutional neural network that is inspired by the neuroscience concept of predictive coding (Rao and Ballard, 1999; Friston, 2005).
 **Check out example prediction videos [here] (https://coxlab.github.io/prednet/).**
@@ -13,7 +13,7 @@ See http://keras.io/ for instructions on installing Keras and its list of depend
 
 Code is included for training the PredNet on the raw [KITTI] (http://www.cvlibs.net/datasets/kitti/) dataset.
 We include code for downloading and processing the data, as well as training and evaluating the model.
-The preprocessed data and can also be downloaded directly using `download_data.sh` and the **trained weights** can be downloaded by running `download_models.sh`.
+The preprocessed data and can also be downloaded directly using `download_data.sh` and the **trained weights** by running `download_models.sh`.
 The model download will include the original weights trained for t+1 prediction, as well as the fine-tuned weights trained to extrapolate predictions for multiple timesteps (see paper for details).
 
 ### Steps
@@ -32,7 +32,7 @@ The model download will include the original weights trained for t+1 prediction,
 	```
 	This will train a PredNet model for t+1 prediction.
 	See [Keras FAQ] (http://keras.io/getting-started/faq/#how-can-i-run-keras-on-gpu) on how to run using a GPU.
-	To download pre-trained weights, run `download_models.sh`
+	**To download pre-trained weights**, run `download_models.sh`
 	<br>
 	<br>
 

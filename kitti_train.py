@@ -76,16 +76,5 @@ history = model.fit_generator(train_generator, samples_per_epoch, nb_epoch, call
 
 if save_model:
     json_string = model.to_json()
-    with open(f, "w") as f:
+    with open(json_file, "w") as f:
         f.write(json_string)
-
-
-# will remove this
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
-plt.xlabel('Epoch')
-plt.ylabel('Loss')
-plt.savefig('error_curve.png')

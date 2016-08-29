@@ -7,6 +7,7 @@ Check out example prediction videos [here] (https://coxlab.github.io/prednet/).
 
 The architecture is implemented as a custom layer<sup>1</sup> in [Keras] (http://keras.io/). Tested on Keras 1.0.7 with [theano] (http://deeplearning.net/software/theano/) backend.
 See http://keras.io/ for instructions on installing Keras and its list of dependencies.
+<br>
 
 ## KITTI Demo
 
@@ -21,7 +22,8 @@ The model download will include the original weights trained for t+1 prediction,
 	python process_kitti.py
 	```
 	This will scrape the KITTI website to download the raw data from the city, residential, and road categories (~165 GB) and then process the images (cropping, downsampling).
-	Alternatively, the processed data (~3 GB) can be directly downloaded by executing `download_data.sh`.
+	Alternatively, the processed data (~3 GB) can be directly downloaded by executing `download_data.sh`
+	<br>
 	<br>
 
 2. **Train model**
@@ -32,7 +34,7 @@ The model download will include the original weights trained for t+1 prediction,
 	See [Keras FAQ] (http://keras.io/getting-started/faq/#how-can-i-run-keras-on-gpu) on how to run using a GPU.
 	To download pre-trained weights, run `download_models.sh`.
 	<br>
-		<br>
+	<br>
 
 3. **Evaluate model**
 	```bash

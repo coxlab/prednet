@@ -3,11 +3,12 @@
 Code accompanying [Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning] (https://arxiv.org/abs/1605.08104) by Bill Lotter, Gabriel Kreiman, and David Cox.
 
 The PredNet is a deep recurrent convolutional neural network that is inspired by the neuroscience concept of predictive coding (Rao and Ballard, 1999; Friston, 2005).
+Check out example prediction videos on the [GitHub page] (https://coxlab.github.io/prednet/).
 
-The architecture is implemented as a custom layer in [Keras] (http://keras.io/). It is compatible with both [theano] (http://deeplearning.net/software/theano/) and [tensorflow] (https://www.tensorflow.org/) backends.
+The architecture is implemented as a custom layer in [Keras] (http://keras.io/). Tested on Keras 1.0.7 with [theano] (http://deeplearning.net/software/theano/) backend.
 See http://keras.io/ for instructions on installing Keras and its list of dependencies.
 
-Note on implementation:  PredNet inherits from the Recurrent layer class, i.e. it has an internal state and a step function. Given the top-down then bottom-up update algorithm, it must be implemented in Keras as essentially a 'super' layer where all layers in the PredNet are in one PredNet layer.
+Note on implementation:  PredNet inherits from the Recurrent layer class, i.e. it has an internal state and a step function. Given the top-down then bottom-up update sequence, it must currently be implemented in Keras as essentially a 'super' layer where all layers in the PredNet are in one PredNet 'layer'. This is less than ideal, but it seems like the most efficient way as of now. We welcome suggestions if anyone thinks of a better implementation.  
 
 ## KITTI Demo
 

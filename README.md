@@ -13,7 +13,7 @@ See http://keras.io/ for instructions on installing Keras and its list of depend
 Code is included for training the PredNet on the raw [KITTI] (http://www.cvlibs.net/datasets/kitti/) dataset.
 We include code for downloading and processing the data, as well as training and evaluating the model.
 The preprocessed data and can also be downloaded directly using `download_data.sh` and the trained weights can be downloaded by running `download_models.sh`.
-The model download will include the original weights trained for t+1 prediction as well as the fine-tuned weights trained to extrapolate predictions for multiple timesteps (see paper for details).
+The model download will include the original weights trained for t+1 prediction, as well as the fine-tuned weights trained to extrapolate predictions for multiple timesteps (see paper for details).
 
 ### Steps
 1. **Download/process data**
@@ -21,7 +21,7 @@ The model download will include the original weights trained for t+1 prediction 
 	python process_kitti.py
 	```
 	This will scrape the KITTI website to download the raw data from the city, residential, and road categories (~165 GB) and then process the images (cropping, downsampling).
-	Alternatively, the processed data (~3 GB) can be directly downloaded by executing `download_data.sh` and then this step can be skipped.
+	Alternatively, the processed data (~3 GB) can be directly downloaded by executing `download_data.sh`.
 	<br>
 
 2. **Train model**
@@ -32,6 +32,7 @@ The model download will include the original weights trained for t+1 prediction 
 	See [Keras FAQ] (http://keras.io/getting-started/faq/#how-can-i-run-keras-on-gpu) on how to run using a GPU.
 	To download pre-trained weights, run `download_models.sh`.
 	<br>
+		<br>
 
 3. **Evaluate model**
 	```bash

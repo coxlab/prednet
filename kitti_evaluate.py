@@ -20,7 +20,7 @@ from data_utils import SequenceGenerator
 from kitti_settings import *
 
 
-n_plot = 20
+n_plot = 40
 batch_size = 10
 nt = 10
 
@@ -33,7 +33,7 @@ test_sources = os.path.join(DATA_DIR, 'sources_test.hkl')
 f = open(json_file, 'r')
 json_string = f.read()
 f.close()
-train_model = model_from_json(json_string)
+train_model = model_from_json(json_string, custom_objects = {'PredNet': PredNet})
 train_model.load_weights(weights_file)
 
 # Create testing model (to output predictions)

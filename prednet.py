@@ -276,6 +276,7 @@ class PredNet(Recurrent):
                   'LSTM_activation': self.LSTM_activation.__name__,
                   'LSTM_inner_activation': self.LSTM_inner_activation.__name__,
                   'dim_ordering': self.dim_ordering,
+                  'extrap_start_time': self.extrap_start_time,
                   'output_mode': self.output_mode}
         base_config = super(PredNet, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))

@@ -13,7 +13,8 @@
     <section class="page-header">
       <h1 class="project-name">PredNet</h1>
       <h2 class="project-tagline">Code accompanying &quot;Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning&quot;</h2>
-      <h2 class="project-tagline">Bill Lotter, Gabriel Kreiman, and David Cox</h2>
+      <h2 class="project-tagline">Bill Lotter, Gabriel Kreiman, and David Cox (2015)</h2>
+      <a href="https://arxiv.org/abs/1605.08104" class="btn">View on arXiv</a>
       <a href="https://github.com/coxlab/prednet" class="btn">View on GitHub</a>
       <a href="https://github.com/coxlab/prednet/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/coxlab/prednet/tarball/master" class="btn">Download .tar.gz</a>
@@ -24,9 +25,27 @@
 It is trained for next frame video prediction with the belief that prediction is an effective objective for unsupervised (or "self-supervised") learning [e.g. 3-11].
 The PredNet architecture is illustrated below.</p>
 
-<p>Predictions on car-cam datasets
+<center><img src="/prednet/plots/prednet_model.png" width="612" height="360"</img></center>
+
+<br>
+
+<p>
 Next frame predictions on the Caltech Pedestrian [12] dataset are shown below.
 The model was trained on the KITTI dataset [13].</p>
+<center><img src="/prednet/plots/caltech_montage_1.gif" width="832" height="421.59"</img></center>
+<br>
+<center><img src="/prednet/plots/caltech_montage_2.gif" width="832" height="421.59" </img></center>
+<br>
+<center><img src="/prednet/plots/caltech_montage_3.gif" width="832" height="421.59"</img></center>
+<br>
+
+<p>
+Multi-timestep ahead predictions can be made by recursively feeding predictions back into the model. Below are several examples for a PredNet
+ model fine-tuned for this task</p>
+ <center><img src="/prednet/plots/caltech_montage_extrap_1.gif" width="832" height="421.59"</img></center>
+
+<br>
+<br>
 
 <ol>
 <li>R. P. N. Rao and D. H. Ballard. Predictive coding in the visual cortex: a functional interpretation
@@ -36,7 +55,7 @@ of some extra-classical receptive-field effects. <em>Nature Neuroscience</em>, 1
 <li>D. George and J. Hawkins.  A hierarchical bayesian model of invariant pattern recognition in
 the visual cortex. <em>IJCNN</em>, 2005.</li>
 <li>R. B. Palm. Prediction as a candidate for learning deep hierarchical models of data. <em>Master’s
-thesis, Technical University of Denmark</em>, 2012</li>
+thesis, Technical University of Denmark</em>, 2012.</li>
 <li>R. C. O’Reilly, D. Wyatte, and J. Rohrlich. Learning through time in the thalamocortical loops.
 <em>arXiv</em>, 2014.</li>
 <li>N. Srivastava, E. Mansimov, and R. Salakhutdinov. Unsupervised learning of video representations

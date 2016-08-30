@@ -41,7 +41,9 @@ layer_config = train_model.layers[1].get_config()
 layer_config['output_mode'] = 'prediction'
 dim_ordering = layer_config['dim_ordering']
 test_prednet = PredNet(weights=train_model.layers[1].get_weights(), **layer_config)
-inputs = Input(shape=train_model.layers[0].batch_input_shape[1:])
+input_shape = list(train_model.layers[0].batch_input_shape[1:])
+input_shape[0] = nt
+inputs = Input(shape=tuple(input_shape))
 predictions = test_prednet(inputs)
 test_model = Model(input=inputs, output=predictions)
 

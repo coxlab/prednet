@@ -36,7 +36,8 @@ class SequenceGenerator(Iterator):
                     curr_location += 1
             self.possible_starts = possible_starts
 
-        self.possible_starts = np.random.permutation(self.possible_starts)
+        if shuffle:
+            self.possible_starts = np.random.permutation(self.possible_starts)
         if N_seq is not None and len(self.possible_starts) > N_seq:  # select a subset of sequences if want to
             self.possible_starts = self.possible_starts[:N_seq]
         self.N_sequences = len(self.possible_starts)

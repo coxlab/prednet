@@ -62,7 +62,7 @@ final_errors = Dense(1, weights=[time_loss_weights, np.zeros(1)], trainable=Fals
 model = Model(input=inputs, output=final_errors)
 model.compile(loss='mean_absolute_error', optimizer='adam')
 
-train_generator = SequenceGenerator(train_file, train_sources, nt, batch_size=batch_size)
+train_generator = SequenceGenerator(train_file, train_sources, nt, batch_size=batch_size, shuffle=True)
 val_generator = SequenceGenerator(val_file, val_sources, nt, batch_size=batch_size, N_seq=N_seq_val)
 
 lr_schedule = lambda epoch: 0.001 if epoch < 75 else 0.0001    # start with lr of 0.001 and then drop to 0.0001 after 75 epochs

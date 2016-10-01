@@ -7,6 +7,7 @@ The PredNet is a deep recurrent convolutional neural network that is inspired by
 
 The architecture is implemented as a custom layer<sup>1</sup> in [Keras] (http://keras.io/). Tested on Keras 1.0.7 with [theano] (http://deeplearning.net/software/theano/) backend.
 See http://keras.io/ for instructions on installing Keras and its list of dependencies.
+For Torch implementation, see [torch-prednet] (https://github.com/e-lab/torch-prednet).
 <br>
 
 ## KITTI Demo

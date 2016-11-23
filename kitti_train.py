@@ -18,7 +18,7 @@ from keras.optimizers import Adam
 from prednet import PredNet
 from data_utils import SequenceGenerator
 from kitti_settings import *
-try:  # new keras uses Tensorflow as default backened
+try:
     K.set_image_dim_ordering('th')
 except:
     pass

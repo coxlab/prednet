@@ -20,7 +20,7 @@ from data_utils import SequenceGenerator
 from kitti_settings import *
 
 
-n_plot = 40
+n_plot = 3
 batch_size = 10
 nt = 10
 
@@ -58,7 +58,7 @@ if dim_ordering == 'th':
 mse_model = np.mean( (X_test[:, 1:] - X_hat[:, 1:])**2 )  # look at all timesteps except the first
 mse_prev = np.mean( (X_test[:, :-1] - X_test[:, 1:])**2 )
 if not os.path.exists(RESULTS_SAVE_DIR): os.mkdir(RESULTS_SAVE_DIR)
-f = open(RESULTS_SAVE_DIR + 'prediction_scores.txt', 'w')
+f = open(RESULTS_SAVE_DIR + 'prediction_scores_4.txt', 'w')
 f.write("Model MSE: %f\n" % mse_model)
 f.write("Previous Frame MSE: %f" % mse_prev)
 f.close()

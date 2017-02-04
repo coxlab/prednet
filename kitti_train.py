@@ -38,8 +38,9 @@ N_seq_val = 100  # number of sequences to use for validation
 
 # Model parameters
 nt = 10
-input_shape = (3, 128, 160)
-stack_sizes = (input_shape[0], 48, 96, 192)
+n_channels, im_height, im_width = (3, 128, 160)
+input_shape = (n_channels, im_height, im_width) if K.image_dim_ordering() == 'th' else (im_height, im_width, n_channels)
+stack_sizes = (n_channels, 48, 96, 192)
 R_stack_sizes = stack_sizes
 A_filt_sizes = (3, 3, 3)
 Ahat_filt_sizes = (3, 3, 3, 3)

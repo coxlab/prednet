@@ -174,10 +174,11 @@ class PredNet(Recurrent):
             if l < self.nb_layers - 1:
                 self.conv_layers['a'].append(Convolution2D(self.stack_sizes[l+1], self.A_filt_sizes[l], self.A_filt_sizes[l], border_mode='same', activation=self.A_activation, dim_ordering=self.dim_ordering))
 
-        self.upsample = UpSampling2D()
-        self.pool = MaxPooling2D()
+        self.upsample = UpSampling2D(dim_ordering=self.dim_ordering)
+        self.pool = MaxPooling2D(dim_ordering=self.dim_ordering)
 
         self.trainable_weights = []
+        nb_row, nb_col = (input_shape[-2], input_shape[-1]) if self.dim_ordering == 'th' else (input_shape[-3], input_shape[-2])
         for c in sorted(self.conv_layers.keys()):
             for l in range(len(self.conv_layers[c])):
                 ds_factor = 2 ** l
@@ -189,7 +190,8 @@ class PredNet(Recurrent):
                     nb_channels = self.stack_sizes[l] * 2 + self.R_stack_sizes[l]
                     if l < self.nb_layers - 1:
                         nb_channels += self.R_stack_sizes[l+1]
-                in_shape = (input_shape[0], nb_channels, input_shape[-2] // ds_factor, input_shape[-1] // ds_factor)
+                in_shape = (input_shape[0], nb_channels, nb_row // ds_factor, nb_col // ds_factor)
+                if self.dim_ordering == 'tf': in_shape = (in_shape[0], in_shape[2], in_shape[3], in_shape[1])
                 self.conv_layers[c][l].build(in_shape)
                 self.trainable_weights += self.conv_layers[c][l].trainable_weights
 

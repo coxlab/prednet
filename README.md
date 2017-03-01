@@ -17,7 +17,7 @@ For Torch implementation, see [torch-prednet] (https://github.com/e-lab/torch-pr
 Code is included for training the PredNet on the raw [KITTI] (http://www.cvlibs.net/datasets/kitti/) dataset.
 We include code for downloading and processing the data, as well as training and evaluating the model.
 The preprocessed data and can also be downloaded directly using `download_data.sh` and the **trained weights** by running `download_models.sh`.
-The model download will include the original weights trained for t+1 prediction, as well as the fine-tuned weights trained to extrapolate predictions for multiple timesteps (see paper for details).
+The model download will include the original weights trained for t+1 prediction, the fine-tuned weights trained to extrapolate predictions for multiple timesteps,  and the "L<sub>all</sub>" weights trained with an 0.1 loss weight on upper layers (see paper for details).
 
 ### Steps
 1. **Download/process data**
@@ -44,6 +44,9 @@ The model download will include the original weights trained for t+1 prediction,
 	python kitti_evaluate.py
 	```
 	This will output the mean-squared error for predictions as well as make plots comparing predictions to ground-truth.
+
+### Feature Extraction
+Extracting the intermediate features for a given layer in the PredNet can be done using the appropriate ```output_mode``` argument. For example, to extract the hidden state of the LSTM (the "Representation" units) in the lowest layer, use ```output_mode = 'R0'```. More details can be found in the PredNet docstring.
 
 <br>
 

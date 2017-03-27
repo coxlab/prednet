@@ -88,7 +88,7 @@ def process_data():
 def process_im(im, desired_sz):
     target_ds = float(desired_sz[0])/im.shape[0]
     im = imresize(im, (desired_sz[0], int(np.round(target_ds * im.shape[1]))))
-    d = (im.shape[1] - desired_sz[1]) / 2
+    d = int((im.shape[1] - desired_sz[1]) / 2)
     im = im[:, d:d+desired_sz[1]]
     return im
 

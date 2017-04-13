@@ -5,8 +5,8 @@ Code and models accompanying [Deep Predictive Coding Networks for Video Predicti
 The PredNet is a deep recurrent convolutional neural network that is inspired by the neuroscience concept of predictive coding (Rao and Ballard, 1999; Friston, 2005).
 **Check out example prediction videos [here](https://coxlab.github.io/prednet/).**
 
-The architecture is implemented as a custom layer<sup>1</sup> in [Keras] (http://keras.io/).
-It is compatible with both [theano](http://deeplearning.net/software/theano/) and [tensorflow] (https://www.tensorflow.org/) backends.
+The architecture is implemented as a custom layer<sup>1</sup> in [Keras](http://keras.io/).
+It is compatible with both [theano](http://deeplearning.net/software/theano/) and [tensorflow](https://www.tensorflow.org/) backends.
 Tested on Keras 1.2.1 with Theano 0.9.0, Tensorflow 0.12.1, and Python 2.7.
 See http://keras.io/ for instructions on installing Keras and its list of dependencies.
 For Torch implementation, see [torch-prednet](https://github.com/e-lab/torch-prednet).

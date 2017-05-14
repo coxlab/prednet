@@ -18,7 +18,10 @@ from keras.optimizers import Adam
 from prednet import PredNet
 from data_utils import SequenceGenerator
 from kitti_settings import *
-
+try:
+    K.set_image_dim_ordering('th')
+except:
+    pass
 
 save_model = True  # if weights will be saved
 weights_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_weights.hdf5')  # where weights will be saved

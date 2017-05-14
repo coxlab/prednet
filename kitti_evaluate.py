@@ -18,7 +18,10 @@ from keras.layers import Input, Dense, Flatten
 from prednet import PredNet
 from data_utils import SequenceGenerator
 from kitti_settings import *
-
+try:
+    K.set_image_dim_ordering('th')
+except:
+    pass
 
 n_plot = 40
 batch_size = 10

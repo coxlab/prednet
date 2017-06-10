@@ -174,7 +174,10 @@ class PredNet(Recurrent):
             initial_states = [T.unbroadcast(init_state, 0, 1) for init_state in initial_states]
 
         if self.extrap_start_time is not None:
-            initial_states += [K.variable(0, int)]  # the last state will correspond to the current timestep
+            if K._BACKEND == 'tensorflow':
+                initial_states += [K.variable(0, 'int32')]  # the last state will correspond to the current timestep
+            else:   # theano
+                initial_states += [K.variable(0, int)]  # the last state will correspond to the current timestep
         return initial_states
 
     def build(self, input_shape):
@@ -220,7 +223,11 @@ class PredNet(Recurrent):
         self.states = [None] * self.nb_layers*3
 
         if self.extrap_start_time is not None:
-            self.t_extrap = K.variable(self.extrap_start_time, int)
+            if K._BACKEND == 'tensorflow':
+                self.t_extrap = K.variable(self.extrap_start_time, 'int32')
+            else:
+                self.t_extrap = K.variable(self.extrap_start_time, int)
+            self.states += [None] * 2   #   [previous_prediction, time]
 
     def step(self, a, states):
         r_tm1 = states[:self.nb_layers]

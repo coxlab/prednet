@@ -23,7 +23,7 @@ class PredNet(Recurrent):
             Has length of 1 - len(stack_sizes).
             Ex. (3, 3) would mean that targets for layers 2 and 3 are computed by a 3x3 convolution of the errors (E)
                 from the layer below (followed by max-pooling)
-        A_filt_sizes: filter sizes for the prediction (Ahat) modules.
+        Ahat_filt_sizes: filter sizes for the prediction (Ahat) modules.
             Has length equal to length of stack_sizes.
             Ex. (3, 3, 3) would mean that the predictions for each layer are computed by a 3x3 convolution of the
                 representation (R) modules at each layer.

@@ -3,9 +3,9 @@ import numpy as np
 from keras import backend as K
 from keras import activations
 from keras.layers import Recurrent
-from keras.layers import Convolution2D, UpSampling2D, MaxPooling2D
+from keras.layers import Conv2D, UpSampling2D, MaxPooling2D
 from keras.engine import InputSpec
-
+from keras_utils import legacy_prednet_support
 
 class PredNet(Recurrent):
     '''PredNet architecture - Lotter 2016.
@@ -49,11 +49,9 @@ class PredNet(Recurrent):
                 The possible unit types are 'R', 'Ahat', 'A', and 'E' corresponding to the 'representation', 'prediction', 'target', and 'error' units respectively.
         extrap_start_time: time step for which model will start extrapolating.
             Starting at this time step, the prediction from the previous time step will be treated as the "actual"
-        dim_ordering: 'th' or 'tf'. In 'th' mode, the channels dimension
-            (the depth) is at index 1, in 'tf' mode is it at index 3.
-            It defaults to the `image_dim_ordering` value found in your
+        data_format: 'channels_first' or 'channels_last'.
+            It defaults to the `image_data_format` value found in your
             Keras config file at `~/.keras/keras.json`.
-            If you never set it, then it will be "th".
 
     # References
         - [Deep predictive coding networks for video prediction and unsupervised learning](https://arxiv.org/abs/1605.08104)
@@ -61,12 +59,13 @@ class PredNet(Recurrent):
         - [Convolutional LSTM network: a machine learning approach for precipitation nowcasting](http://arxiv.org/abs/1506.04214)
         - [Predictive coding in the visual cortex: a functional interpretation of some extra-classical receptive-field effects](http://www.nature.com/neuro/journal/v2/n1/pdf/nn0199_79.pdf)
     '''
+    @legacy_prednet_support
     def __init__(self, stack_sizes, R_stack_sizes,
                  A_filt_sizes, Ahat_filt_sizes, R_filt_sizes,
                  pixel_max=1., error_activation='relu', A_activation='relu',
                  LSTM_activation='tanh', LSTM_inner_activation='hard_sigmoid',
-                 output_mode='error', extrap_start_time = None,
-                 dim_ordering=K.image_dim_ordering(), **kwargs):
+                 output_mode='error', extrap_start_time=None,
+                 data_format=K.image_data_format(), **kwargs):
         self.stack_sizes = stack_sizes
         self.nb_layers = len(stack_sizes)
         assert len(R_stack_sizes) == self.nb_layers, 'len(R_stack_sizes) must equal len(stack_sizes)'
@@ -96,16 +95,15 @@ class PredNet(Recurrent):
             self.output_layer_num = None
         self.extrap_start_time = extrap_start_time
 
-        assert dim_ordering in {'tf', 'th'}, 'dim_ordering must be in {tf, th}'
-        self.dim_ordering = dim_ordering
-        self.channel_axis = -3 if dim_ordering == 'th' else -1
-        self.row_axis = -2 if dim_ordering == 'th' else -3
-        self.column_axis = -1 if dim_ordering == 'th' else -2
-
+        assert data_format in {'channels_last', 'channels_first'}, 'data_format must be in {channels_last, channels_first}'
+        self.data_format = data_format
+        self.channel_axis = -3 if data_format == 'channels_first' else -1
+        self.row_axis = -2 if data_format == 'channels_first' else -3
+        self.column_axis = -1 if data_format == 'channels_first' else -2
         super(PredNet, self).__init__(**kwargs)
         self.input_spec = [InputSpec(ndim=5)]
 
-    def get_output_shape_for(self, input_shape):
+    def compute_output_shape(self, input_shape):
         if self.output_mode == 'prediction':
             out_shape = input_shape[2:]
         elif self.output_mode == 'error':
@@ -118,7 +116,7 @@ class PredNet(Recurrent):
             out_stack_size = stack_mult * getattr(self, stack_str)[self.output_layer_num]
             out_nb_row = input_shape[self.row_axis] / 2**self.output_layer_num
             out_nb_col = input_shape[self.column_axis] / 2**self.output_layer_num
-            if self.dim_ordering == 'th':
+            if self.data_format == 'channels_first':
                 out_shape = (out_stack_size, out_nb_row, out_nb_col)
             else:
                 out_shape = (out_nb_row, out_nb_col, out_stack_size)
@@ -128,13 +126,13 @@ class PredNet(Recurrent):
         else:
             return (input_shape[0],) + out_shape
 
-    def get_initial_states(self, x):
+    def get_initial_state(self, x):
         input_shape = self.input_spec[0].shape
         init_nb_row = input_shape[self.row_axis]
         init_nb_col = input_shape[self.column_axis]
 
         base_initial_state = K.zeros_like(x)  # (samples, timesteps) + image_shape
-        non_channel_axis = -1 if self.dim_ordering == 'th' else -2
+        non_channel_axis = -1 if self.data_format == 'channels_first' else -2
         for _ in range(2):
             base_initial_state = K.sum(base_initial_state, axis=non_channel_axis)
         base_initial_state = K.sum(base_initial_state, axis=1)  # (samples, nb_channels)
@@ -160,7 +158,7 @@ class PredNet(Recurrent):
 
                 reducer = K.zeros((input_shape[self.channel_axis], output_size)) # (nb_channels, output_size)
                 initial_state = K.dot(base_initial_state, reducer) # (samples, output_size)
-                if self.dim_ordering == 'th':
+                if self.data_format == 'channels_first':
                     output_shp = (-1, stack_size, nb_row, nb_col)
                 else:
                     output_shp = (-1, nb_row, nb_col, stack_size)
@@ -174,7 +172,7 @@ class PredNet(Recurrent):
             initial_states = [T.unbroadcast(init_state, 0, 1) for init_state in initial_states]
 
         if self.extrap_start_time is not None:
-            initial_states += [K.variable(0, int)]  # the last state will correspond to the current timestep
+            initial_states += [K.variable(0, int if K.backend() != 'tensorflow' else 'int32')]  # the last state will correspond to the current timestep
         return initial_states
 
     def build(self, input_shape):
@@ -184,19 +182,19 @@ class PredNet(Recurrent):
         for l in range(self.nb_layers):
             for c in ['i', 'f', 'c', 'o']:
                 act = self.LSTM_activation if c == 'c' else self.LSTM_inner_activation
-                self.conv_layers[c].append(Convolution2D(self.R_stack_sizes[l], self.R_filt_sizes[l], self.R_filt_sizes[l], border_mode='same', activation=act, dim_ordering=self.dim_ordering))
+                self.conv_layers[c].append(Conv2D(self.R_stack_sizes[l], self.R_filt_sizes[l], padding='same', activation=act, data_format=self.data_format))
 
             act = 'relu' if l == 0 else self.A_activation
-            self.conv_layers['ahat'].append(Convolution2D(self.stack_sizes[l], self.Ahat_filt_sizes[l], self.Ahat_filt_sizes[l], border_mode='same', activation=act, dim_ordering=self.dim_ordering))
+            self.conv_layers['ahat'].append(Conv2D(self.stack_sizes[l], self.Ahat_filt_sizes[l], padding='same', activation=act, data_format=self.data_format))
 
             if l < self.nb_layers - 1:
-                self.conv_layers['a'].append(Convolution2D(self.stack_sizes[l+1], self.A_filt_sizes[l], self.A_filt_sizes[l], border_mode='same', activation=self.A_activation, dim_ordering=self.dim_ordering))
+                self.conv_layers['a'].append(Conv2D(self.stack_sizes[l+1], self.A_filt_sizes[l], padding='same', activation=self.A_activation, data_format=self.data_format))
 
-        self.upsample = UpSampling2D(dim_ordering=self.dim_ordering)
-        self.pool = MaxPooling2D(dim_ordering=self.dim_ordering)
+        self.upsample = UpSampling2D(data_format=self.data_format)
+        self.pool = MaxPooling2D(data_format=self.data_format)
 
         self.trainable_weights = []
-        nb_row, nb_col = (input_shape[-2], input_shape[-1]) if self.dim_ordering == 'th' else (input_shape[-3], input_shape[-2])
+        nb_row, nb_col = (input_shape[-2], input_shape[-1]) if self.data_format == 'channels_first' else (input_shape[-3], input_shape[-2])
         for c in sorted(self.conv_layers.keys()):
             for l in range(len(self.conv_layers[c])):
                 ds_factor = 2 ** l
@@ -209,18 +207,16 @@ class PredNet(Recurrent):
                     if l < self.nb_layers - 1:
                         nb_channels += self.R_stack_sizes[l+1]
                 in_shape = (input_shape[0], nb_channels, nb_row // ds_factor, nb_col // ds_factor)
-                if self.dim_ordering == 'tf': in_shape = (in_shape[0], in_shape[2], in_shape[3], in_shape[1])
-                self.conv_layers[c][l].build(in_shape)
+                if self.data_format == 'channels_last': in_shape = (in_shape[0], in_shape[2], in_shape[3], in_shape[1])
+                with K.name_scope('layer_' + c + '_' + str(l)):
+                    self.conv_layers[c][l].build(in_shape)
                 self.trainable_weights += self.conv_layers[c][l].trainable_weights
-
-        if self.initial_weights is not None:
-            self.set_weights(self.initial_weights)
-            del self.initial_weights
 
         self.states = [None] * self.nb_layers*3
 
         if self.extrap_start_time is not None:
-            self.t_extrap = K.variable(self.extrap_start_time, int)
+            self.t_extrap = K.variable(self.extrap_start_time, int if K.backend() != 'tensorflow' else 'int32')
+            self.states += [None] * 2  # [previous frame prediction, timestep]
 
     def step(self, a, states):
         r_tm1 = states[:self.nb_layers]
@@ -235,6 +231,7 @@ class PredNet(Recurrent):
         r = []
         e = []
 
+        # Update R units starting from the top
         for l in reversed(range(self.nb_layers)):
             inputs = [r_tm1[l], e_tm1[l]]
             if l < self.nb_layers - 1:
@@ -252,6 +249,7 @@ class PredNet(Recurrent):
             if l > 0:
                 r_up = self.upsample.call(_r)
 
+        # Update feedforward path starting from the bottom
         for l in range(self.nb_layers):
             ahat = self.conv_layers['ahat'][l].call(r[l])
             if l == 0:
@@ -306,7 +304,7 @@ class PredNet(Recurrent):
                   'A_activation': self.A_activation.__name__,
                   'LSTM_activation': self.LSTM_activation.__name__,
                   'LSTM_inner_activation': self.LSTM_inner_activation.__name__,
-                  'dim_ordering': self.dim_ordering,
+                  'data_format': self.data_format,
                   'extrap_start_time': self.extrap_start_time,
                   'output_mode': self.output_mode}
         base_config = super(PredNet, self).get_config()

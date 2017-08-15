@@ -8,18 +8,18 @@ class SequenceGenerator(Iterator):
     def __init__(self, data_file, source_file, nt,
                  batch_size=8, shuffle=False, seed=None,
                  output_mode='error', sequence_start_mode='all', N_seq=None,
-                 dim_ordering=K.image_dim_ordering()):
+                 data_format=K.image_data_format()):
         self.X = hkl.load(data_file)  # X will be like (n_images, nb_cols, nb_rows, nb_channels)
         self.sources = hkl.load(source_file) # source for each image so when creating sequences can assure that consecutive frames are from same video
         self.nt = nt
         self.batch_size = batch_size
-        self.dim_ordering = dim_ordering
+        self.data_format = data_format
         assert sequence_start_mode in {'all', 'unique'}, 'sequence_start_mode must be in {all, unique}'
         self.sequence_start_mode = sequence_start_mode
         assert output_mode in {'error', 'prediction'}, 'output_mode must be in {error, prediction}'
         self.output_mode = output_mode
 
-        if self.dim_ordering == 'th':
+        if self.data_format == 'channels_first':
             self.X = np.transpose(self.X, (0, 3, 1, 2))
         self.im_shape = self.X[0].shape
 

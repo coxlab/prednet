@@ -6,10 +6,11 @@ The PredNet is a deep recurrent convolutional neural network that is inspired by
 **Check out example prediction videos [here](https://coxlab.github.io/prednet/).**
 
 The architecture is implemented as a custom layer<sup>1</sup> in [Keras](http://keras.io/).
-It is compatible with both [theano](http://deeplearning.net/software/theano/) and [tensorflow](https://www.tensorflow.org/) backends.
-Tested on Keras 1.2.1 with Theano 0.9.0, Tensorflow 0.12.1, and Python 2.7.
-See http://keras.io/ for instructions on installing Keras and its list of dependencies.
-For Torch implementation, see [torch-prednet](https://github.com/e-lab/torch-prednet).
+Code and model data is now compatible with Keras 2.0.
+Specifically, it has been tested on Keras 2.0.6 with Theano 0.9.0, Tensorflow 1.2.1, and Python 2.7.
+The provided weights were trained with the Theano backend.
+For previous versions of the code compatible with Keras 1.2.1, use fbcdc18.
+To convert old PredNet model files and weights for Keras 2.0 compatibility, see ```convert_model_to_keras2``` in `keras_utils.py`.
 <br>
 
 ## KITTI Demo
@@ -47,6 +48,9 @@ The model download will include the original weights trained for t+1 prediction,
 
 ### Feature Extraction
 Extracting the intermediate features for a given layer in the PredNet can be done using the appropriate ```output_mode``` argument. For example, to extract the hidden state of the LSTM (the "Representation" units) in the lowest layer, use ```output_mode = 'R0'```. More details can be found in the PredNet docstring.
+
+### Multi-Step Prediction
+The PredNet argument ```extrap_start_time``` can be used to force multi-step prediction. Starting at this time step, the prediction from the previous time step will be treated as the actual input. For example, if the model is run on a sequence of 15 timesteps with ```extrap_start_time = 10```, the last output will correspond to a t+5 prediction. In the paper, we train in this setting starting from the original t+1 trained weights, and the resulting fine-tuned weights are included in `download_models.sh`.
 
 <br>
 

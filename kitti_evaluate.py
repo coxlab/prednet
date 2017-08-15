@@ -39,18 +39,18 @@ train_model.load_weights(weights_file)
 # Create testing model (to output predictions)
 layer_config = train_model.layers[1].get_config()
 layer_config['output_mode'] = 'prediction'
-dim_ordering = layer_config['dim_ordering']
+data_format = layer_config['data_format'] if 'data_format' in layer_config else layer_config['dim_ordering']
 test_prednet = PredNet(weights=train_model.layers[1].get_weights(), **layer_config)
 input_shape = list(train_model.layers[0].batch_input_shape[1:])
 input_shape[0] = nt
 inputs = Input(shape=tuple(input_shape))
 predictions = test_prednet(inputs)
-test_model = Model(input=inputs, output=predictions)
+test_model = Model(inputs=inputs, outputs=predictions)
 
-test_generator = SequenceGenerator(test_file, test_sources, nt, sequence_start_mode='unique', dim_ordering=dim_ordering)
+test_generator = SequenceGenerator(test_file, test_sources, nt, sequence_start_mode='unique', data_format=data_format)
 X_test = test_generator.create_all()
 X_hat = test_model.predict(X_test, batch_size)
-if dim_ordering == 'th':
+if data_format == 'channels_first':
     X_test = np.transpose(X_test, (0, 1, 3, 4, 2))
     X_hat = np.transpose(X_hat, (0, 1, 3, 4, 2))
 

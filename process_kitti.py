@@ -37,7 +37,7 @@ def download_data():
         if not os.path.exists(c_dir): os.mkdir(c_dir)
         for i, d in enumerate(drive_list):
             print str(i+1) + '/' + str(len(drive_list)) + ": " + d
-            url = "http://kitti.is.tue.mpg.de/kitti/raw_data/" + d + "/" + d + "_sync.zip"
+            url = "https://s3.eu-central-1.amazonaws.com/avg-kitti/raw_data/" + d + "/" + d + "_sync.zip"
             urllib.urlretrieve(url, filename=c_dir + d + "_sync.zip")
 
 

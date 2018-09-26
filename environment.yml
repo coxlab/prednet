@@ -1,0 +1,11 @@
+name: prednet
+
+dependencies:
+  - python=2.7
+
+  - pip:
+    - keras==2.0.6
+    - theano==0.9.0
+    - tensorflow==1.2.1
+    - hickle==2.1.0
+    

@@ -1,3 +1,6 @@
+# This file allows you to configure your python environment quickly for prednet.
+# please refer to https://conda.io/docs/user-guide/tasks/manage-environments.html
+
 name: prednet
 
 dependencies:

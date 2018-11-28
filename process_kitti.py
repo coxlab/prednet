@@ -7,7 +7,8 @@ import requests
 from bs4 import BeautifulSoup
 import urllib.request
 import numpy as np
-from scipy.misc import imread, imresize
+from imageio import imread
+from scipy.misc import imresize
 import hickle as hkl
 from kitti_settings import *
 
@@ -45,7 +46,7 @@ def download_data():
 def extract_data():
     for c in categories:
         c_dir = os.path.join(DATA_DIR, 'raw/', c + '/')
-        zip_files = list(os.walk(c_dir))[-1][-1]#.next()
+        zip_files = list(os.walk(c_dir, topdown=False))[-1][-1]#.next()
         for f in zip_files:
             print( 'unpacking: ' + f)
             spec_folder = f[:10] + '/' + f[:-4] + '/image_03/data*'
@@ -62,7 +63,7 @@ def process_data():
     not_train = splits['val'] + splits['test']
     for c in categories:  # Randomly assign recordings to training and testing. Cross-validation done across entire recordings.
         c_dir = os.path.join(DATA_DIR, 'raw', c + '/')
-        folders= list(os.walk(c_dir))[-1][-2]
+        folders= list(os.walk(c_dir, topdown=False))[-1][-2]
         splits['train'] += [(c, f) for f in folders if (c, f) not in not_train]
 
     for split in splits:
@@ -70,7 +71,7 @@ def process_data():
         source_list = []  # corresponds to recording that image came from
         for category, folder in splits[split]:
             im_dir = os.path.join(DATA_DIR, 'raw/', category, folder, folder[:10], folder, 'image_03/data/')
-            files = list(os.walk(im_dir))[-1][-1]
+            files = list(os.walk(im_dir, topdown=False))[-1][-1]
             im_list += [im_dir + f for f in sorted(files)]
             source_list += [category + '-' + folder] * len(files)
 

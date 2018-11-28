@@ -43,6 +43,9 @@ class SequenceGenerator(Iterator):
         self.N_sequences = len(self.possible_starts)
         super(SequenceGenerator, self).__init__(len(self.possible_starts), batch_size, shuffle, seed)
 
+    def __getitem__(self, null):
+        return self.next()
+
     def next(self):
         with self.lock:
             index_array, current_index, current_batch_size = next(self.index_generator)

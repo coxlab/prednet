@@ -1,3 +1,8 @@
+This is a fork of PredNet developed by Bill Lotter, Gabriel Kreiman, and David Cox which has been modified to use Python 3.6 and the most recent stable versions of Tensorflow and Keras. Worth noting that TF is only compatible with CUDA up to 9.0 and the associated CUDNN release.
+
+Below is the original readme from Bill Lotter's repository.
+
+
 # prednet
 
 Code and models accompanying [Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning](https://arxiv.org/abs/1605.08104) by Bill Lotter, Gabriel Kreiman, and David Cox.

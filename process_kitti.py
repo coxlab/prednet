@@ -5,9 +5,10 @@ Code for downloading and processing KITTI data (Geiger et al. 2013, http://www.c
 import os
 import requests
 from bs4 import BeautifulSoup
-import urllib
+import urllib.request
 import numpy as np
-from scipy.misc import imread, imresize
+from imageio import imread
+from scipy.misc import imresize
 import hickle as hkl
 from kitti_settings import *
 
@@ -32,22 +33,22 @@ def download_data():
         soup = BeautifulSoup(r.content)
         drive_list = soup.find_all("h3")
         drive_list = [d.text[:d.text.find(' ')] for d in drive_list]
-        print "Downloading set: " + c
+        print( "Downloading set: " + c)
         c_dir = base_dir + c + '/'
         if not os.path.exists(c_dir): os.mkdir(c_dir)
         for i, d in enumerate(drive_list):
-            print str(i+1) + '/' + str(len(drive_list)) + ": " + d
+            print( str(i+1) + '/' + str(len(drive_list)) + ": " + d)
             url = "https://s3.eu-central-1.amazonaws.com/avg-kitti/raw_data/" + d + "/" + d + "_sync.zip"
-            urllib.urlretrieve(url, filename=c_dir + d + "_sync.zip")
+            urllib.request.urlretrieve(url, filename=c_dir + d + "_sync.zip")
 
 
 # unzip images
 def extract_data():
     for c in categories:
         c_dir = os.path.join(DATA_DIR, 'raw/', c + '/')
-        _, _, zip_files = os.walk(c_dir).next()
+        zip_files = list(os.walk(c_dir, topdown=False))[-1][-1]#.next()
         for f in zip_files:
-            print 'unpacking: ' + f
+            print( 'unpacking: ' + f)
             spec_folder = f[:10] + '/' + f[:-4] + '/image_03/data*'
             command = 'unzip -qq ' + c_dir + f + ' ' + spec_folder + ' -d ' + c_dir + f[:-4]
             os.system(command)
@@ -62,7 +63,7 @@ def process_data():
     not_train = splits['val'] + splits['test']
     for c in categories:  # Randomly assign recordings to training and testing. Cross-validation done across entire recordings.
         c_dir = os.path.join(DATA_DIR, 'raw', c + '/')
-        _, folders, _ = os.walk(c_dir).next()
+        folders= list(os.walk(c_dir, topdown=False))[-1][-2]
         splits['train'] += [(c, f) for f in folders if (c, f) not in not_train]
 
     for split in splits:
@@ -70,11 +71,11 @@ def process_data():
         source_list = []  # corresponds to recording that image came from
         for category, folder in splits[split]:
             im_dir = os.path.join(DATA_DIR, 'raw/', category, folder, folder[:10], folder, 'image_03/data/')
-            _, _, files = os.walk(im_dir).next()
+            files = list(os.walk(im_dir, topdown=False))[-1][-1]
             im_list += [im_dir + f for f in sorted(files)]
             source_list += [category + '-' + folder] * len(files)
 
-        print 'Creating ' + split + ' data: ' + str(len(im_list)) + ' images'
+        print( 'Creating ' + split + ' data: ' + str(len(im_list)) + ' images')
         X = np.zeros((len(im_list),) + desired_im_sz + (3,), np.uint8)
         for i, im_file in enumerate(im_list):
             im = imread(im_file)

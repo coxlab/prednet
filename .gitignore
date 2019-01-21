@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# Video and data folders
+kitti_data/
+model_data_keras*/
+
 # Distribution / packaging
 .Python
 env/

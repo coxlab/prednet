@@ -1,8 +1,3 @@
-This is a fork of PredNet developed by Bill Lotter, Gabriel Kreiman, and David Cox which has been modified to use Python 3.6 and the most recent stable versions of Tensorflow and Keras. Worth noting that TF is only compatible with CUDA up to 9.0 and the associated CUDNN release.
-
-Below is the original readme from Bill Lotter's repository.
-
-
 # prednet
 
 Code and models accompanying [Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning](https://arxiv.org/abs/1605.08104) by Bill Lotter, Gabriel Kreiman, and David Cox.
@@ -11,8 +6,8 @@ The PredNet is a deep recurrent convolutional neural network that is inspired by
 **Check out example prediction videos [here](https://coxlab.github.io/prednet/).**
 
 The architecture is implemented as a custom layer<sup>1</sup> in [Keras](http://keras.io/).
-Code and model data is now compatible with Keras 2.0.
-Specifically, it has been tested on Keras 2.0.6 with Theano 0.9.0, Tensorflow 1.2.1, and Python 2.7 (for your convenience, we have added an environment.yml file for setting up your python environment).
+Code and model data is compatible with Keras 2.0 and Python 2.7 and 3.6.
+The latest version has been tested on Keras 2.2.4 with Tensorflow 1.6.
 For previous versions of the code compatible with Keras 1.2.1, use fbcdc18.
 To convert old PredNet model files and weights for Keras 2.0 compatibility, see ```convert_model_to_keras2``` in `keras_utils.py`.
 <br>

@@ -201,7 +201,7 @@ class PredNet(Recurrent):
                 if c == 'ahat':
                     nb_channels = self.R_stack_sizes[l]
                 elif c == 'a':
-                    nb_channels = 2 * self.R_stack_sizes[l]
+                    nb_channels = 2 * self.stack_sizes[l]
                 else:
                     nb_channels = self.stack_sizes[l] * 2 + self.R_stack_sizes[l]
                     if l < self.nb_layers - 1:

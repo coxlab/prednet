@@ -21,8 +21,15 @@ categories = ['city', 'residential', 'road']
 val_recordings = [('city', '2011_09_26_drive_0005_sync')]
 test_recordings = [('city', '2011_09_26_drive_0104_sync'), ('residential', '2011_09_26_drive_0079_sync'), ('road', '2011_09_26_drive_0070_sync')]
 
-if not os.path.exists(DATA_DIR): os.mkdir(DATA_DIR)
+def set_data_dir(path):
+    global DATA_DIR
+    DATA_DIR = path
+    if not os.path.exists(DATA_DIR): os.mkdir(DATA_DIR)
 
+def set_desired_im_sz(sz):
+    global desired_im_sz
+    desired_im_sz = sz
+    
 # Download raw zip files by scraping KITTI website
 def download_data():
     base_dir = os.path.join(DATA_DIR, 'raw/')

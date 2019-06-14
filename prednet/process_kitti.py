@@ -102,6 +102,7 @@ def process_im(im, desired_sz):
 
 
 if __name__ == '__main__':
+    set_data_dir(DATA_DIR)
     download_data()
     extract_data()
     process_data()

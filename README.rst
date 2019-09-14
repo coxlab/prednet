@@ -21,12 +21,6 @@ Overview
 
 .. end-badges
 
-Code and models accompanying Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning by Bill
-Lotter, Gabriel Kreiman, and David Cox. The PredNet is a deep recurrent convolutional neural network that is inspired
-by the neuroscience concept of predictive coding (Rao and Ballard, 1999; Friston, 2005).
-
-* Free software: MIT license
-
 Installation
 ============
 
@@ -49,9 +43,9 @@ and David Cox.
 The PredNet is a deep recurrent convolutional neural network that is
 inspired by the neuroscience concept of predictive coding (Rao and
 Ballard, 1999; Friston, 2005). **Check out example prediction
-videos**\ `here`_\ **.**
+videos **\ `here`_\ **.**
 
-The architecture is implemented as a custom layer1 in `Keras`_. Code and
+The architecture is implemented as a custom layer:sup:`1` in `Keras`_. Code and
 model data is compatible with Keras 2.0 and Python 2.7 and 3.6. The
 latest version has been tested on Keras 2.2.4 with Tensorflow 1.6. For
 previous versions of the code compatible with Keras 1.2.1, use fbcdc18.

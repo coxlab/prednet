@@ -112,7 +112,7 @@ upsampling operations.
 
    <br>
 
-1 Note on implementation: PredNet inherits from the Recurrent layer
+:sup:`1` Note on implementation: PredNet inherits from the Recurrent layer
 class, i.e. it has an internal state and a step function. Given the
 top-down then bottom-up update sequence, it must currently be
 implemented in Keras as essentially a 'super' layer where all layers in

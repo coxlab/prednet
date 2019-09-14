@@ -90,7 +90,35 @@ Multi-Step Prediction
 The PredNet argument ``extrap_start_time`` can be used to force
 multi-step prediction. Starting at this time step, the prediction from
 the previous time step will be treated as the actual input. For example,
-if the model is run on a sequence o
+if the model is run on a sequence of 15 timesteps with
+``extrap_start_time = 10``, the last output will correspond to a t+5
+prediction. In the paper, we train in this setting starting from the
+original t+1 trained weights (see ``kitti_extrap_finetune.py``), and the
+resulting fine-tuned weights are included in ``download_models.sh``.
+Note that when training with extrapolation, the "errors" are no longer
+tied to ground truth, so the loss should be calculated on the pixel
+predictions themselves. This can be done by using
+``output_mode = 'prediction'``, as illustrated in
+``kitti_extrap_finetune.py``.
+
+Additional Notes
+~~~~~~~~~~~~~~~~
+
+When training on a new dataset, the image size has to be divisible by
+2^(nb of layers - 1) because of the cyclical 2x2 max-pooling and
+upsampling operations.
+
+.. raw:: html
+
+   <br>
+
+1 Note on implementation: PredNet inherits from the Recurrent layer
+class, i.e. it has an internal state and a step function. Given the
+top-down then bottom-up update sequence, it must currently be
+implemented in Keras as essentially a 'super' layer where all layers in
+the PredNet are in one PredNet 'layer'. This is less than ideal, but it
+seems like the most efficient way as of now. We welcome suggestions if
+anyone thinks of a better implementation.
 
 .. _Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning: https://arxiv.org/abs/1605.08104
 .. _here: https://coxlab.github.io/prednet/

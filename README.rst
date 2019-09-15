@@ -108,10 +108,6 @@ When training on a new dataset, the image size has to be divisible by
 2^(nb of layers - 1) because of the cyclical 2x2 max-pooling and
 upsampling operations.
 
-.. raw:: html
-
-   <br>
-
 :sup:`1` Note on implementation: PredNet inherits from the Recurrent layer
 class, i.e. it has an internal state and a step function. Given the
 top-down then bottom-up update sequence, it must currently be

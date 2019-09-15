@@ -165,7 +165,7 @@ class PredNet(Recurrent):
                 initial_state = K.reshape(initial_state, output_shp)
                 initial_states += [initial_state]
 
-        if K._BACKEND == 'theano':
+        if K.backend() == 'theano':
             from theano import tensor as T
             # There is a known issue in the Theano scan op when dealing with inputs whose shape is 1 along a dimension.
             # In our case, this is a problem when training on grayscale images, and the below line fixes it.

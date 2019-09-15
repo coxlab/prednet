@@ -15,9 +15,9 @@ from keras import backend as K
 from keras.models import Model, model_from_json
 from keras.layers import Input, Dense, Flatten
 
-from prednet import PredNet
-from data_utils import SequenceGenerator
-from kitti_settings import *
+from prednet.prednet import PredNet
+from prednet.data_utils import SequenceGenerator
+from prednet.kitti_settings import *
 
 
 n_plot = 40

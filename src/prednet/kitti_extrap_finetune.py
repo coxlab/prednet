@@ -11,7 +11,7 @@ from keras.models import Model, model_from_json
 from keras.layers import Input
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 
-from prednet import PredNet
+from prednet.prednet import PredNet
 from data_utils import SequenceGenerator
 from kitti_settings import *
 

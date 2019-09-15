@@ -8,7 +8,8 @@ from bs4 import BeautifulSoup
 import urllib.request
 import numpy as np
 from imageio import imread
-from scipy.misc import imresize
+#from scipy.misc import imresize
+from PIL import Image
 import hickle as hkl
 from prednet.kitti_settings import *
 
@@ -92,10 +93,12 @@ def process_data():
         hkl.dump(source_list, os.path.join(DATA_DIR, 'sources_' + split + '.hkl'))
 
 
+
 # resize and crop image
 def process_im(im, desired_sz):
     target_ds = float(desired_sz[0])/im.shape[0]
-    im = imresize(im, (desired_sz[0], int(np.round(target_ds * im.shape[1]))))
+    #im = imresize(im, (desired_sz[0], int(np.round(target_ds * im.shape[1]))))
+    im = numpy.array(Image.fromarray(im).resize((desired_sz[0], int(np.round(target_ds * im.shape[1])))))
     d = int((im.shape[1] - desired_sz[1]) / 2)
     im = im[:, d:d+desired_sz[1]]
     return im

@@ -1,5 +1,5 @@
 
-from prednet import main
+import prednet
 
 
 def test_main():

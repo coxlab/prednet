@@ -80,6 +80,7 @@ setup(
         'imageio',
         'scipy>=1.2.0',
         'pillow',
+        'matplotlib',
         'hickle',
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
     ],

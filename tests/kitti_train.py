@@ -17,7 +17,7 @@ from keras.optimizers import Adam
 
 from prednet.prednet import PredNet
 from prednet.data_utils import SequenceGenerator
-from prednet.kitti_settings import *
+from kitti_settings import *
 
 
 save_model = True  # if weights will be saved

@@ -56,6 +56,11 @@ Steps
    images (cropping, downsampling). Alternatively, the processed data
    (~3 GB) can be directly downloaded by executing ``download_data.sh``
 
+   It's unclear how to fix the "RuntimeError: Cannot open file.", so
+   for now use LanaSina's ``kitti_hkl`` at
+   https://figshare.com/articles/KITTI_hkl_files/7985684
+   https://github.com/coxlab/prednet/issues/53
+
 2. **Train model**
 
    .. code:: bash

@@ -65,7 +65,10 @@ Steps
 
    .. code:: bash
 
-      python kitti_train.py
+      $ python kitti_train.py
+      Using TensorFlow backend.
+      Epoch 1/150
+       56/125 [============>.................] - ETA: 8:29 - loss: 0.0649
 
    This will train a PredNet model for t+1 prediction. See `Keras FAQ`_
    on how to run using a GPU. **To download pre-trained weights**, run

@@ -11,7 +11,7 @@ from imageio import imread
 #from scipy.misc import imresize
 from PIL import Image
 import hickle as hkl
-from prednet.kitti_settings import *
+from kitti_settings import *
 
 
 desired_im_sz = (128, 160)

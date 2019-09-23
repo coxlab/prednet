@@ -11,10 +11,11 @@ include .editorconfig
 include AUTHORS.rst
 include CHANGELOG.rst
 include CONTRIBUTING.rst
-include LICENSE
+include License.txt
 include README.rst
 
 include tox.ini .travis.yml .appveyor.yml
+include environment.yml
 
 
 global-exclude *.py[cod] __pycache__/* *.so *.dylib

@@ -56,15 +56,42 @@ Steps
    images (cropping, downsampling). Alternatively, the processed data
    (~3 GB) can be directly downloaded by executing ``download_data.sh``
 
+   It's unclear how to fix the "RuntimeError: Cannot open file.", so
+   for now use LanaSina's ``kitti_hkl`` at
+   https://figshare.com/articles/KITTI_hkl_files/7985684
+   https://github.com/coxlab/prednet/issues/53
+
 2. **Train model**
 
    .. code:: bash
 
-      python kitti_train.py
+      $ python kitti_train.py
+      Using TensorFlow backend.
+      Epoch 1/150
+       56/125 [============>.................] - ETA: 8:29 - loss: 0.0649
 
    This will train a PredNet model for t+1 prediction. See `Keras FAQ`_
    on how to run using a GPU. **To download pre-trained weights**, run
    ``download_models.sh``
+
+   Currently there are the following warnings on newer versions of TensorFlow:
+
+   .. code:: bash
+
+      site-packages/keras/backend/tensorflow_backend.py:74: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.
+      site-packages/keras/backend/tensorflow_backend.py:517: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+      site-packages/keras/backend/tensorflow_backend.py:4138: The name tf.random_uniform is deprecated. Please use tf.random.uniform instead.
+      site-packages/keras/backend/tensorflow_backend.py:2018: The name tf.image.resize_nearest_neighbor is deprecated. Please use tf.compat.v1.image.resize_nearest_neighbor instead.
+      site-packages/keras/backend/tensorflow_backend.py:2018: The name tf.image.resize_nearest_neighbor is deprecated. Please use tf.compat.v1.image.resize_nearest_neighbor instead.
+      site-packages/keras/backend/tensorflow_backend.py:3976: The name tf.nn.max_pool is deprecated. Please use tf.nn.max_pool2d instead.
+      site-packages/keras/backend/tensorflow_backend.py:174: The name tf.get_default_session is deprecated. Please use tf.compat.v1.get_default_session instead.
+      site-packages/keras/backend/tensorflow_backend.py:181: The name tf.ConfigProto is deprecated. Please use tf.compat.v1.ConfigProto instead.
+      site-packages/keras/optimizers.py:790: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.
+      site-packages/tensorflow/python/ops/math_grad.py:1250: add_dispatch_support.<locals>.wrapper (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+      Instructions for updating:
+      Use tf.where in 2.0, which has the same broadcast rule as np.where
+
+
 
 3. **Evaluate model**
 

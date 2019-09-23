@@ -82,6 +82,7 @@ setup(
         'pillow',
         'matplotlib',
         'hickle',
+        'pytest',
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
     ],
     tests_require=['pytest'],

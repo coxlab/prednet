@@ -14,3 +14,10 @@ def load_video(filepath, dirToSaveHKL):
     hickle.dump(train, os.path.join(dirToSaveHKL, 'X_train.hkl'))
     hickle.dump(validate, os.path.join(dirToSaveHKL, 'X_validate.hkl'))
     hickle.dump(test, os.path.join(dirToSaveHKL, 'X_test.hkl'))
+    # The first few sources in the KITTI sources_test.hkl are
+    # 'city-2011_09_26_drive_0104_sync', 'city-2011_09_26_drive_0104_sync', 'city-2011_09_26_drive_0104_sync'
+    for split, data in (('train', train), ('validate', validate), ('test', test)):
+        source_list = [filepath for frame in data]
+        hickle.dump(source_list, os.path.join(dirToSaveHKL, 'X_{}.hkl'.format(split)))
+
+

@@ -8,7 +8,7 @@ import keras.callbacks
 import keras.models
 import keras.backend
 
-def train_on_hickles(DATA_DIR, WEIGHTS_DIR):
+def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width):
   save_model = True  # if weights will be saved
   weights_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_weights.hdf5')  # where weights will be saved
   json_file = os.path.join(WEIGHTS_DIR, 'prednet_model.json')
@@ -26,7 +26,7 @@ def train_on_hickles(DATA_DIR, WEIGHTS_DIR):
   N_seq_val = 100  # number of sequences to use for validation
   
   # Model parameters
-  n_channels, im_height, im_width = (3, 128, 160)
+  n_channels = 3
   input_shape = (n_channels, im_height, im_width) if keras.backend.image_data_format() == 'channels_first' else (im_height, im_width, n_channels)
   stack_sizes = (n_channels, 48, 96, 192)
   R_stack_sizes = stack_sizes

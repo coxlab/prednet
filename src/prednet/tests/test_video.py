@@ -18,5 +18,5 @@ def test_video():
     for filename in ('X_train.hkl', 'X_validate.hkl', 'X_test.hkl',
                      'sources_train.hkl', 'sources_validate.hkl', 'sources_test.hkl'):
       assert os.path.exists(os.path.join(tempdirpath, filename))
-    prednet.train.train_on_hickles(tempdirpath, tempdirpath)
+    prednet.train.train_on_hickles(tempdirpath, tempdirpath, 240, 320)
     assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))

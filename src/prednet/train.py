@@ -11,7 +11,7 @@ import keras.backend
 def train_on_hickles(DATA_DIR, WEIGHTS_DIR):
   save_model = True  # if weights will be saved
   weights_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_weights.hdf5')  # where weights will be saved
-  json_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_model.json')
+  json_file = os.path.join(WEIGHTS_DIR, 'prednet_model.json')
   
   # Data files
   train_file = os.path.join(DATA_DIR, 'X_train.hkl')

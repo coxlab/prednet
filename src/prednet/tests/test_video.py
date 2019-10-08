@@ -16,3 +16,4 @@ def test_video():
   with tempfile.TemporaryDirectory() as tempdirpath:
     prednet.data_input.load_video(filepath, tempdirpath)
     prednet.train.train_on_hickles(tempdirpath, tempdirpath)
+    assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))

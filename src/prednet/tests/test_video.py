@@ -15,5 +15,8 @@ def test_video():
   filepath = pkg_resources.resource_filename(__name__, os.path.join('resources', 'centaur_1.mpg'))
   with tempfile.TemporaryDirectory() as tempdirpath:
     prednet.data_input.load_video(filepath, tempdirpath)
+    for filename in ('X_train.hkl', 'X_validate.hkl', 'X_test.hkl',
+                     'sources_train.hkl', 'sources_validate.hkl', 'sources_test.hkl'):
+      assert os.path.exists(os.path.join(tempdirpath, filename))
     prednet.train.train_on_hickles(tempdirpath, tempdirpath)
     assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))

@@ -18,6 +18,6 @@ def load_video(filepath, dirToSaveHKL):
     # 'city-2011_09_26_drive_0104_sync', 'city-2011_09_26_drive_0104_sync', 'city-2011_09_26_drive_0104_sync'
     for split, data in (('train', train), ('validate', validate), ('test', test)):
         source_list = [filepath for frame in data]
-        hickle.dump(source_list, os.path.join(dirToSaveHKL, 'X_{}.hkl'.format(split)))
+        hickle.dump(source_list, os.path.join(dirToSaveHKL, 'sources_{}.hkl'.format(split)))
 
 

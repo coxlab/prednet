@@ -16,8 +16,8 @@ def train_on_hickles(DATA_DIR, WEIGHTS_DIR):
   # Data files
   train_file = os.path.join(DATA_DIR, 'X_train.hkl')
   train_sources = os.path.join(DATA_DIR, 'sources_train.hkl')
-  val_file = os.path.join(DATA_DIR, 'X_val.hkl')
-  val_sources = os.path.join(DATA_DIR, 'sources_val.hkl')
+  val_file = os.path.join(DATA_DIR, 'X_validate.hkl')
+  val_sources = os.path.join(DATA_DIR, 'sources_validate.hkl')
   
   # Training parameters
   nb_epoch = 150

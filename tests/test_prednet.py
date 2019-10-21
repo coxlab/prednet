@@ -1,6 +1,6 @@
 
-import prednet
+from prednet.cli import main
 
 
 def test_main():
-    pass
+    main([])

@@ -177,6 +177,8 @@ test:
   # need to pip install tox here.
   # With --sitepackages, we can save time by installing once
   # for both regular tests and documentation checks.
+  - python -c "import enum; print(enum.__file__)"
+  - pip uninstall enum34
   - pip install .
   - git --version
   - python --version

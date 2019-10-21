@@ -1,4 +1,4 @@
-image: dahanna/python.3.7-git-tox-alpine
+image: dahanna/python:3.7-seaborn-alpine
 
 default:
   before_script:

@@ -180,6 +180,7 @@ test:
   - python -c "import enum; print(enum.__file__)"
   - pip uninstall --yes enum34
   - pip install .
+  - pip install tox
   - git --version
   - python --version
   - python2 --version || echo "python2 is not installed."

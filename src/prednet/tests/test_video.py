@@ -28,7 +28,7 @@ def test_video():
 
 
 def test_black():
-  array = np.zeros((8, 2, 2, 3))
+  array = np.zeros((64, 240, 320, 3))
   with tempfile.TemporaryDirectory() as tempdirpath:
     prednet.data_input.save_array_as_hickle(array, ['black' for frame in array], tempdirpath)
     for filename in ('X_train.hkl', 'X_validate.hkl', 'X_test.hkl',
@@ -36,4 +36,6 @@ def test_black():
       assert os.path.exists(os.path.join(tempdirpath, filename))
     for split in ('train', 'validate', 'test'):
       assert hickle.load(os.path.join(tempdirpath, 'X_{}.hkl'.format(split))).shape[0] == len(hickle.load(os.path.join(tempdirpath, 'sources_{}.hkl'.format(split))))
+    prednet.train.train_on_hickles(tempdirpath, tempdirpath, 240, 320)
+    assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))
 

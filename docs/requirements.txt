@@ -1,2 +1,2 @@
-sphinx>=1.3
+sphinx @ git+https://github.com/dHannasch/sphinx.git@revert-6378
 sphinx-rtd-theme

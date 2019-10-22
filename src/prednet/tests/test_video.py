@@ -39,3 +39,6 @@ def test_black():
     prednet.train.train_on_hickles(tempdirpath, tempdirpath, 8, 8)
     assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))
 
+
+if __name__ == "__main__":
+  test_black()

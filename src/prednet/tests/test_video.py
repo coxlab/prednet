@@ -46,5 +46,5 @@ if __name__ == "__main__":
     print("Currently at line", frame.f_lineno, frame.f_code.co_filename)
     import sys
     sys.exit()
-  signal.signal(signal.SIGINT, print_linenum)
+  # signal.signal(signal.SIGINT, print_linenum)
   test_black()

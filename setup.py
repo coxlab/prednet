@@ -25,7 +25,11 @@ def read(*names, **kwargs):
 
 setup(
     name='prednet',
-    version='0.0.0',
+    use_scm_version={
+        'local_scheme': 'dirty-tag',
+        'write_to': 'src/prednet/_version.py',
+        'fallback_version': '0.0.0',
+    },
     license='MIT',
     description='Code and models accompanying Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning by Bill Lotter, Gabriel Kreiman, and David Cox. The PredNet is a deep recurrent convolutional neural network that is inspired by the neuroscience concept of predictive coding (Rao and Ballard, 1999; Friston, 2005).',
     long_description='%s\n%s' % (
@@ -51,7 +55,6 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
@@ -71,7 +74,7 @@ setup(
     keywords=[
         # eg: 'keyword1', 'keyword2', 'keyword3',
     ],
-    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
     install_requires=[
         'tensorflow-gpu>=1.13.1',
         'Keras>=2.2.4',
@@ -86,7 +89,6 @@ setup(
         'pytest',
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
     ],
-    tests_require=['pytest'],
     extras_require={
         # eg:
         #   'rst': ['docutils>=0.11'],
@@ -94,5 +96,11 @@ setup(
     },
     setup_requires=[
         'pytest-runner',
+        'setuptools_scm>=3.3.1',
     ],
+    entry_points={
+        'console_scripts': [
+            'prednet = prednet.cli:main',
+        ]
+    },
 )

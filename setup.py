@@ -80,6 +80,7 @@ setup(
         'imageio',
         'scipy>=1.2.0',
         'pillow',
+        'sk-video',
         'matplotlib',
         'hickle',
         'pytest',

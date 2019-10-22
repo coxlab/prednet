@@ -41,4 +41,8 @@ def test_black():
 
 
 if __name__ == "__main__":
+  import signal
+  def print_linenum(signum, frame):
+    print("Currently at line", frame.f_lineno)
+  signal.signal(signal.SIGINT, print_linenum)
   test_black()

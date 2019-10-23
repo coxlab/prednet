@@ -1,2 +1,2 @@
-sphinx @ git+https://github.com/dHannasch/sphinx.git@revert-6378
+sphinx @ git+https://github.com/tk0miya/sphinx.git@1331_useragent
 sphinx-rtd-theme

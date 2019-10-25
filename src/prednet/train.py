@@ -8,7 +8,7 @@ import keras.callbacks
 import keras.models
 import keras.backend
 
-def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epochs=150):
+def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epochs=150, steps_per_epoch=125):
   save_model = True  # if weights will be saved
   weights_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_weights.hdf5')  # where weights will be saved
   json_file = os.path.join(WEIGHTS_DIR, 'prednet_model.json')
@@ -21,7 +21,7 @@ def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epoch
   
   # Training parameters
   batch_size = 4
-  samples_per_epoch = 500
+  samples_per_epoch = steps_per_epoch * batch_size
   N_seq_val = 100  # number of sequences to use for validation
   
   # Model parameters
@@ -63,7 +63,7 @@ def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epoch
       if not os.path.exists(WEIGHTS_DIR): os.mkdir(WEIGHTS_DIR)
       callbacks.append(keras.callbacks.ModelCheckpoint(filepath=weights_file, monitor='val_loss', save_best_only=True))
   
-  history = model.fit_generator(train_generator, samples_per_epoch / batch_size, number_of_epochs, callbacks=callbacks,
+  history = model.fit_generator(train_generator, steps_per_epoch, number_of_epochs, callbacks=callbacks,
                   validation_data=val_generator, validation_steps=N_seq_val / batch_size)
   
   if save_model:

@@ -63,8 +63,11 @@ KeyboardInterrupt
       assert hickle.load(os.path.join(tempdirpath, 'X_{}.hkl'.format(split))).shape[0] == len(hickle.load(os.path.join(tempdirpath, 'sources_{}.hkl'.format(split))))
     with capsys.disabled():
       prednet.train.train_on_hickles(tempdirpath, tempdirpath, array.shape[1], array.shape[2],
-                                     number_of_epochs=4, steps_per_epoch=8)
-      prednet.evaluate.evaluate_json_model(tempdirpath, tempdirpath, tempdirpath, path_to_save_prediction_scores='prediction_scores.txt')
+                                     number_of_epochs=4, steps_per_epoch=8,
+                                     weights_file='zero_weights.hdf5')
+      assert os.path.exists(os.path.join(tempdirpath, 'zero_weights.hdf5'))
+      prednet.evaluate.evaluate_json_model(tempdirpath, tempdirpath, tempdirpath,
+                                           path_to_save_prediction_scores='prediction_scores.txt')
     assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))
 
 

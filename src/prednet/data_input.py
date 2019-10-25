@@ -25,6 +25,7 @@ def save_array_as_hickle(array, source_list, dirToSaveHKL):
 
 def load_video(filepath, dirToSaveHKL):
     array = skvideo.io.vread(filepath)
+    # error can occur: Cannot find installation of real FFmpeg (which comes with ffprobe)
     source_list = [filepath for frame in array]
     save_array_as_hickle(array, source_list, dirToSaveHKL)
 

@@ -28,11 +28,31 @@ def test_video():
 
 
 def test_black():
-  filepath = pkg_resources.resource_filename(__name__, os.path.join('resources', 'centaur_1.mpg'))
-  array = np.zeros((8, 8, 8, 3))
-  import skvideo
-  array = skvideo.io.vread(filepath)[:8, :8, :8]
-  assert array.shape == (8, 8, 8, 3)
+  array = np.zeros((32, 8, 8, 3))
+  """
+  # Having 16 frames instead of 32 frames causes training to hang indefinitely on Epoch 1/150:
+Epoch 1/150
+^CTraceback (most recent call last):
+  File "src/prednet/tests/test_video.py", line 54, in <module>
+    test_black()
+  File "src/prednet/tests/test_video.py", line 43, in test_black
+    prednet.train.train_on_hickles(tempdirpath, tempdirpath, array.shape[1], array.shape[2])
+  File "/home/dahanna/prednet/src/prednet/train.py", line 68, in train_on_hickles
+    validation_data=val_generator, validation_steps=N_seq_val / batch_size)
+  File "/home/dahanna/anaconda3/envs/36env/lib/python3.6/site-packages/keras/legacy/interfaces.py", line 91, in wrapper
+    return func(*args, **kwargs)
+  File "/home/dahanna/anaconda3/envs/36env/lib/python3.6/site-packages/keras/engine/training.py", line 1418, in fit_generator
+    initial_epoch=initial_epoch)
+  File "/home/dahanna/anaconda3/envs/36env/lib/python3.6/site-packages/keras/engine/training_generator.py", line 181, in fit_generator
+    generator_output = next(output_generator)
+  File "/home/dahanna/anaconda3/envs/36env/lib/python3.6/site-packages/keras/utils/data_utils.py", line 595, in get
+    inputs = self.queue.get(block=True).get()
+  File "/home/dahanna/anaconda3/envs/36env/lib/python3.6/queue.py", line 164, in get
+    self.not_empty.wait()
+  File "/home/dahanna/anaconda3/envs/36env/lib/python3.6/threading.py", line 295, in wait
+    waiter.acquire()
+KeyboardInterrupt
+  """
   with tempfile.TemporaryDirectory() as tempdirpath:
     prednet.data_input.save_array_as_hickle(array, ['black' for frame in array], tempdirpath)
     for filename in ('X_train.hkl', 'X_validate.hkl', 'X_test.hkl',
@@ -40,7 +60,7 @@ def test_black():
       assert os.path.exists(os.path.join(tempdirpath, filename))
     for split in ('train', 'validate', 'test'):
       assert hickle.load(os.path.join(tempdirpath, 'X_{}.hkl'.format(split))).shape[0] == len(hickle.load(os.path.join(tempdirpath, 'sources_{}.hkl'.format(split))))
-    prednet.train.train_on_hickles(tempdirpath, tempdirpath, array.shape[1], array.shape[2])
+    prednet.train.train_on_hickles(tempdirpath, tempdirpath, array.shape[1], array.shape[2], number_of_epochs=16)
     assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))
 
 

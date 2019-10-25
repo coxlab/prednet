@@ -27,7 +27,8 @@ def test_video():
     assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))
 
 
-def test_black():
+def test_black(capsys):
+  # if an argument has a default, pytest will not insert a fixture
   array = np.zeros((32, 8, 8, 3))
   """
   # Having 16 frames instead of 32 frames causes training to hang indefinitely on Epoch 1/150:
@@ -60,9 +61,15 @@ KeyboardInterrupt
       assert os.path.exists(os.path.join(tempdirpath, filename))
     for split in ('train', 'validate', 'test'):
       assert hickle.load(os.path.join(tempdirpath, 'X_{}.hkl'.format(split))).shape[0] == len(hickle.load(os.path.join(tempdirpath, 'sources_{}.hkl'.format(split))))
-    prednet.train.train_on_hickles(tempdirpath, tempdirpath, array.shape[1], array.shape[2], number_of_epochs=16)
+    with capsys.disabled():
+      prednet.train.train_on_hickles(tempdirpath, tempdirpath, array.shape[1], array.shape[2], number_of_epochs=4)
     assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))
 
+
+class StubCapSys:
+  def disabled():
+    import contextlib
+    return contextlib.nullcontext()
 
 if __name__ == "__main__":
   import signal
@@ -71,4 +78,4 @@ if __name__ == "__main__":
     import sys
     sys.exit()
   # signal.signal(signal.SIGINT, print_linenum)
-  test_black()
+  test_black(StubCapSys())

@@ -64,7 +64,7 @@ KeyboardInterrupt
     with capsys.disabled():
       prednet.train.train_on_hickles(tempdirpath, tempdirpath, array.shape[1], array.shape[2],
                                      number_of_epochs=4, steps_per_epoch=8)
-      prednet.evaluate.evaluate_json_model(tempdirpath, tempdirpath, tempdirpath, 'prediction_scores.txt')
+      prednet.evaluate.evaluate_json_model(tempdirpath, tempdirpath, tempdirpath, path_to_save_prediction_scores='prediction_scores.txt')
     assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))
 
 

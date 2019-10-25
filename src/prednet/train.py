@@ -9,9 +9,8 @@ import keras.models
 import keras.backend
 
 def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epochs=150, steps_per_epoch=125,
-                     json_file='prednet_model.json'):
+                     json_file='prednet_model.json', weights_file='prednet_weights.hdf5'):
   save_model = True  # if weights will be saved
-  weights_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_weights.hdf5')  # where weights will be saved
 
   # Data files
   train_file = os.path.join(DATA_DIR, 'X_train.hkl')
@@ -61,7 +60,8 @@ def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epoch
   callbacks = [keras.callbacks.LearningRateScheduler(lr_schedule)]
   if save_model:
       if not os.path.exists(WEIGHTS_DIR): os.mkdir(WEIGHTS_DIR)
-      callbacks.append(keras.callbacks.ModelCheckpoint(filepath=weights_file, monitor='val_loss', save_best_only=True))
+      callbacks.append(keras.callbacks.ModelCheckpoint(filepath=os.path.join(WEIGHTS_DIR, weights_file),
+                                                       monitor='val_loss', save_best_only=True))
   
   history = model.fit_generator(train_generator, steps_per_epoch, number_of_epochs, callbacks=callbacks,
                   validation_data=val_generator, validation_steps=N_seq_val / batch_size)

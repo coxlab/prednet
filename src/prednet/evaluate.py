@@ -18,12 +18,13 @@ from prednet.prednet import PredNet
 from prednet.data_utils import SequenceGenerator
 
 
-def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR, json_file='prednet_model.json', path_to_save_prediction_scores: str = None):
+def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR,
+                        json_file='prednet_model.json', weights_file='prednet_weights.hdf5',
+                        path_to_save_prediction_scores: str = None):
   n_plot = 40
   batch_size = 10
   nt = 10
   
-  weights_file = os.path.join(WEIGHTS_DIR, 'tensorflow_weights/prednet_kitti_weights.hdf5')
   test_file = os.path.join(DATA_DIR, 'X_test.hkl')
   test_sources = os.path.join(DATA_DIR, 'sources_test.hkl')
   
@@ -31,7 +32,7 @@ def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR, json_file='pred
   with open(os.path.join(WEIGHTS_DIR, json_file)) as f:
     json_string = f.read()
   train_model = model_from_json(json_string, custom_objects = {'PredNet': PredNet})
-  train_model.load_weights(weights_file)
+  train_model.load_weights(os.path.join(WEIGHTS_DIR, weights_file))
   
   # Create testing model (to output predictions)
   layer_config = train_model.layers[1].get_config()

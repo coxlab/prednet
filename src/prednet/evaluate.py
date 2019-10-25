@@ -18,20 +18,18 @@ from prednet.prednet import PredNet
 from prednet.data_utils import SequenceGenerator
 
 
-def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR, path_to_save_prediction_scores: str = None):
+def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR, json_file='prednet_model.json', path_to_save_prediction_scores: str = None):
   n_plot = 40
   batch_size = 10
   nt = 10
   
   weights_file = os.path.join(WEIGHTS_DIR, 'tensorflow_weights/prednet_kitti_weights.hdf5')
-  json_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_model.json')
   test_file = os.path.join(DATA_DIR, 'X_test.hkl')
   test_sources = os.path.join(DATA_DIR, 'sources_test.hkl')
   
   # Load trained model
-  f = open(json_file, 'r')
-  json_string = f.read()
-  f.close()
+  with open(os.path.join(WEIGHTS_DIR, json_file)) as f:
+    json_string = f.read()
   train_model = model_from_json(json_string, custom_objects = {'PredNet': PredNet})
   train_model.load_weights(weights_file)
   
@@ -59,7 +57,7 @@ def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR, path_to_save_pr
     # Compare MSE of PredNet predictions vs. using last frame.  Write results to prediction_scores.txt
     mse_model = np.mean( (X_test[:, 1:] - X_hat[:, 1:])**2 )  # look at all timesteps except the first
     mse_prev = np.mean( (X_test[:, :-1] - X_test[:, 1:])**2 )
-    with open(RESULTS_SAVE_DIR + path_to_save_prediction_scores, 'w') as f:
+    with open(os.path.join(RESULTS_SAVE_DIR, path_to_save_prediction_scores), 'w') as f:
       f.write("Model MSE: %f\n" % mse_model)
       f.write("Previous Frame MSE: %f" % mse_prev)
   

@@ -8,11 +8,11 @@ import keras.callbacks
 import keras.models
 import keras.backend
 
-def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epochs=150, steps_per_epoch=125):
+def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epochs=150, steps_per_epoch=125,
+                     json_file='prednet_model.json'):
   save_model = True  # if weights will be saved
   weights_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_weights.hdf5')  # where weights will be saved
-  json_file = os.path.join(WEIGHTS_DIR, 'prednet_model.json')
-  
+
   # Data files
   train_file = os.path.join(DATA_DIR, 'X_train.hkl')
   train_sources = os.path.join(DATA_DIR, 'sources_train.hkl')
@@ -68,5 +68,5 @@ def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epoch
   
   if save_model:
       json_string = model.to_json()
-      with open(json_file, "w") as f:
+      with open(os.path.join(WEIGHTS_DIR, json_file), "w") as f:
           f.write(json_string)

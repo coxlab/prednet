@@ -60,10 +60,12 @@ def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epoch
   callbacks = [keras.callbacks.LearningRateScheduler(lr_schedule)]
   if save_model:
       if not os.path.exists(WEIGHTS_DIR): os.mkdir(WEIGHTS_DIR)
+      print('Setting keras.callbacks.ModelCheckpoint for', os.path.join(WEIGHTS_DIR, weights_file))
       callbacks.append(keras.callbacks.ModelCheckpoint(filepath=os.path.join(WEIGHTS_DIR, weights_file),
                                                        monitor='val_loss', save_best_only=True))
   
-  history = model.fit_generator(train_generator, steps_per_epoch, number_of_epochs, callbacks=callbacks,
+  history = model.fit_generator(train_generator, steps_per_epoch, number_of_epochs,
+                                callbacks=callbacks,
                   validation_data=val_generator, validation_steps=N_seq_val / batch_size)
   
   if save_model:

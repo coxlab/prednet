@@ -23,7 +23,7 @@ def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR,
                         path_to_save_prediction_scores: str = None):
   n_plot = 40
   batch_size = 4
-  nt = 10
+  nt = 8
   
   test_file = os.path.join(DATA_DIR, 'X_test.hkl')
   assert os.path.exists(test_file)

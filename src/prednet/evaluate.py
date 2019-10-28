@@ -48,7 +48,6 @@ def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR,
   predictions = test_prednet(inputs)
   test_model = Model(inputs=inputs, outputs=predictions)
   
-  assert nt == 8
   test_generator = SequenceGenerator(test_file, test_sources, nt,
                                      sequence_start_mode='unique', data_format=data_format)
   X_test = test_generator.create_all()

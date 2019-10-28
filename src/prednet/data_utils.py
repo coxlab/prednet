@@ -11,6 +11,7 @@ class SequenceGenerator(Iterator):
                  data_format=K.image_data_format()):
         self.X = hkl.load(data_file)  # X will be like (n_images, nb_cols, nb_rows, nb_channels)
         if self.X.shape[0] < nt:
+            # If nt > X.shape[0], the generator will generate zero items. That is almost certainly not what the user intended.
             raise ValueError(self.X.shape[0], nt)
         self.sources = hkl.load(source_file) # source for each image so when creating sequences can assure that consecutive frames are from same video
         self.nt = nt
@@ -53,6 +54,7 @@ class SequenceGenerator(Iterator):
     def next(self):
         with self.lock:
             current_index = (self.batch_index * self.batch_size) % self.n
+            # self.index_generator is inherited from keras_preprocessing.image.iterator.Iterator
             index_array, current_batch_size = next(self.index_generator), self.batch_size
         batch_x = np.zeros((current_batch_size, self.nt) + self.im_shape, np.float32)
         for i, idx in enumerate(index_array):

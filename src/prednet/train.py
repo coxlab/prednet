@@ -33,7 +33,7 @@ def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epoch
   R_filt_sizes = (3, 3, 3, 3)
   layer_loss_weights = np.array([1., 0., 0., 0.])  # weighting for each layer in final loss; "L_0" model:  [1, 0, 0, 0], "L_all": [1, 0.1, 0.1, 0.1]
   layer_loss_weights = np.expand_dims(layer_loss_weights, 1)
-  nt = 10  # number of timesteps used for sequences in training
+  nt = 8  # number of timesteps used for sequences in training
   time_loss_weights = 1./ (nt - 1) * np.ones((nt,1))  # equally weight all timesteps except the first
   time_loss_weights[0] = 0
   

@@ -43,7 +43,6 @@ class SequenceGenerator(Iterator):
             self.possible_starts = np.random.permutation(self.possible_starts)
         if N_seq is not None and len(self.possible_starts) > N_seq:  # select a subset of sequences if want to
             self.possible_starts = self.possible_starts[:N_seq]
-        assert bool(self.possible_starts)
         self.N_sequences = len(self.possible_starts)
         assert self.N_sequences > 0
         super(SequenceGenerator, self).__init__(len(self.possible_starts), batch_size, shuffle, seed)

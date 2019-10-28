@@ -22,7 +22,7 @@ def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR,
                         json_file='prednet_model.json', weights_path='prednet_weights.hdf5',
                         path_to_save_prediction_scores: str = None):
   n_plot = 40
-  batch_size = 10
+  batch_size = 4
   nt = 10
   
   test_file = os.path.join(DATA_DIR, 'X_test.hkl')

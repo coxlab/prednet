@@ -49,7 +49,8 @@ def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR,
   test_model = Model(inputs=inputs, outputs=predictions)
   
   assert nt == 8
-  test_generator = SequenceGenerator(test_file, test_sources, nt, sequence_start_mode='unique', data_format=data_format)
+  test_generator = SequenceGenerator(test_file, test_sources, nt,
+                                     sequence_start_mode='unique', data_format=data_format)
   X_test = test_generator.create_all()
   assert type(X_test) is np.ndarray
   X_hat = test_model.predict(X_test, batch_size)

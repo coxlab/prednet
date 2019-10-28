@@ -179,6 +179,7 @@ test:
   # for both regular tests and documentation checks.
   - python -c "import enum; print(enum.__file__)"
   - pip uninstall --yes enum34
+  - pip uninstall --yes prednet || echo "PredNet is not installed."
   - pip install .
   - pip install tox
   - git --version

@@ -74,3 +74,4 @@ def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epoch
       json_string = model.to_json()
       with open(os.path.join(WEIGHTS_DIR, json_file), "w") as f:
           f.write(json_string)
+      assert os.path.exists(os.path.join(WEIGHTS_DIR, weights_file))

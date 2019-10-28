@@ -27,7 +27,8 @@ class SequenceGenerator(Iterator):
         self.im_shape = self.X[0].shape
 
         if self.sequence_start_mode == 'all':  # allow for any possible sequence, starting from any frame
-            self.possible_starts = np.array([i for i in range(self.X.shape[0] - self.nt) if self.sources[i] == self.sources[i + self.nt - 1]])
+            self.possible_starts = np.array([i for i in range(self.X.shape[0] - self.nt + 1)
+                                             if self.sources[i] == self.sources[i + self.nt - 1]])
         elif self.sequence_start_mode == 'unique':  #create sequences where each unique frame is in at most one sequence
             curr_location = 0
             possible_starts = []

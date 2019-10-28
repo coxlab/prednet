@@ -26,7 +26,9 @@ def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR,
   nt = 10
   
   test_file = os.path.join(DATA_DIR, 'X_test.hkl')
+  assert os.path.exists(test_file)
   test_sources = os.path.join(DATA_DIR, 'sources_test.hkl')
+  assert os.path.exists(test_sources)
   
   # Load trained model
   with open(os.path.join(WEIGHTS_DIR, json_file)) as f:

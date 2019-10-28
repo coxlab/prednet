@@ -28,6 +28,7 @@ class SequenceGenerator(Iterator):
         elif self.sequence_start_mode == 'unique':  #create sequences where each unique frame is in at most one sequence
             curr_location = 0
             possible_starts = []
+            assert curr_location < self.X.shape[0] - self.nt + 1
             while curr_location < self.X.shape[0] - self.nt + 1:
                 if self.sources[curr_location] == self.sources[curr_location + self.nt - 1]:
                     possible_starts.append(curr_location)

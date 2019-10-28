@@ -53,7 +53,8 @@ def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR,
   if type(X_hat) is list:
     X_hat = np.array(X_hat)
   assert type(X_hat) is np.ndarray
-  assert X_hat.shape == X_test.shape
+  if X_hat.shape != X_test.shape:
+    raise Exception(X_test.shape, X_hat.shape)
   if data_format == 'channels_first':
       X_test = np.transpose(X_test, (0, 1, 3, 4, 2))
       X_hat = np.transpose(X_hat, (0, 1, 3, 4, 2))

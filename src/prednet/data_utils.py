@@ -36,6 +36,7 @@ class SequenceGenerator(Iterator):
                 else:
                     curr_location += 1
             self.possible_starts = possible_starts
+            assert bool(self.possible_starts)
 
         if shuffle:
             self.possible_starts = np.random.permutation(self.possible_starts)

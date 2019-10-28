@@ -48,7 +48,9 @@ def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR,
   
   test_generator = SequenceGenerator(test_file, test_sources, nt, sequence_start_mode='unique', data_format=data_format)
   X_test = test_generator.create_all()
+  assert type(X_test) is np.ndarray
   X_hat = test_model.predict(X_test, batch_size)
+  assert type(X_hat) is np.ndarray
   if data_format == 'channels_first':
       X_test = np.transpose(X_test, (0, 1, 3, 4, 2))
       X_hat = np.transpose(X_hat, (0, 1, 3, 4, 2))

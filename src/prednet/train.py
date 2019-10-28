@@ -63,6 +63,8 @@ def train_on_hickles(DATA_DIR, WEIGHTS_DIR, im_height, im_width, number_of_epoch
       print('Setting keras.callbacks.ModelCheckpoint for', os.path.join(WEIGHTS_DIR, weights_file))
       callbacks.append(keras.callbacks.ModelCheckpoint(filepath=os.path.join(WEIGHTS_DIR, weights_file),
                                                        monitor='val_loss', save_best_only=True))
+  else:
+      raise NotImplementedError("It appears that evaluation requires the HDF5 file.")
   
   history = model.fit_generator(train_generator, steps_per_epoch, number_of_epochs,
                                 callbacks=callbacks,

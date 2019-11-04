@@ -19,15 +19,15 @@ class PredNet(Recurrent):
                 channels in the second and third layers, respectively.
         R_stack_sizes: number of channels in the representation (R) modules.
             Length must equal length of stack_sizes, but the number of channels per layer can be different.
-        A_filt_sizes: filter sizes for the target (A) modules.
+        A_filt_sizes: (convolution) filter sizes for the target (A) modules.
             Has length of 1 - len(stack_sizes).
             Ex. (3, 3) would mean that targets for layers 2 and 3 are computed by a 3x3 convolution of the errors (E)
                 from the layer below (followed by max-pooling)
-        Ahat_filt_sizes: filter sizes for the prediction (Ahat) modules.
+        Ahat_filt_sizes: (convolution) filter sizes for the prediction (Ahat) modules.
             Has length equal to length of stack_sizes.
             Ex. (3, 3, 3) would mean that the predictions for each layer are computed by a 3x3 convolution of the
                 representation (R) modules at each layer.
-        R_filt_sizes: filter sizes for the representation (R) modules.
+        R_filt_sizes: (convolution) filter sizes for the representation (R) modules.
             Has length equal to length of stack_sizes.
             Corresponds to the filter sizes for all convolutions in the LSTM.
         pixel_max: the maximum pixel value.
@@ -67,7 +67,9 @@ class PredNet(Recurrent):
                  output_mode='error', extrap_start_time=None,
                  data_format=K.image_data_format(), **kwargs):
         self.stack_sizes = stack_sizes
-        self.nb_layers = len(stack_sizes)
+        self.nb_layers = len(stack_sizes) # the number of layers (w/ each layer containing R, A_hat, A, E)
+
+
         assert len(R_stack_sizes) == self.nb_layers, 'len(R_stack_sizes) must equal len(stack_sizes)'
         self.R_stack_sizes = R_stack_sizes
         assert len(A_filt_sizes) == (self.nb_layers - 1), 'len(A_filt_sizes) must equal len(stack_sizes) - 1'
@@ -80,8 +82,8 @@ class PredNet(Recurrent):
         self.pixel_max = pixel_max
         self.error_activation = activations.get(error_activation)
         self.A_activation = activations.get(A_activation)
-        self.LSTM_activation = activations.get(LSTM_activation)
-        self.LSTM_inner_activation = activations.get(LSTM_inner_activation)
+        self.LSTM_activation = activations.get(LSTM_activation) # act func for output (c)
+        self.LSTM_inner_activation = activations.get(LSTM_inner_activation) # act func for f,i,o gates
 
         default_output_modes = ['prediction', 'error', 'all']
         layer_output_modes = [layer + str(n) for n in range(self.nb_layers) for layer in ['R', 'E', 'A', 'Ahat']]
@@ -104,6 +106,14 @@ class PredNet(Recurrent):
         self.input_spec = [InputSpec(ndim=5)]
 
     def compute_output_shape(self, input_shape):
+        """ Depending on self.output_mode, we we will need an array matching in size for the output.
+
+        Arguments:
+            input_shape {tupel} -- shape of the input
+
+        Returns:
+            tupel -- dimensions of output
+        """
         if self.output_mode == 'prediction':
             out_shape = input_shape[2:]
         elif self.output_mode == 'error':
@@ -128,8 +138,8 @@ class PredNet(Recurrent):
 
     def get_initial_state(self, x):
         input_shape = self.input_spec[0].shape
-        init_nb_row = input_shape[self.row_axis]
-        init_nb_col = input_shape[self.column_axis]
+        init_nb_row = input_shape[self.row_axis] # number of rows in input
+        init_nb_col = input_shape[self.column_axis] # number of cols in input
 
         base_initial_state = K.zeros_like(x)  # (samples, timesteps) + image_shape
         non_channel_axis = -1 if self.data_format == 'channels_first' else -2
@@ -138,8 +148,8 @@ class PredNet(Recurrent):
         base_initial_state = K.sum(base_initial_state, axis=1)  # (samples, nb_channels)
 
         initial_states = []
-        states_to_pass = ['r', 'c', 'e']
-        nlayers_to_pass = {u: self.nb_layers for u in states_to_pass}
+        states_to_pass = ['r', 'c', 'e'] # (r)epresentational layer, (c)ontext (LSTM state), (e) error
+        nlayers_to_pass = {u: self.nb_layers for u in states_to_pass} # how many layers of each state to pass
         if self.extrap_start_time is not None:
            states_to_pass.append('ahat')  # pass prediction in states so can use as actual for t+1 when extrapolating
            nlayers_to_pass['ahat'] = 1
@@ -177,7 +187,7 @@ class PredNet(Recurrent):
 
     def build(self, input_shape):
         self.input_spec = [InputSpec(shape=input_shape)]
-        self.conv_layers = {c: [] for c in ['i', 'f', 'c', 'o', 'a', 'ahat']}
+        self.conv_layers = {c: [] for c in ['i', 'f', 'c', 'o', 'a', 'ahat']} # LSTM: (i)nput, (f)orget, (c)ell, (o) output; a, a_hat
 
         for l in range(self.nb_layers):
             for c in ['i', 'f', 'c', 'o']:
@@ -201,7 +211,7 @@ class PredNet(Recurrent):
                 if c == 'ahat':
                     nb_channels = self.R_stack_sizes[l]
                 elif c == 'a':
-                    nb_channels = 2 * self.stack_sizes[l]
+                    nb_channels = 2 * self.stack_sizes[l] # Wolfgang Pauli changed to 2 * self.R_stack_sizes[l]?
                 else:
                     nb_channels = self.stack_sizes[l] * 2 + self.R_stack_sizes[l]
                     if l < self.nb_layers - 1:
@@ -219,9 +229,10 @@ class PredNet(Recurrent):
             self.states += [None] * 2  # [previous frame prediction, timestep]
 
     def step(self, a, states):
-        r_tm1 = states[:self.nb_layers]
-        c_tm1 = states[self.nb_layers:2*self.nb_layers]
-        e_tm1 = states[2*self.nb_layers:3*self.nb_layers]
+        # get the states of states_to_pass from t-1 (previous time step)
+        r_tm1 = states[:self.nb_layers] # nb_layers times representational layer
+        c_tm1 = states[self.nb_layers:2*self.nb_layers] # nb_layers times LSTM state
+        e_tm1 = states[2*self.nb_layers:3*self.nb_layers] # nb_layers times error
 
         if self.extrap_start_time is not None:
             t = states[-1]
@@ -234,19 +245,23 @@ class PredNet(Recurrent):
         # Update R units starting from the top
         for l in reversed(range(self.nb_layers)):
             inputs = [r_tm1[l], e_tm1[l]]
+            # if we are not in the deepest hidden layer, we also add the representation layer from the next deepest layer as input
             if l < self.nb_layers - 1:
                 inputs.append(r_up)
 
             inputs = K.concatenate(inputs, axis=self.channel_axis)
+            # update state of i, f, o, c
             i = self.conv_layers['i'][l].call(inputs)
             f = self.conv_layers['f'][l].call(inputs)
             o = self.conv_layers['o'][l].call(inputs)
+            # update LSTM state, first forget, than add input * state of t-1
             _c = f * c_tm1[l] + i * self.conv_layers['c'][l].call(inputs)
+            # update r, output * lstm-state
             _r = o * self.LSTM_activation(_c)
             c.insert(0, _c)
             r.insert(0, _r)
 
-            if l > 0:
+            if l > 0: # create pointer to representational layer from next deepest layer
                 r_up = self.upsample.call(_r)
 
         # Update feedforward path starting from the bottom

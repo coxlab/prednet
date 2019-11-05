@@ -1,2 +1,2 @@
-sphinx @ git+https://github.com/sphinx-doc/sphinx.git
+sphinx @ git+https://github.com/sphinx-doc/sphinx.git@2.0
 sphinx-rtd-theme

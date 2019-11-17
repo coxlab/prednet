@@ -18,20 +18,20 @@ from prednet.prednet import PredNet
 from prednet.data_utils import SequenceGenerator
 
 
-def evaluate_json_model(DATA_DIR, WEIGHTS_DIR, RESULTS_SAVE_DIR,
-                        json_file='prednet_model.json', weights_path='prednet_weights.hdf5',
+def evaluate_json_model(DATA_DIR, RESULTS_SAVE_DIR,
+                        path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',
                         path_to_save_prediction_scores: str = None):
   n_plot = 40
   batch_size = 4
   nt = 8
-  
+
   test_file = os.path.join(DATA_DIR, 'X_test.hkl')
   assert os.path.exists(test_file)
   test_sources = os.path.join(DATA_DIR, 'sources_test.hkl')
   assert os.path.exists(test_sources)
   
   # Load trained model
-  with open(os.path.join(WEIGHTS_DIR, json_file)) as f:
+  with open(path_to_model_json) as f:
     json_string = f.read()
   train_model = model_from_json(json_string, custom_objects = {'PredNet': PredNet})
   assert os.path.exists(weights_path)

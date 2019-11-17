@@ -93,7 +93,7 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
   callbacks = [keras.callbacks.LearningRateScheduler(lr_schedule)]
   if save_model:
       if not os.path.exists(os.path.dirname(path_to_save_weights_hdf5)):
-        os.mkdirs(os.path.dirname(path_to_save_weights_hdf5))
+        os.makedirs(os.path.dirname(path_to_save_weights_hdf5))
       print('Setting keras.callbacks.ModelCheckpoint for', path_to_save_weights_hdf5)
       callbacks.append(keras.callbacks.ModelCheckpoint(filepath=path_to_save_weights_hdf5,
                                                        monitor='val_loss', save_best_only=True))
@@ -106,7 +106,7 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
   
   if save_model:
       if not os.path.exists(os.path.dirname(path_to_save_model_json)):
-        os.mkdirs(os.path.dirname(path_to_save_model_json))
+        os.makedirs(os.path.dirname(path_to_save_model_json))
       json_string = model.to_json()
       with open(path_to_save_model_json, "w") as f:
           f.write(json_string)

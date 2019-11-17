@@ -78,11 +78,12 @@ KeyboardInterrupt
                                      path_to_save_model_json=os.path.join(tempdirpath, 'prednet_model.json'))
       weights_path = os.path.join(tempdirpath, 'zero_weights.hdf5')
       assert os.path.exists(weights_path)
-      prednet.evaluate.evaluate_on_hickles(tempdirpath,
+      predicted = prednet.evaluate.evaluate_on_hickles(tempdirpath,
                                            path_to_save_prediction_scores='prediction_scores.txt',
                                            path_to_model_json=os.path.join(tempdirpath, 'prednet_model.json'),
                                            weights_path=weights_path,
                                            RESULTS_SAVE_DIR=tempdirpath)
+      assert predicted.shape == (0, 8, 8, 8, 3)
     assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))
 
 

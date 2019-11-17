@@ -85,31 +85,35 @@ def get_predicted_frames_for_single_video(path_to_video,
                              weights_path=path_to_save_weights_hdf5)
 
 
+def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',
+                          nt=8):
+  # Load the model and its trained weights.
+  with open(path_to_model_json) as f:
+    json_string = f.read()
+  train_model = model_from_json(json_string, custom_objects = {'PredNet': PredNet})
+  assert os.path.exists(weights_path)
+  train_model.load_weights(weights_path)
+
+  # Create testing model (to output predictions)
+  layer_config = train_model.layers[1].get_config()
+  layer_config['output_mode'] = 'prediction'
+  test_prednet = PredNet(weights=train_model.layers[1].get_weights(), **layer_config)
+  input_shape = list(train_model.layers[0].batch_input_shape[1:])
+  input_shape[0] = nt
+  inputs = Input(shape=tuple(input_shape))
+  predictions = test_prednet(inputs)
+  data_format = layer_config['data_format'] if 'data_format' in layer_config else layer_config['dim_ordering']
+  return Model(inputs=inputs, outputs=predictions), data_format
+
+
 def evaluate_json_model(test_file, test_sources,
                         path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',
                         RESULTS_SAVE_DIR: str = None,
                         path_to_save_prediction_scores: str = None):
   batch_size = 4
   nt = 8
+  test_model, data_format = make_evaluation_model(path_to_model_json, weights_path, nt)
 
-  # Load trained model
-  with open(path_to_model_json) as f:
-    json_string = f.read()
-  train_model = model_from_json(json_string, custom_objects = {'PredNet': PredNet})
-  assert os.path.exists(weights_path)
-  train_model.load_weights(weights_path)
-  
-  # Create testing model (to output predictions)
-  layer_config = train_model.layers[1].get_config()
-  layer_config['output_mode'] = 'prediction'
-  data_format = layer_config['data_format'] if 'data_format' in layer_config else layer_config['dim_ordering']
-  test_prednet = PredNet(weights=train_model.layers[1].get_weights(), **layer_config)
-  input_shape = list(train_model.layers[0].batch_input_shape[1:])
-  input_shape[0] = nt
-  inputs = Input(shape=tuple(input_shape))
-  predictions = test_prednet(inputs)
-  test_model = Model(inputs=inputs, outputs=predictions)
-  
   test_generator = SequenceGenerator(test_file, test_sources, nt,
                                      sequence_start_mode='unique', data_format=data_format)
   X_test = test_generator.create_all()

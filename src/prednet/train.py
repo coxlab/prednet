@@ -1,6 +1,7 @@
 
 import os.path
 import numpy as np
+import skvideo.io
 import prednet.prednet
 import prednet.data_utils
 import keras.layers
@@ -21,6 +22,18 @@ def train_on_hickles(DATA_DIR,
   return train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources,
                                      path_to_save_model_json, path_to_save_weights_hdf5,
                                      number_of_epochs, steps_per_epoch)
+
+
+def train_on_single_video(path_to_video, number_of_epochs=150, steps_per_epoch=125):
+  array = skvideo.io.vread(path_to_video)
+  source_list = [path_to_video for frame in array]
+  assert len(source_list) == array.shape[0]
+  numberOfFrames = array.shape[0]
+  return train_on_arrays_and_sources(array[:numberOfFrames//2], source_list[:numberOfFrames//2],
+                                     array[numberOfFrames//2:], source_list[numberOfFrames//2:],
+                                     path_to_save_model_json=os.path.splitext(path_to_video)[0] + '.model.json',
+                                     path_to_save_weights_hdf5=os.path.splitext(path_to_video)[0] + '.model.hdf5',
+                                     )
 
 
 def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources,

@@ -13,6 +13,7 @@ import skvideo.io
 
 # Even though it's a small video, centaur_1.mpg still takes too long.
 #@pytest.mark.skip
+@pytest.mark.skipif(not skvideo.io.io._HAS_FFMPEG, reason='We cannot test loading a video without the video-loading library installed.')
 def test_load_video():
   """
   Loading the MPG requires sudo apt-get install ffmpeg on Ubuntu.

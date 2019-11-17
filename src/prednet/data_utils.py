@@ -9,11 +9,19 @@ class SequenceGenerator(Iterator):
                  batch_size=8, shuffle=False, seed=None,
                  output_mode='error', sequence_start_mode='all', N_seq=None,
                  data_format=K.image_data_format()):
-        self.X = hkl.load(data_file)  # X will be like (n_images, nb_cols, nb_rows, nb_channels)
+        try:
+            self.X = hkl.load(data_file)  # X will be like (n_images, nb_cols, nb_rows, nb_channels)
+        except hkl.FileError:
+            assert isinstance(data_file, np.ndarray)
+            self.X = data_file
         if self.X.shape[0] < nt:
             # If nt > X.shape[0], the generator will generate zero items. That is almost certainly not what the user intended.
             raise ValueError(self.X.shape[0], nt)
-        self.sources = hkl.load(source_file) # source for each image so when creating sequences can assure that consecutive frames are from same video
+        try:
+            self.sources = hkl.load(source_file) # source for each image so when creating sequences can assure that consecutive frames are from same video
+        except hkl.FileError:
+            assert isinstance(source_file, list)
+            self.sources = source_file
         self.nt = nt
         self.batch_size = batch_size
         self.data_format = data_format

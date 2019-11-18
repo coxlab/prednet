@@ -3,6 +3,7 @@ Calculates mean-squared error and plots predictions.
 '''
 
 import os
+import resource
 import numpy as np
 import skvideo.io
 from six.moves import cPickle
@@ -78,6 +79,8 @@ def get_predicted_frames_for_single_video(path_to_video,
                                       path_to_save_weights_hdf5=path_to_save_weights_hdf5,
                                       number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
   array = skvideo.io.vread(path_to_video)
+  print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',
+        resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
   assert array.dtype == np.uint8
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]

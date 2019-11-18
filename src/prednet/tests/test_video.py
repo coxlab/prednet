@@ -83,7 +83,9 @@ KeyboardInterrupt
                                            path_to_model_json=os.path.join(tempdirpath, 'prednet_model.json'),
                                            weights_path=weights_path,
                                            RESULTS_SAVE_DIR=tempdirpath)
-      assert predicted.shape == (0, 8, 8, 8, 3)
+      assert predicted.shape == (1, 8, 8, 8, 3)
+      assert predicted.size == 8*8*8*3
+      assert np.count_nonzero(predicted) == 0
     assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))
 
 

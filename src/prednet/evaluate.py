@@ -78,11 +78,16 @@ def get_predicted_frames_for_single_video(path_to_video,
                                       path_to_save_weights_hdf5=path_to_save_weights_hdf5,
                                       number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
   array = skvideo.io.vread(path_to_video)
+  assert array.dtype == np.uint8
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]
-  return evaluate_json_model(array[:-1], source_list[:-1],
+  prediction = evaluate_json_model(array, source_list,
                              path_to_model_json=path_to_save_model_json,
                              weights_path=path_to_save_weights_hdf5)
+  # if prediction.shape != array.shape:
+  #   raise Exception(array.shape, prediction.shape)
+  # Predictions are initially returned as float32, possibly because the model is float32.
+  return prediction
 
 
 def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',
@@ -124,6 +129,7 @@ def evaluate_json_model(test_file, test_sources,
   assert type(X_hat) is np.ndarray
   if X_hat.shape != X_test.shape:
     raise Exception(X_test.shape, X_hat.shape)
+  assert len(X_test.shape) == 5
   if data_format == 'channels_first':
       X_test = np.transpose(X_test, (0, 1, 3, 4, 2))
       X_hat = np.transpose(X_hat, (0, 1, 3, 4, 2))
@@ -133,4 +139,6 @@ def evaluate_json_model(test_file, test_sources,
 
   # They compare X_test[:, 1:] to X_hat[:, 1:]? Why?
   # Wouldn't the frame in X_hat at the same index be what's predicted for the *next* frame? Shouldn't it be compared to the next frame?
-  return X_hat[:-1]
+  assert X_hat.shape == X_test.shape
+  assert X_hat.dtype == X_test.dtype
+  return X_hat

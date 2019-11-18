@@ -45,6 +45,7 @@ def train_on_single_video(path_to_video,
                                      array[numberOfFrames//2:], source_list[numberOfFrames//2:],
                                      path_to_save_model_json=path_to_save_model_json,
                                      path_to_save_weights_hdf5=path_to_save_weights_hdf5,
+                                     number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
                                      )
 
 

@@ -13,6 +13,7 @@ class SequenceGenerator(Iterator):
             self.X = hkl.load(data_file)  # X will be like (n_images, nb_cols, nb_rows, nb_channels)
         except hkl.hickle.FileError:
             assert isinstance(data_file, np.ndarray)
+            assert data_file.dtype == np.uint8
             self.X = data_file
         if self.X.shape[0] < nt:
             # If nt > X.shape[0], the generator will generate zero items. That is almost certainly not what the user intended.

@@ -41,6 +41,7 @@ def train_on_single_video(path_to_video,
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]
   numberOfFrames = array.shape[0]
+  print('train_on_single_video about to call train_on_arrays_and_sources')
   return train_on_arrays_and_sources(array[:numberOfFrames//2], source_list[:numberOfFrames//2],
                                      array[numberOfFrames//2:], source_list[numberOfFrames//2:],
                                      path_to_save_model_json=path_to_save_model_json,

@@ -92,7 +92,7 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
   lr_schedule = lambda epoch: 0.001 if epoch < 75 else 0.0001    # start with lr of 0.001 and then drop to 0.0001 after 75 epochs
   callbacks = [keras.callbacks.LearningRateScheduler(lr_schedule)]
   if save_model:
-      if not os.path.exists(os.path.dirname(path_to_save_weights_hdf5)):
+      if os.path.dirname(path_to_save_weights_hdf5) != '' and not os.path.exists(os.path.dirname(path_to_save_weights_hdf5)):
         os.makedirs(os.path.dirname(path_to_save_weights_hdf5), exist_ok=True)
       print('Setting keras.callbacks.ModelCheckpoint for', path_to_save_weights_hdf5)
       callbacks.append(keras.callbacks.ModelCheckpoint(filepath=path_to_save_weights_hdf5,
@@ -105,7 +105,7 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
                   validation_data=val_generator, validation_steps=N_seq_val / batch_size)
   
   if save_model:
-      if not os.path.exists(os.path.dirname(path_to_save_model_json)):
+      if os.path.dirname(path_to_save_model_json) != '' and not os.path.exists(os.path.dirname(path_to_save_model_json)):
         os.makedirs(os.path.dirname(path_to_save_model_json), exist_ok=True)
       json_string = model.to_json()
       with open(path_to_save_model_json, "w") as f:

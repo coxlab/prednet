@@ -11,7 +11,7 @@ class SequenceGenerator(Iterator):
                  data_format=K.image_data_format()):
         try:
             self.X = hkl.load(data_file)  # X will be like (n_images, nb_cols, nb_rows, nb_channels)
-        except hkl.FileError:
+        except hkl.hickle.FileError:
             assert isinstance(data_file, np.ndarray)
             self.X = data_file
         if self.X.shape[0] < nt:
@@ -19,7 +19,7 @@ class SequenceGenerator(Iterator):
             raise ValueError(self.X.shape[0], nt)
         try:
             self.sources = hkl.load(source_file) # source for each image so when creating sequences can assure that consecutive frames are from same video
-        except hkl.FileError:
+        except hkl.hickle.FileError:
             assert isinstance(source_file, list)
             self.sources = source_file
         self.nt = nt

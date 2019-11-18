@@ -31,6 +31,12 @@ def train_on_single_video(path_to_video,
     path_to_save_model_json = os.path.splitext(path_to_video)[0] + '.model.json'
   if not path_to_save_weights_hdf5:
     path_to_save_weights_hdf5 = os.path.splitext(path_to_video)[0] + '.model.hdf5'
+  if os.path.exists(path_to_save_model_json) and os.path.exists(path_to_save_weights_hdf5):
+    # For this special case, do not re-train if we already have a trained model.
+    print('train_on_single_video found', path_to_save_model_json, 'and', path_to_save_weights_hdf5,
+          'so just using those instead of re-training.')
+    return
+
   array = skvideo.io.vread(path_to_video)
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]

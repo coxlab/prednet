@@ -89,7 +89,9 @@ def get_predicted_frames_for_single_video(path_to_video,
   # If lengthOfVideoSequences does not divide the number of frames,
   # PredNet will truncate, which is usually not what we want.
   if array.shape[0] % lengthOfVideoSequences != 0:
-    array = np.pad(array, (lengthOfVideoSequences - (array.shape[0] % lengthOfVideoSequences), 0, 0, 0), 'edge')
+    array = np.pad(array,
+                   ((0, lengthOfVideoSequences - (array.shape[0] % lengthOfVideoSequences)), (0,0), (0,0), (0,0)),
+                   'edge')
     source_list.extend([source_list[-1]] * (lengthOfVideoSequences - (len(source_list) % lengthOfVideoSequences)))
   assert array.shape[0] % lengthOfVideoSequences == 0
   assert len(source_list) == array.shape[0]

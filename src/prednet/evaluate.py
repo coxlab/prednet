@@ -84,6 +84,16 @@ def get_predicted_frames_for_single_video(path_to_video,
   assert array.dtype == np.uint8
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]
+  assert len(array.shape) == 4
+  lengthOfVideoSequences = 8
+  # If lengthOfVideoSequences does not divide the number of frames,
+  # PredNet will truncate, which is usually not what we want.
+  if array.shape[0] % lengthOfVideoSequences != 0:
+    array = np.pad(array, (lengthOfVideoSequences - (array.shape[0] % lengthOfVideoSequences), 0, 0, 0), 'edge')
+    source_list.extend([source_list[-1]] * (lengthOfVideoSequences - (len(source_list) % lengthOfVideoSequences)))
+  assert array.shape[0] % lengthOfVideoSequences == 0
+  assert len(source_list) == array.shape[0]
+  assert len(array.shape) == 4
   prediction = evaluate_json_model(array, source_list,
                              path_to_model_json=path_to_save_model_json,
                              weights_path=path_to_save_weights_hdf5)
@@ -117,9 +127,9 @@ def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path=
 def evaluate_json_model(test_file, test_sources,
                         path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',
                         RESULTS_SAVE_DIR: str = None,
-                        path_to_save_prediction_scores: str = None):
+                        path_to_save_prediction_scores: str = None,
+                        nt=8):
   batch_size = 4
-  nt = 8
   test_model, data_format = make_evaluation_model(path_to_model_json, weights_path, nt)
 
   test_generator = SequenceGenerator(test_file, test_sources, nt,

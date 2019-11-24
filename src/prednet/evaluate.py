@@ -105,6 +105,20 @@ def get_predicted_frames_for_single_video(path_to_video,
   return prediction
 
 
+def save_predicted_frames_for_single_video(path_to_video,
+                                          number_of_epochs=150, steps_per_epoch=125,
+                                          ):
+  path_to_save_predicted_frames = os.path.splitext(path_to_video)[0] + '.predicted' + os.path.splitext(path_to_video)[1]
+  predictedFrames = get_predicted_frames_for_single_video(path_to_video, number_of_epochs, steps_per_epoch)
+  assert len(predictedFrames.shape) == 5
+  predictedFrames = predictedFrames.reshape(-1, *predictedFrames.shape[2:])
+  assert len(predictedFrames.shape) == 4
+  assert predictedFrames.dtype == np.float32
+  predictedFrames = (predictedFrames * 255).astype(np.uint8)
+  assert predictedFrames.dtype == np.uint8
+  skvideo.io.vwrite(path_to_save_predicted_frames, predictedFrames)
+
+
 def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',
                           nt=8):
   # Load the model and its trained weights.
@@ -138,13 +152,15 @@ def evaluate_json_model(test_file, test_sources,
                                      sequence_start_mode='unique', data_format=data_format)
   X_test = test_generator.create_all()
   assert type(X_test) is np.ndarray
+  assert len(X_test.shape) == 5
+  assert X_test.shape[1] == nt
+  # assert np.count_nonzero(X_test[:, nt-1, :, :, :]) == 0 # X_test does not have the inserted black frames?
   X_hat = test_model.predict(X_test, batch_size)
   if type(X_hat) is list:
     X_hat = np.array(X_hat)
   assert type(X_hat) is np.ndarray
   if X_hat.shape != X_test.shape:
     raise Exception(X_test.shape, X_hat.shape)
-  assert len(X_test.shape) == 5
   if data_format == 'channels_first':
       X_test = np.transpose(X_test, (0, 1, 3, 4, 2))
       X_hat = np.transpose(X_hat, (0, 1, 3, 4, 2))
@@ -156,4 +172,5 @@ def evaluate_json_model(test_file, test_sources,
   # Wouldn't the frame in X_hat at the same index be what's predicted for the *next* frame? Shouldn't it be compared to the next frame?
   assert X_hat.shape == X_test.shape
   assert X_hat.dtype == X_test.dtype
+  # assert np.count_nonzero(X_hat[:, 0, :, :, :]) == 0
   return X_hat

@@ -22,17 +22,7 @@ def test_load_video():
   """
   filepath = pkg_resources.resource_filename(__name__, os.path.join('resources', 'centaur_1.mpg'))
   filepath = pkg_resources.resource_filename(__name__, os.path.join('resources', 'black.mpg'))
-  with tempfile.TemporaryDirectory() as tempdirpath:
-    prednet.data_input.load_video(filepath, tempdirpath)
-    for filename in ('X_train.hkl', 'X_validate.hkl', 'X_test.hkl',
-                     'sources_train.hkl', 'sources_validate.hkl', 'sources_test.hkl'):
-      assert os.path.exists(os.path.join(tempdirpath, filename))
-    # prednet.train.train_on_hickles(tempdirpath, tempdirpath, 240, 320)
-    prednet.train.train_on_hickles(tempdirpath,
-                                   number_of_epochs=4, steps_per_epoch=8,
-                                   path_to_save_weights_hdf5=os.path.join(tempdirpath, 'zero_weights.hdf5'),
-                                   path_to_save_model_json=os.path.join(tempdirpath, 'prednet_model.json'))
-    assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))
+  prednet.evaluate.save_predicted_frames_for_single_video(filepath, number_of_epochs=4, steps_per_epoch=8)
 
 
 def test_black(capsys):
@@ -79,7 +69,7 @@ KeyboardInterrupt
       weights_path = os.path.join(tempdirpath, 'zero_weights.hdf5')
       assert os.path.exists(weights_path)
       predicted = prednet.evaluate.evaluate_on_hickles(tempdirpath,
-                                           path_to_save_prediction_scores='prediction_scores.txt',
+                                           path_to_save_prediction_scores=os.path.join(tempdirpath, 'prediction_scores.txt'),
                                            path_to_model_json=os.path.join(tempdirpath, 'prednet_model.json'),
                                            weights_path=weights_path,
                                            RESULTS_SAVE_DIR=tempdirpath)
@@ -87,6 +77,26 @@ KeyboardInterrupt
       assert predicted.size == 8*8*8*3
       assert np.count_nonzero(predicted) == 0
     assert os.path.exists(os.path.join(tempdirpath, 'prednet_model.json'))
+
+
+def test_moving_dot(capsys):
+  array = np.zeros((32, 8, 8, 3), dtype=np.uint8)
+  for i in range(32):
+    array[i, i % 8, 4, :] = 255
+  with tempfile.TemporaryDirectory() as tempdirpath:
+    prednet.data_input.save_array_as_hickle(array, ['moving' for frame in array], tempdirpath)
+    with capsys.disabled():
+      prednet.train.train_on_hickles(tempdirpath,
+                                     number_of_epochs=4, steps_per_epoch=8,
+                                     path_to_save_weights_hdf5=os.path.join(tempdirpath, 'weights.hdf5'),
+                                     path_to_save_model_json=os.path.join(tempdirpath, 'prednet_model.json'))
+      predicted = prednet.evaluate.evaluate_on_hickles(tempdirpath,
+                                           path_to_save_prediction_scores=os.path.join(tempdirpath, 'prediction_scores.txt'),
+                                           path_to_model_json=os.path.join(tempdirpath, 'prednet_model.json'),
+                                           weights_path=os.path.join(tempdirpath, 'weights.hdf5'),
+                                           RESULTS_SAVE_DIR=tempdirpath)
+    assert predicted.shape == (1, 8, 8, 8, 3)
+    assert predicted.size == 8*8*8*3
 
 
 class StubCapSys:

@@ -20,8 +20,8 @@ def train_on_hickles(DATA_DIR,
   val_file = os.path.join(DATA_DIR, 'X_validate.hkl')
   val_sources = os.path.join(DATA_DIR, 'sources_validate.hkl')
   return train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources,
-                                     path_to_save_model_json, path_to_save_weights_hdf5,
-                                     number_of_epochs, steps_per_epoch)
+                                     path_to_save_model_json=path_to_save_model_json, path_to_save_weights_hdf5=path_to_save_weights_hdf5,
+                                     number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
 
 
 def train_on_single_video(path_to_video,
@@ -51,24 +51,7 @@ def train_on_single_video(path_to_video,
                                      )
 
 
-def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources,
-                                path_to_save_model_json='prednet_model.json', path_to_save_weights_hdf5='prednet_weights.hdf5',
-                                number_of_epochs=150, steps_per_epoch=125,
-                                ):
-
-  save_model = True  # if weights will be saved
-
-  # Training parameters
-  batch_size = 4
-  samples_per_epoch = steps_per_epoch * batch_size
-  N_seq_val = 100  # number of sequences to use for validation
-
-  nt = 8  # number of timesteps used for sequences in training
-
-  train_generator = prednet.data_utils.SequenceGenerator(train_file, train_sources, nt, batch_size=batch_size, shuffle=True)
-  val_generator = prednet.data_utils.SequenceGenerator(val_file, val_sources, nt, batch_size=batch_size, N_seq=N_seq_val)
-  assert train_generator.im_shape == val_generator.im_shape
-
+def make_training_model(nt, input_shape):
   # Model parameters
   n_channels = 3
   # input_shape = (n_channels, im_height, im_width) if keras.backend.image_data_format() == 'channels_first' else (im_height, im_width, n_channels)
@@ -87,7 +70,7 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
                     A_filt_sizes, Ahat_filt_sizes, R_filt_sizes,
                     output_mode='error', return_sequences=True)
   
-  inputs = keras.layers.Input(shape=(nt,) + train_generator.im_shape)
+  inputs = keras.layers.Input(shape=(nt,) + input_shape)
   errors = predictor(inputs)  # errors will be (batch_size, nt, nb_layers)
   errors_by_time = keras.layers.TimeDistributed(keras.layers.Dense(1, trainable=False),
                                                 weights=[layer_loss_weights, np.zeros(1)],
@@ -97,6 +80,32 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
   final_errors = keras.layers.Dense(1, weights=[time_loss_weights, np.zeros(1)], trainable=False)(errors_by_time)  # weight errors by time
   model = keras.models.Model(inputs=inputs, outputs=final_errors)
   model.compile(loss='mean_absolute_error', optimizer='adam')
+  return model
+
+
+def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources,
+                                path_to_save_model_json='prednet_model.json', path_to_save_weights_hdf5='prednet_weights.hdf5',
+                                model_path=None,
+                                number_of_epochs=150, steps_per_epoch=125,
+                                ):
+
+  save_model = True  # if weights will be saved
+
+  # Training parameters
+  batch_size = 4
+  samples_per_epoch = steps_per_epoch * batch_size
+  N_seq_val = 100  # number of sequences to use for validation
+
+  nt = 8  # number of timesteps used for sequences in training
+
+  train_generator = prednet.data_utils.SequenceGenerator(train_file, train_sources, nt, batch_size=batch_size, shuffle=True)
+  val_generator = prednet.data_utils.SequenceGenerator(val_file, val_sources, nt, batch_size=batch_size, N_seq=N_seq_val)
+  assert train_generator.im_shape == val_generator.im_shape
+
+  if model_path:
+    model = keras.models.load_model(model_path, custom_objects = {'PredNet': prednet.prednet.PredNet})
+  else:
+    model = make_training_model(nt, train_generator.im_shape)
 
   lr_schedule = lambda epoch: 0.001 if epoch < 75 else 0.0001    # start with lr of 0.001 and then drop to 0.0001 after 75 epochs
   callbacks = [keras.callbacks.LearningRateScheduler(lr_schedule)]
@@ -112,8 +121,12 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
   history = model.fit_generator(train_generator, steps_per_epoch, number_of_epochs,
                                 callbacks=callbacks,
                   validation_data=val_generator, validation_steps=N_seq_val / batch_size)
-  
+
   if save_model:
+      if model_path:
+        if os.path.dirname(path_to_save_model_json) != '':
+          os.makedirs(os.path.dirname(model_path), exist_ok=True)
+        model.save(model_path)
       if os.path.dirname(path_to_save_model_json) != '' and not os.path.exists(os.path.dirname(path_to_save_model_json)):
         os.makedirs(os.path.dirname(path_to_save_model_json), exist_ok=True)
       json_string = model.to_json()

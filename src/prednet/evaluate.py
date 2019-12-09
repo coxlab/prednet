@@ -87,10 +87,10 @@ def get_predicted_frames_for_single_video(path_to_video,
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]
   assert len(array.shape) == 4
-  lengthOfVideoSequences = nt
-  if lengthOfVideoSequences is None:
+  if nt is None:
     # Just evaluate the whole thing as one long sequence.
-    lengthOfVideoSequences = array.shape[0]
+    nt = array.shape[0]
+  lengthOfVideoSequences = nt
   # If lengthOfVideoSequences does not divide the number of frames,
   # PredNet will truncate, which is usually not what we want.
   if array.shape[0] % lengthOfVideoSequences != 0:

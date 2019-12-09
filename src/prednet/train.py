@@ -117,7 +117,7 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
   val_generator = prednet.data_utils.SequenceGenerator(val_file, val_sources, nt, batch_size=batch_size, N_seq=N_seq_val)
   assert train_generator.im_shape == val_generator.im_shape
 
-  if model_path:
+  if model_path and os.path.exists(model_path):
     model = keras.models.load_model(model_path, custom_objects = {'PredNet': prednet.prednet.PredNet})
   else:
     model = make_training_model(nt, train_generator.im_shape)

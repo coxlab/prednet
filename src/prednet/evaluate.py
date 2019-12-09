@@ -71,6 +71,7 @@ def evaluate_on_hickles(DATA_DIR,
 
 def get_predicted_frames_for_single_video(path_to_video,
                                           number_of_epochs=150, steps_per_epoch=125,
+                                          nt=8,
                                           ):
   path_to_save_model_json = os.path.splitext(path_to_video)[0] + '.model.json'
   path_to_save_weights_hdf5 = os.path.splitext(path_to_video)[0] + '.model.hdf5'
@@ -98,7 +99,8 @@ def get_predicted_frames_for_single_video(path_to_video,
   assert len(array.shape) == 4
   prediction = evaluate_json_model(array, source_list,
                              path_to_model_json=path_to_save_model_json,
-                             weights_path=path_to_save_weights_hdf5)
+                             weights_path=path_to_save_weights_hdf5,
+                             nt=nt)
   # if prediction.shape != array.shape:
   #   raise Exception(array.shape, prediction.shape)
   # Predictions are initially returned as float32, possibly because the model is float32.
@@ -107,9 +109,10 @@ def get_predicted_frames_for_single_video(path_to_video,
 
 def save_predicted_frames_for_single_video(path_to_video,
                                           number_of_epochs=150, steps_per_epoch=125,
+                                          nt=8,
                                           ):
   path_to_save_predicted_frames = os.path.splitext(path_to_video)[0] + '.predicted' + os.path.splitext(path_to_video)[1]
-  predictedFrames = get_predicted_frames_for_single_video(path_to_video, number_of_epochs, steps_per_epoch)
+  predictedFrames = get_predicted_frames_for_single_video(path_to_video, number_of_epochs, steps_per_epoch, nt=nt)
   assert len(predictedFrames.shape) == 5
   predictedFrames = predictedFrames.reshape(-1, *predictedFrames.shape[2:])
   assert len(predictedFrames.shape) == 4

@@ -34,7 +34,7 @@ def train_on_single_video(path_to_video,
     path_to_save_weights_hdf5 = os.path.splitext(path_to_video)[0] + '.model.hdf5'
   if not path_to_save_model_file:
     path_to_save_model_file = os.path.splitext(path_to_video)[0] + '.model.save.hdf5'
-  if os.path.exists(path_to_save_model_file):
+  if path_to_save_model_file and os.path.exists(path_to_save_model_file):
     # For this special case, do not re-train if we already have a trained model.
     print('train_on_single_video found', path_to_save_model_file,
           'so just using that instead of re-training.')
@@ -43,6 +43,12 @@ def train_on_single_video(path_to_video,
     # For this special case, do not re-train if we already have a trained model.
     print('train_on_single_video found', path_to_save_model_json, 'and', path_to_save_weights_hdf5,
           'so just using those instead of re-training.')
+    if path_to_save_model_file and not os.path.exists(path_to_save_model_file):
+      with open(path_to_save_model_json) as f:
+        json_string = f.read()
+      model = keras.models.model_from_json(json_string, custom_objects = {'PredNet': prednet.prednet.PredNet})
+      model.load_weights(path_to_save_weights_hdf5)
+      model.save(path_to_save_model_file)
     return
 
   print('train_on_single_video about to call skvideo.io.vread')

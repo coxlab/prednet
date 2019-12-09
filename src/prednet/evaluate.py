@@ -109,6 +109,7 @@ def get_predicted_frames_for_single_video(path_to_video,
   prediction = evaluate_json_model(array, source_list,
                              path_to_model_json=path_to_save_model_json,
                              weights_path=path_to_save_weights_hdf5,
+                             model_file_path=model_file_path,
                              nt=nt)
   # if prediction.shape != array.shape:
   #   raise Exception(array.shape, prediction.shape)

@@ -14,6 +14,7 @@ import matplotlib.gridspec as gridspec
 
 from keras import backend as K
 from keras.models import Model, model_from_json
+import keras.models
 from keras.layers import Input, Dense, Flatten
 
 from prednet.prednet import PredNet
@@ -72,12 +73,14 @@ def evaluate_on_hickles(DATA_DIR,
 def get_predicted_frames_for_single_video(path_to_video,
                                           number_of_epochs=150, steps_per_epoch=125,
                                           nt=8,
+                                          model_file_path=None,
                                           ):
   path_to_save_model_json = os.path.splitext(path_to_video)[0] + '.model.json'
   path_to_save_weights_hdf5 = os.path.splitext(path_to_video)[0] + '.model.hdf5'
   prednet.train.train_on_single_video(path_to_video,
                                       path_to_save_model_json=path_to_save_model_json,
                                       path_to_save_weights_hdf5=path_to_save_weights_hdf5,
+                                      path_to_save_model_file=model_file_path,
                                       number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
 
   array = skvideo.io.vread(path_to_video)
@@ -114,9 +117,11 @@ def get_predicted_frames_for_single_video(path_to_video,
 def save_predicted_frames_for_single_video(path_to_video,
                                           number_of_epochs=150, steps_per_epoch=125,
                                           nt=8,
+                                          model_file_path=None,
                                           ):
   path_to_save_predicted_frames = os.path.splitext(path_to_video)[0] + '.predicted' + os.path.splitext(path_to_video)[1]
-  predictedFrames = get_predicted_frames_for_single_video(path_to_video, number_of_epochs, steps_per_epoch, nt=nt)
+  predictedFrames = get_predicted_frames_for_single_video(path_to_video, number_of_epochs, steps_per_epoch, nt=nt,
+                                                          model_file_path=model_file_path)
   assert len(predictedFrames.shape) == 5
   predictedFrames = predictedFrames.reshape(-1, *predictedFrames.shape[2:])
   assert len(predictedFrames.shape) == 4
@@ -127,13 +132,17 @@ def save_predicted_frames_for_single_video(path_to_video,
 
 
 def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',
+                          model_file_path=None,
                           nt=8):
-  # Load the model and its trained weights.
-  with open(path_to_model_json) as f:
-    json_string = f.read()
-  train_model = model_from_json(json_string, custom_objects = {'PredNet': PredNet})
-  assert os.path.exists(weights_path)
-  train_model.load_weights(weights_path)
+  if model_file_path:
+    train_model = keras.models.load_model(model_file_path)
+  else:
+    # Load the model and its trained weights.
+    with open(path_to_model_json) as f:
+      json_string = f.read()
+    train_model = model_from_json(json_string, custom_objects = {'PredNet': PredNet})
+    assert os.path.exists(weights_path)
+    train_model.load_weights(weights_path)
 
   # Create testing model (to output predictions)
   layer_config = train_model.layers[1].get_config()
@@ -149,11 +158,12 @@ def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path=
 
 def evaluate_json_model(test_file, test_sources,
                         path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',
+                        model_file_path=None,
                         RESULTS_SAVE_DIR: str = None,
                         path_to_save_prediction_scores: str = None,
                         nt=8):
   batch_size = 4
-  test_model, data_format = make_evaluation_model(path_to_model_json, weights_path, nt)
+  test_model, data_format = make_evaluation_model(path_to_model_json, weights_path, model_file_path, nt)
 
   test_generator = SequenceGenerator(test_file, test_sources, nt,
                                      sequence_start_mode='unique', data_format=data_format)

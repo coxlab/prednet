@@ -41,9 +41,13 @@ def main(args=None):
         prednet.evaluate.save_predicted_frames_for_single_video(
             args.path_to_video,
             number_of_epochs=args.number_of_epochs, steps_per_epoch=args.steps_per_epoch,
+            model_file_path=args.model_file,
             nt=args.subsequence_length,
             )
     else:
-      prednet.evaluate.save_predicted_frames_for_single_video(
-          args.path_to_video,
-          number_of_epochs=args.number_of_epochs, steps_per_epoch=args.steps_per_epoch)
+        prednet.evaluate.save_predicted_frames_for_single_video(
+            args.path_to_video,
+            number_of_epochs=args.number_of_epochs, steps_per_epoch=args.steps_per_epoch,
+            model_file_path=args.model_file,
+            nt=args.subsequence_length,
+            )

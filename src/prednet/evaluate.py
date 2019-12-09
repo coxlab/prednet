@@ -67,7 +67,9 @@ def evaluate_on_hickles(DATA_DIR,
   assert os.path.exists(test_file)
   test_sources = os.path.join(DATA_DIR, 'sources_test.hkl')
   assert os.path.exists(test_sources)
-  return evaluate_json_model(test_file, test_sources, path_to_model_json, weights_path, RESULTS_SAVE_DIR, path_to_save_prediction_scores)
+  return evaluate_json_model(test_file, test_sources, path_to_model_json, weights_path,
+                             RESULTS_SAVE_DIR=RESULTS_SAVE_DIR,
+                             path_to_save_prediction_scores=path_to_save_prediction_scores)
 
 
 def get_predicted_frames_for_single_video(path_to_video,

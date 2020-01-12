@@ -83,7 +83,7 @@ setup(
         'imageio',
         'scipy>=1.2.0',
         'pillow',
-        'skvideo @ git+https://github.com/dHannasch/scikit-video.git@use-distutils-core-setup',
+        'git+https://github.com/dHannasch/scikit-video.git@use-distutils-core-setup',
         'matplotlib',
         'hickle',
         'pytest',

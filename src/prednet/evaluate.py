@@ -13,6 +13,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
+from PIL import Image, ImageChops
+
 from keras import backend as K
 from keras.models import Model, model_from_json
 import keras.models
@@ -21,6 +23,10 @@ from keras.layers import Input, Dense, Flatten
 from prednet.prednet import PredNet
 from prednet.data_utils import SequenceGenerator
 import prednet.train
+
+
+def ImageChops_on_ndarrays(distortedFrame, pristineFrame):
+    return ImageChops.difference(Image.fromarray(distortedFrame), Image.fromarray(pristineFrame))
 
 
 def save_results(X_test, X_hat, nt, RESULTS_SAVE_DIR, path_to_save_prediction_scores: str = None):
@@ -124,6 +130,7 @@ def save_predicted_frames_for_single_video(path_to_video,
                                           model_file_path=None,
                                           ):
   path_to_save_predicted_frames = os.path.splitext(path_to_video)[0] + '.predicted' + os.path.splitext(path_to_video)[1]
+  path_to_save_comparison_video = os.path.splitext(path_to_video)[0] + '.comparison' + os.path.splitext(path_to_video)[1]
   predictedFrames = get_predicted_frames_for_single_video(path_to_video, number_of_epochs, steps_per_epoch, nt=nt,
                                                           model_file_path=model_file_path)
   assert len(predictedFrames.shape) == 5
@@ -133,6 +140,9 @@ def save_predicted_frames_for_single_video(path_to_video,
   predictedFrames = (predictedFrames * 255).astype(np.uint8)
   assert predictedFrames.dtype == np.uint8
   skvideo.io.vwrite(path_to_save_predicted_frames, predictedFrames)
+
+  comparisonFrames = skvideo.measure.view_diff.make_comparison_video(skvideo.io.vread(path_to_video), predictedFrames, ImageChops_on_ndarrays, skvideo.measure.mse_rgb)
+  skvideo.io.vwrite(path_to_save_comparison_video, comparisonFrames)
 
 
 def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',

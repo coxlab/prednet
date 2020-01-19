@@ -6,7 +6,7 @@ import os
 import resource
 import numpy as np
 import skvideo.io
-import skvideo.measure.view_diff
+# import skvideo.measure.view_diff
 from six.moves import cPickle
 import matplotlib
 matplotlib.use('Agg')

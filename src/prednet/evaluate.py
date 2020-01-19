@@ -141,8 +141,8 @@ def save_predicted_frames_for_single_video(path_to_video,
   assert predictedFrames.dtype == np.uint8
   skvideo.io.vwrite(path_to_save_predicted_frames, predictedFrames)
 
-  comparisonFrames = skvideo.measure.view_diff.make_comparison_video(skvideo.io.vread(path_to_video), predictedFrames, ImageChops_on_ndarrays, skvideo.measure.mse_rgb)
-  skvideo.io.vwrite(path_to_save_comparison_video, comparisonFrames)
+  # comparisonFrames = skvideo.measure.view_diff.make_comparison_video(skvideo.io.vread(path_to_video), predictedFrames, ImageChops_on_ndarrays, skvideo.measure.mse_rgb)
+  # skvideo.io.vwrite(path_to_save_comparison_video, comparisonFrames)
 
 
 def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',

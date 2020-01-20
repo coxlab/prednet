@@ -83,6 +83,8 @@ def test_moving_dot(capsys):
   filepath = pkg_resources.resource_filename(__name__, os.path.join('resources', 'dot-moving-left-to-right.mpg'))
   rightToLeftFilepath = pkg_resources.resource_filename(__name__, os.path.join('resources', 'dot-moving-right-to-left.mpg'))
   leftToRight = np.zeros((32, 8, 8, 3), dtype=np.uint8)
+  for i in range(leftToRight.shape[0]):
+    leftToRight[i, leftToRight.shape[1]//2, (i % leftToRight.shape[2]), :] = 255
   for i in range(32):
     leftToRight[i, 4, i % 8, :] = 255
   skvideo.io.vwrite(filepath, leftToRight)

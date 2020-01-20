@@ -16,7 +16,7 @@ def moving_dot():
   rightToLeftFilepath = 'dot-moving-right-to-left.mpg'
   leftToRight = np.zeros((2**20, 8, 8, 3), dtype=np.uint8)
   for i in range(leftToRight.shape[0]):
-    leftToRight[i, leftToRight.shape[1]/2, i % leftToRight.shape[2], :] = 255
+    leftToRight[i, leftToRight.shape[1]//2, (i % leftToRight.shape[2]), :] = 255
   skvideo.io.vwrite(filepath, leftToRight)
   prednet.train.train_on_single_video(filepath)
   predicted = prednet.evaluate.save_predicted_frames_for_single_video(filepath,

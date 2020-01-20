@@ -124,12 +124,16 @@ def get_predicted_frames_for_single_video(path_to_video,
   return prediction
 
 
+def default_prediction_filepath(path_to_video):
+  return os.path.splitext(path_to_video)[0] + '.predicted' + os.path.splitext(path_to_video)[1]
+
+
 def save_predicted_frames_for_single_video(path_to_video,
                                           number_of_epochs=150, steps_per_epoch=125,
                                           nt=8,
                                           model_file_path=None,
                                           ):
-  path_to_save_predicted_frames = os.path.splitext(path_to_video)[0] + '.predicted' + os.path.splitext(path_to_video)[1]
+  path_to_save_predicted_frames = default_prediction_filepath(path_to_video)
   path_to_save_comparison_video = os.path.splitext(path_to_video)[0] + '.comparison' + os.path.splitext(path_to_video)[1]
   predictedFrames = get_predicted_frames_for_single_video(path_to_video, number_of_epochs, steps_per_epoch, nt=nt,
                                                           model_file_path=model_file_path)
@@ -140,6 +144,8 @@ def save_predicted_frames_for_single_video(path_to_video,
   predictedFrames = (predictedFrames * 255).astype(np.uint8)
   assert predictedFrames.dtype == np.uint8
   skvideo.io.vwrite(path_to_save_predicted_frames, predictedFrames)
+  # raise Exception(path_to_save_predicted_frames, predictedFrames.shape)
+  return predictedFrames
 
   # comparisonFrames = skvideo.measure.view_diff.make_comparison_video(skvideo.io.vread(path_to_video), predictedFrames, ImageChops_on_ndarrays, skvideo.measure.mse_rgb)
   # skvideo.io.vwrite(path_to_save_comparison_video, comparisonFrames)

@@ -24,6 +24,10 @@ def train_on_hickles(DATA_DIR,
                                      number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
 
 
+def default_path_to_save_model(path_to_video):
+  return os.path.splitext(path_to_video)[0] + '.model.save.hdf5'
+
+
 def train_on_single_video(path_to_video,
                           path_to_save_model_json=None, path_to_save_weights_hdf5=None,
                           path_to_save_model_file=None,
@@ -33,11 +37,12 @@ def train_on_single_video(path_to_video,
   if not path_to_save_weights_hdf5:
     path_to_save_weights_hdf5 = os.path.splitext(path_to_video)[0] + '.model.hdf5'
   if not path_to_save_model_file:
-    path_to_save_model_file = os.path.splitext(path_to_video)[0] + '.model.save.hdf5'
+    path_to_save_model_file = default_path_to_save_model(path_to_video)
   if path_to_save_model_file and os.path.exists(path_to_save_model_file):
     # For this special case, do not re-train if we already have a trained model.
     print('train_on_single_video found', path_to_save_model_file,
           'so just using that instead of re-training.')
+    # Later we should re-train here since we'll be training on multiple videos sequentially.
     return
   if os.path.exists(path_to_save_model_json) and os.path.exists(path_to_save_weights_hdf5):
     # For this special case, do not re-train if we already have a trained model.

@@ -15,8 +15,8 @@ def moving_dot():
   filepath = 'dot-moving-left-to-right.mpg'
   rightToLeftFilepath = 'dot-moving-right-to-left.mpg'
   leftToRight = np.zeros((2**20, 8, 8, 3), dtype=np.uint8)
-  for i in range(32):
-    leftToRight[i, 4, i % 8, :] = 255
+  for i in range(leftToRight.shape[0]):
+    leftToRight[i, leftToRight.shape[1]/2, i % leftToRight.shape[2], :] = 255
   skvideo.io.vwrite(filepath, leftToRight)
   prednet.train.train_on_single_video(filepath)
   predicted = prednet.evaluate.save_predicted_frames_for_single_video(filepath,
@@ -27,7 +27,7 @@ def moving_dot():
     raise Exception(predicted.shape)
   assert np.count_nonzero(predicted) > 0
   rightToLeft = np.zeros((32, 8, 8, 3), dtype=np.uint8)
-  for i in range(32):
+  for i in range(rightToLeft.shape[0]):
     rightToLeft[i, 4, -i % 8, :] = 255
   skvideo.io.vwrite(rightToLeftFilepath, rightToLeft)
   rightToLeftPredicted = prednet.evaluate.save_predicted_frames_for_single_video(rightToLeftFilepath,

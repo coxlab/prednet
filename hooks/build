@@ -1,0 +1,11 @@
+#!/bin/bash
+if [[ "$DOCKER_TAG" == *gpu* ]]; then
+  # https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
+  echo "Since 'gpu' is in the DOCKER_TAG, assuming we should use a GPU-enabled base image."
+  BASE_IMAGE=tensorflow/tensorflow:1.15.0-gpu-py3-jupyter
+  ;
+else
+  echo "Since 'gpu' is not in the DOCKER_TAG, assuming we should use a CPU base image."
+  BASE_IMAGE=tensorflow/tensorflow:1.15.0-py3-jupyter
+fi
+docker build --build-arg BASE_IMAGE=$BASE_IMAGE .

@@ -86,6 +86,7 @@ setup(
         # 'scikit-video @ git+https://github.com/dHannasch/scikit-video.git@branch-to-install',
         'scikit-video',
         'matplotlib',
+        'jupyterlab',
         'hickle',
         'pytest',
         # eg: 'aspectlib==1.1.1', 'six>=1.7',

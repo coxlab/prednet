@@ -15,6 +15,7 @@ Why does this file exist, and why not put this in __main__?
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
 import argparse
+import jupyterlab.labapp
 import prednet.train
 import prednet.evaluate
 
@@ -25,7 +26,7 @@ parser.add_argument('--subsequence-length', type=int,
                     help="Length of subsequences (at the end of each subsequence, PredNet forgets its state and starts fresh).")
 parser.add_argument('--number-of-epochs', type=int, default=150, help="Number of epochs to use in training.")
 parser.add_argument('--steps-per-epoch', type=int, default=125, help="Steps per epoch to use in training.")
-parser.add_argument('train_or_predict', nargs='?', choices=('train', 'predict'), help="Only train or only evaluate.")
+parser.add_argument('train_or_predict', nargs='?', choices=('train', 'predict', 'jupyter'), help="Only train or only evaluate.")
 
 
 def main(args=None):
@@ -46,6 +47,8 @@ def main(args=None):
             model_file_path=args.model_file,
             nt=args.subsequence_length,
             )
+      elif args.train_or_predict == 'jupyter':
+        jupyterlab.labapp.main()  # open an included notebook showing how to do something simple with prednet
     else:
         prednet.evaluate.save_predicted_frames_for_video_list(
             args.paths_to_videos,

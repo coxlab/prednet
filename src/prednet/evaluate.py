@@ -151,6 +151,16 @@ def save_predicted_frames_for_single_video(path_to_video,
   # skvideo.io.vwrite(path_to_save_comparison_video, comparisonFrames)
 
 
+def save_predicted_frames_for_video_list(paths_to_videos,
+                                        model_file_path,
+                                        number_of_epochs=150, steps_per_epoch=125,
+                                        nt=8,
+                                        ):
+  for path_to_video in paths_to_videos:
+    save_predicted_frames_for_single_video(path_to_video, model_file_path=model_file_path,
+                                           number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, nt=nt)
+
+
 def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',
                           model_file_path=None,
                           nt=8):

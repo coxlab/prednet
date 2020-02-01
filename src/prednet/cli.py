@@ -19,7 +19,7 @@ import prednet.train
 import prednet.evaluate
 
 parser = argparse.ArgumentParser(description='Train and evaluate on single video.')
-parser.add_argument('path_to_video', help="Path to source video file.")
+parser.add_argument('paths_to_videos', nargs='+', help="Path to source video file.")
 parser.add_argument('--model-file', help="Path to load and/or save the model file.")
 parser.add_argument('--subsequence-length', type=int,
                     help="Length of subsequences (at the end of each subsequence, PredNet forgets its state and starts fresh).")
@@ -30,23 +30,25 @@ parser.add_argument('train_or_predict', nargs='?', choices=('train', 'predict'),
 
 def main(args=None):
     args = parser.parse_args(args=args)
+    if len(args.paths_to_videos) != 1 and not args.model_file:
+      parser.error('If you want to specify more than one video, we cannot infer the name you want for the model file.')
     if args.train_or_predict:
       if args.train_or_predict == 'train':
-          prednet.train.train_on_single_video(args.path_to_video,
-                                              number_of_epochs=args.number_of_epochs,
-                                              steps_per_epoch=args.steps_per_epoch)
+          prednet.train.train_on_video_list(args.paths_to_videos,
+                                            number_of_epochs=args.number_of_epochs,
+                                            steps_per_epoch=args.steps_per_epoch)
       elif args.train_or_predict == 'predict':
         # This might not be the best way to do things, but this function will
         # automatically use the saved model if the file(s) already exist.
-        prednet.evaluate.save_predicted_frames_for_single_video(
-            args.path_to_video,
+        prednet.evaluate.save_predicted_frames_for_video_list(
+            args.paths_to_videos,
             number_of_epochs=args.number_of_epochs, steps_per_epoch=args.steps_per_epoch,
             model_file_path=args.model_file,
             nt=args.subsequence_length,
             )
     else:
-        prednet.evaluate.save_predicted_frames_for_single_video(
-            args.path_to_video,
+        prednet.evaluate.save_predicted_frames_for_video_list(
+            args.paths_to_videos,
             number_of_epochs=args.number_of_epochs, steps_per_epoch=args.steps_per_epoch,
             model_file_path=args.model_file,
             nt=args.subsequence_length,

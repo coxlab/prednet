@@ -71,6 +71,14 @@ def train_on_single_video(path_to_video,
                                      )
 
 
+def train_on_video_list(paths_to_videos,
+                        path_to_save_model_file,
+                        number_of_epochs=150, steps_per_epoch=125):
+  for path_to_video in paths_to_videos:
+    train_on_single_video(path_to_video, path_to_save_model_file=path_to_save_model_file,
+                          number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
+
+
 def make_training_model(nt, input_shape):
   # Model parameters
   n_channels = 3

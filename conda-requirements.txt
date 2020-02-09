@@ -1,0 +1,11 @@
+tensorflow-gpu>=1.13.1,<2.0
+Keras>=2.2.4
+requests
+beautifulsoup4 # bs4 when installing using pip
+imageio
+scipy>=1.2.0
+pillow
+matplotlib
+# hickle
+pytest
+# conda does not install jupyterlab correctly; it fails to launch with ImportError: cannot import name 'ensure_dir_exists' ModuleNotFoundError: No module named 'jupyter_server'

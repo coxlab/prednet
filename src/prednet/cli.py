@@ -40,6 +40,7 @@ predictParser = subparsers.add_parser('predict', help='Predict frames using a mo
 jupyterParser = subparsers.add_parser('jupyter', help='Launch a Jupyter instance showing how you can use PredNet programmatically.')
 trainParser.add_argument('paths_to_videos', nargs='+', help="Paths to source video files.")
 predictParser.add_argument('paths_to_videos', nargs='+', help="Paths to source video files.")
+jupyterParser.add_argument('--port', type=int, default=8888, help="The port the notebook server will listen on.")
 
 
 def main(args=None):
@@ -49,7 +50,8 @@ def main(args=None):
       parser.error('If you want to specify more than one video, we cannot infer the name you want for the model file.')
     if args.subparser_name == 'jupyter':
       # open an included notebook showing how to do something simple with prednet
-      jupyterlab.labapp.main([pkg_resources.resource_filename(__name__, os.path.join('resources', 'quickstart.ipynb'))])
+      jupyterlab.labapp.main([pkg_resources.resource_filename(__name__, os.path.join('resources', 'quickstart.ipynb')),
+                              '--port', args.port])
     else:
       # We put off importing prednet because there's a delay when the TensorFlow backend is loaded.
       # The TensorFlow backend will be loaded as soon as we import either, so we might as well import both.

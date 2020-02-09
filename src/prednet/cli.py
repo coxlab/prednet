@@ -51,7 +51,7 @@ def main(args=None):
     if args.subparser_name == 'jupyter':
       # open an included notebook showing how to do something simple with prednet
       jupyterlab.labapp.main([pkg_resources.resource_filename(__name__, os.path.join('resources', 'quickstart.ipynb')),
-                              '--port', args.port])
+                              '--port', str(args.port)])
     else:
       # We put off importing prednet because there's a delay when the TensorFlow backend is loaded.
       # The TensorFlow backend will be loaded as soon as we import either, so we might as well import both.

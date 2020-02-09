@@ -28,7 +28,11 @@ parser.add_argument('--subsequence-length', type=int,
                     help="Length of subsequences (at the end of each subsequence, PredNet forgets its state and starts fresh).")
 parser.add_argument('--number-of-epochs', type=int, default=150, help="Number of epochs to use in training.")
 parser.add_argument('--steps-per-epoch', type=int, default=125, help="Steps per epoch to use in training.")
-subparsers = parser.add_subparsers(help='We can only train, or predict, or simply open a Jupyter instance.', dest='subparser_name')
+subparsers = parser.add_subparsers(help='We can only train, or predict, or simply open a Jupyter instance.', dest='subparser_name',
+                                   required=True)
+# We'd like to allow users to skip specifying the subparser (default to predict) and just provide video files,
+# but that gets hairy since the parser will first try to interpret the video file path as a subparser name.
+# This is more explicit anyway.
 trainParser = subparsers.add_parser('train', help='Train a model.')
 predictParser = subparsers.add_parser('predict', help='Predict frames using a model (train if necessary).')
 jupyterParser = subparsers.add_parser('jupyter', help='Launch a Jupyter instance showing how you can use PredNet programmatically.')

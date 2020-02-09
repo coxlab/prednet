@@ -40,8 +40,8 @@ predictParser = subparsers.add_parser('predict', help='Predict frames using a mo
 jupyterParser = subparsers.add_parser('jupyter', help='Launch a Jupyter instance showing how you can use PredNet programmatically.')
 trainParser.add_argument('paths_to_videos', nargs='+', help="Paths to source video files.")
 predictParser.add_argument('paths_to_videos', nargs='+', help="Paths to source video files.")
-jupyterParser.add_argument('jupyter_lab_arguments', nargs='*',
-                           help="All further arguments will be passed through to jupyter lab just as if you invoked jupyter lab directly.")
+jupyterParser.add_argument('--jupyter-lab-arguments', nargs=argparse.REMAINDER,
+                           help="All further arguments will be passed through to jupyter lab just as if you invoked jupyter lab directly. We need to have --jupyter-lab-arguments due to a bug in argparse. https://bugs.python.org/issue17050")
 # jupyterParser.add_argument('--port', type=int, default=8888, help="The port the notebook server will listen on.")
 # jupyterParser.add_argument('--ip', default='localhost', help="The IP address the notebook server will listen on. If you get OSError: [Errno 99] Cannot assign requested address, try --ip 127.0.0.1. That shouldn't matter but sometimes does with odd proxy/firewall configurations.")
 # IPython listens on localhost by default. 127.0.0.1 ought to behave the same, and does in almost all cases. Some cases where this can be handled differently include local proxies and/or firewalls (usually due to a configuration oversight, rather than an intentional difference in behavior). We have found cases where localhost works and 127 doesn't and vice versa, so there isn't an unambiguously correct answer for the default.

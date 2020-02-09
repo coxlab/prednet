@@ -29,10 +29,12 @@ parser.add_argument('--subsequence-length', type=int,
 parser.add_argument('--number-of-epochs', type=int, default=150, help="Number of epochs to use in training.")
 parser.add_argument('--steps-per-epoch', type=int, default=125, help="Steps per epoch to use in training.")
 subparsers = parser.add_subparsers(help='We can only train, or predict, or simply open a Jupyter instance.', dest='subparser_name',
-                                   required=True)
+                                   #required=True,
+                                  )
 # We'd like to allow users to skip specifying the subparser (default to predict) and just provide video files,
 # but that gets hairy since the parser will first try to interpret the video file path as a subparser name.
 # This is more explicit anyway.
+# But requiring subparsers requires Python 3.7, so that has to wait until we upgrade to TensorFlow 2.
 trainParser = subparsers.add_parser('train', help='Train a model.')
 predictParser = subparsers.add_parser('predict', help='Predict frames using a model (train if necessary).')
 jupyterParser = subparsers.add_parser('jupyter', help='Launch a Jupyter instance showing how you can use PredNet programmatically.')

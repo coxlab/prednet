@@ -75,4 +75,7 @@ def main(args=None):
             model_file_path=args.model_file,
             nt=args.subsequence_length,
             )
+      else:
+        assert args.subparser_name is None
+        parser.error("Choose from 'train', 'predict', 'jupyter'.") # won't need this once we're compatible with Python 3.7
 

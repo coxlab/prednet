@@ -132,8 +132,10 @@ def save_predicted_frames_for_single_video(path_to_video,
                                           number_of_epochs=150, steps_per_epoch=125,
                                           nt=8,
                                           model_file_path=None,
+                                          path_to_save_predicted_frames=None,
                                           ):
-  path_to_save_predicted_frames = default_prediction_filepath(path_to_video)
+  if path_to_save_predicted_frames is None:
+    path_to_save_predicted_frames = default_prediction_filepath(path_to_video)
   path_to_save_comparison_video = os.path.splitext(path_to_video)[0] + '.comparison' + os.path.splitext(path_to_video)[1]
   predictedFrames = get_predicted_frames_for_single_video(path_to_video, number_of_epochs, steps_per_epoch, nt=nt,
                                                           model_file_path=model_file_path)

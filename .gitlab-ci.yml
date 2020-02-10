@@ -156,6 +156,7 @@ pages:
   # If the test stage fails, the deploy stage is skipped.
   script:
   - pip install -r docs/requirements.txt
+  - jupyter nbconvert --to rst --output-dir docs --output example.rst src/prednet/resources/quickstart.ipynb
   - sphinx-build -E -b html docs dist/docs
   - mv dist/docs/ public/
   artifacts:

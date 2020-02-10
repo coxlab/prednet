@@ -55,8 +55,11 @@ def main(args=None):
       parser.error('If you want to specify more than one video, we cannot infer the name you want for the model file.')
     if args.subparser_name == 'jupyter':
       # open an included notebook showing how to do something simple with prednet
-      jupyterlab.labapp.main([pkg_resources.resource_filename(__name__, os.path.join('resources', 'quickstart.ipynb')),
-                              *args.jupyter_lab_arguments])
+      if args.jupyter_lab_arguments:
+        jupyterlab.labapp.main([pkg_resources.resource_filename(__name__, os.path.join('resources', 'quickstart.ipynb')),
+                                *args.jupyter_lab_arguments])
+      else:
+        jupyterlab.labapp.main([pkg_resources.resource_filename(__name__, os.path.join('resources', 'quickstart.ipynb'))])
     else:
       # We put off importing prednet because there's a delay when the TensorFlow backend is loaded.
       # The TensorFlow backend will be loaded as soon as we import either, so we might as well import both.

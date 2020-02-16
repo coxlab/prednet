@@ -10,7 +10,7 @@ ENV http_proxy=$HTTP_PROXY
 ENV https_proxy=$HTTPS_PROXY
 
 RUN pip uninstall --yes enum34
-RUN pip install --no-cache .
+RUN pip install --no-cache ./prednet
 
 RUN mkdir /video_files
 VOLUME /video_files

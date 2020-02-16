@@ -8,4 +8,5 @@ else
   BASE_IMAGE=tensorflow/tensorflow:1.15.0-py3-jupyter
 fi
 echo "BASE_IMAGE = $BASE_IMAGE"
-docker build --build-arg BASE_IMAGE=$BASE_IMAGE .
+# Without --tag $IMAGE_NAME, get 'An image does not exist locally with the tag'
+docker build --tag $IMAGE_NAME --build-arg BASE_IMAGE=$BASE_IMAGE .

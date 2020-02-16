@@ -86,11 +86,14 @@ def get_predicted_frames_for_single_video(path_to_video,
                                           ):
   path_to_save_model_json = os.path.splitext(path_to_video)[0] + '.model.json'
   path_to_save_weights_hdf5 = os.path.splitext(path_to_video)[0] + '.model.hdf5'
-  prednet.train.train_on_single_video(path_to_video,
-                                      path_to_save_model_json=path_to_save_model_json,
-                                      path_to_save_weights_hdf5=path_to_save_weights_hdf5,
-                                      path_to_save_model_file=model_file_path,
-                                      number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
+  if model_file_path is None:
+    model_file_path = prednet.train.default_path_to_save_model(path_to_video)
+  if not os.path.exists(model_file_path):
+    prednet.train.train_on_single_video(path_to_video,
+                                        path_to_save_model_json=path_to_save_model_json,
+                                        path_to_save_weights_hdf5=path_to_save_weights_hdf5,
+                                        path_to_save_model_file=model_file_path,
+                                        number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
 
   array = skvideo.io.vread(path_to_video)
   print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',

@@ -38,12 +38,17 @@ def train_on_single_video(path_to_video,
     path_to_save_weights_hdf5 = os.path.splitext(path_to_video)[0] + '.model.hdf5'
   if not path_to_save_model_file:
     path_to_save_model_file = default_path_to_save_model(path_to_video)
-  if path_to_save_model_file and os.path.exists(path_to_save_model_file):
+  path_to_save_settings = os.path.splitext(path_to_save_model_file)[0] + '.settings.txt'
+  print('number_of_epochs =', number_of_epochs, 'steps_per_epoch =', steps_per_epoch,
+        file=open(path_to_save_settings, 'w'))
+  # Better to check in the evaluate function whether training is already done.
+  # If the train function gets a command to re-train (possibly on a new video), then re-train.
+  # if path_to_save_model_file and os.path.exists(path_to_save_model_file):
     # For this special case, do not re-train if we already have a trained model.
-    print('train_on_single_video found', path_to_save_model_file,
-          'so just using that instead of re-training.')
+  #  print('train_on_single_video found', path_to_save_model_file,
+  #        'so just using that instead of re-training.')
     # Later we should re-train here since we'll be training on multiple videos sequentially.
-    return
+  #  return
   if os.path.exists(path_to_save_model_json) and os.path.exists(path_to_save_weights_hdf5):
     # For this special case, do not re-train if we already have a trained model.
     print('train_on_single_video found', path_to_save_model_json, 'and', path_to_save_weights_hdf5,
@@ -71,11 +76,28 @@ def train_on_single_video(path_to_video,
                                      )
 
 
+
+def train_on_single_path(path,
+                         path_to_save_model_file=None,
+                         number_of_epochs=150, steps_per_epoch=125):
+  # os.walk() on a file name returns an empty list instead of a list containing only that entry,
+  # so we need to specifically check whether the path is a directory.
+  if os.path.isdir(path):
+    for root, dirs, files in os.walk(path):
+      for filename in files:
+        # should probably check whether it's actually a video file
+        train_on_single_video(os.path.join(root, filename), path_to_save_model_file=path_to_save_model_file,
+                              number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
+  else:
+    train_on_single_video(path, path_to_save_model_file=path_to_save_model_file,	
+                          number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
+
+
 def train_on_video_list(paths_to_videos,
                         path_to_save_model_file,
                         number_of_epochs=150, steps_per_epoch=125):
   for path_to_video in paths_to_videos:
-    train_on_single_video(path_to_video, path_to_save_model_file=path_to_save_model_file,
+    train_on_single_path(path_to_video, path_to_save_model_file=path_to_save_model_file,
                           number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
 
 

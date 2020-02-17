@@ -20,5 +20,8 @@ RUN pip install --no-cache ./prednet
 
 RUN mkdir ./video_files
 RUN touch ./video_files/dummyfile
+# If we later --mount type=bind to map a host directory to /tf/video_files,
+# then dummyfile should NOT appear, as the /tf/video_files on the image is shadowed by the bind mount.
+# https://docs.docker.com/storage/bind-mounts/#mount-into-a-non-empty-directory-on-the-container
 VOLUME /video_files
 # If any build steps change the data within the volume after it has been declared, those changes will be discarded.

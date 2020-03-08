@@ -90,7 +90,8 @@ def train_on_single_video(path_to_video,
 
 def train_on_single_path(path,
                          path_to_save_model_file=None,
-                         number_of_epochs=150, steps_per_epoch=125):
+                         number_of_epochs=150, steps_per_epoch=125,
+                         *args, **kwargs):
   # os.walk() on a file name returns an empty list instead of a list containing only that entry,
   # so we need to specifically check whether the path is a directory.
   if os.path.isdir(path):
@@ -98,18 +99,22 @@ def train_on_single_path(path,
       for filename in files:
         # should probably check whether it's actually a video file
         train_on_single_video(os.path.join(root, filename), path_to_save_model_file=path_to_save_model_file,
-                              number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
+                              number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
+                              *args, **kwargs)
   else:
     train_on_single_video(path, path_to_save_model_file=path_to_save_model_file,	
-                          number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
+                          number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
+                          *args, **kwargs)
 
 
 def train_on_video_list(paths_to_videos,
                         path_to_save_model_file,
-                        number_of_epochs=150, steps_per_epoch=125):
+                        number_of_epochs=150, steps_per_epoch=125,
+                        *args, **kwargs):
   for path_to_video in paths_to_videos:
     train_on_single_path(path_to_video, path_to_save_model_file=path_to_save_model_file,
-                          number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
+                         number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
+                         *args, **kwargs)
 
 
 def make_training_model(nt, input_shape):

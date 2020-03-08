@@ -83,7 +83,7 @@ def get_predicted_frames_for_single_video(path_to_video,
                                           number_of_epochs=150, steps_per_epoch=125,
                                           nt=8,
                                           model_file_path=None,
-                                          ):
+                                          *args, **kwargs):
   path_to_save_model_json = os.path.splitext(path_to_video)[0] + '.model.json'
   path_to_save_weights_hdf5 = os.path.splitext(path_to_video)[0] + '.model.hdf5'
   if model_file_path is None:
@@ -93,7 +93,8 @@ def get_predicted_frames_for_single_video(path_to_video,
                                         path_to_save_model_json=path_to_save_model_json,
                                         path_to_save_weights_hdf5=path_to_save_weights_hdf5,
                                         path_to_save_model_file=model_file_path,
-                                        number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch)
+                                        number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
+                                        *args, **kwargs)
 
   array = skvideo.io.vread(path_to_video)
   print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',

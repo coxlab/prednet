@@ -151,7 +151,7 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
   nt = 8  # number of timesteps used for sequences in training
 
   train_generator = prednet.data_utils.SequenceGenerator(train_file, train_sources, nt, batch_size=batch_size, shuffle=True)
-  val_generator = prednet.data_utils.SequenceGenerator(val_file, val_sources, nt, batch_size=batch_size, N_seq=N_seq_val)
+  val_generator = prednet.data_utils.SequenceGenerator(val_file, val_sources, nt, batch_size=batch_size, max_num_sequences=N_seq_val)
   assert train_generator.im_shape == val_generator.im_shape
 
   if model_path and os.path.exists(model_path):

@@ -31,7 +31,16 @@ def default_path_to_save_model(path_to_video):
 def train_on_single_video(path_to_video,
                           path_to_save_model_json=None, path_to_save_weights_hdf5=None,
                           path_to_save_model_file=None,
-                          number_of_epochs=150, steps_per_epoch=125):
+                          number_of_epochs=150, steps_per_epoch=125,
+                          batch_size=4,
+                          sequence_length=8,
+                          number_of_validation_sequences=100,
+                          ):
+  """
+  Picking which frames to use for validation is tricky, because when using sequence_start_mode='all',
+  we require the video to have no jumps in it; we need to be able to start a sequence anywhere.
+  Thus, the only place we can really scythe out a section for validation is at the beginning or the end.
+  """
   if not path_to_save_model_json:
     path_to_save_model_json = os.path.splitext(path_to_video)[0] + '.model.json'
   if not path_to_save_weights_hdf5:
@@ -67,12 +76,14 @@ def train_on_single_video(path_to_video,
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]
   numberOfFrames = array.shape[0]
+  numberOfValidationFrames = number_of_validation_sequences * sequence_length
   return train_on_arrays_and_sources(array[:numberOfFrames//2], source_list[:numberOfFrames//2],
                                      array[numberOfFrames//2:], source_list[numberOfFrames//2:],
                                      path_to_save_model_json=path_to_save_model_json,
                                      path_to_save_weights_hdf5=path_to_save_weights_hdf5,
                                      model_path=path_to_save_model_file,
                                      number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
+                                     batch_size=batch_size, sequence_length=sequence_length,
                                      )
 
 

@@ -184,7 +184,10 @@ def save_predicted_frames_for_video_list(paths_to_videos,
                                          ):
   for path_to_video in paths_to_videos:
     if prediction_save_extension == 'png':
-      path_to_save_predicted_frames = os.path.join(os.path.splitext(path_to_video)[0] + '_predicted_frames', 'predicted')
+      directoryToSave = os.path.splitext(path_to_video)[0] + '_predicted_frames'
+      if not os.path.exists(directoryToSave):
+        os.mkdir(directoryToSave)
+      path_to_save_predicted_frames = os.path.join(directoryToSave, 'predicted')
     else:
       path_to_save_predicted_frames = None
     save_predicted_frames_for_single_video(path_to_video, model_file_path=model_file_path,

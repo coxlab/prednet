@@ -18,7 +18,7 @@ def moving_dot():
   for i in range(leftToRight.shape[0]):
     leftToRight[i, leftToRight.shape[1]//2, (i % leftToRight.shape[2]), :] = 255
   skvideo.io.vwrite(filepath, leftToRight)
-  prednet.train.train_on_single_video(filepath)
+  prednet.train.train_on_single_video(filepath, number_of_epochs=15)
   predicted = prednet.evaluate.save_predicted_frames_for_single_video(filepath,
             nt=None,
             model_file_path=prednet.train.default_path_to_save_model(filepath),

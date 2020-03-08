@@ -138,20 +138,21 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
                                 model_path=None,
                                 number_of_epochs=150, steps_per_epoch=125,
                                 batch_size=4,
+                                max_validation_sequences=100,
                                 ):
   """
+  At most `max_validation_sequences` frame sequences will be used for validation.
   """
 
   save_model = True  # if weights will be saved
 
   # Training parameters
   samples_per_epoch = steps_per_epoch * batch_size
-  N_seq_val = 100  # number of sequences to use for validation
 
   nt = 8  # number of timesteps used for sequences in training
 
   train_generator = prednet.data_utils.SequenceGenerator(train_file, train_sources, nt, batch_size=batch_size, shuffle=True)
-  val_generator = prednet.data_utils.SequenceGenerator(val_file, val_sources, nt, batch_size=batch_size, max_num_sequences=N_seq_val)
+  val_generator = prednet.data_utils.SequenceGenerator(val_file, val_sources, nt, batch_size=batch_size, max_num_sequences=max_validation_sequences)
   assert train_generator.im_shape == val_generator.im_shape
 
   if model_path and os.path.exists(model_path):
@@ -172,7 +173,7 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
   
   history = model.fit_generator(train_generator, steps_per_epoch, number_of_epochs,
                                 callbacks=callbacks,
-                  validation_data=val_generator, validation_steps=N_seq_val / batch_size)
+                  validation_data=val_generator, validation_steps=max_validation_sequences / batch_size)
 
   if save_model:
       if model_path:

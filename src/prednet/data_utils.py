@@ -73,7 +73,8 @@ class SequenceGenerator(Iterator):
 
     def next(self) -> typing.Tuple[np.ndarray, np.ndarray]:
         """
-        The first is a batch of frame sequences.
+        The first array is a batch of frame sequences.
+        The batch is of length `batch_size`, and each sequence has `sequence_length` frames.
         """
         with self.lock:
             current_index = (self.batch_index * self.batch_size) % self.n

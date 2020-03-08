@@ -1,3 +1,4 @@
-sphinx @ git+https://github.com/sphinx-doc/sphinx.git@2.0
+# sphinx @ git+https://github.com/sphinx-doc/sphinx.git@2.0
+sphinx
 sphinx-rtd-theme
 nbconvert

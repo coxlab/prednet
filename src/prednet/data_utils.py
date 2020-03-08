@@ -12,12 +12,15 @@ class SequenceGenerator(Iterator):
     If sequence_start_mode='all', then `possible_starts` is simply
     all indices such that the next few frames are from the same source.
     If sequence_start_mode='unique', then `possible_starts` is spaced out to be non-overlapping.
+
+    If `max_num_sequences` is set, then `possible_starts` will be truncated to have
+    only `max_num_sequences` starting points (and thus the SequenceGenerator will generate at most `max_num_sequences` sequences.
     """
     def __init__(self, data_file, source_file,
                  sequence_length,
                  batch_size=8, shuffle=False, seed=None,
                  output_mode='error', sequence_start_mode='all',
-                 N_seq=None,
+                 max_num_sequences=None,
                  data_format=K.image_data_format()):
         try:
             self.X = hkl.load(data_file)  # X will be like (n_images, nb_cols, nb_rows, nb_channels)
@@ -62,8 +65,8 @@ class SequenceGenerator(Iterator):
 
         if shuffle:
             self.possible_starts = np.random.permutation(self.possible_starts)
-        if N_seq is not None and len(self.possible_starts) > N_seq:  # select a subset of sequences if want to
-            self.possible_starts = self.possible_starts[:N_seq]
+        if max_num_sequences is not None and len(self.possible_starts) > max_num_sequences:  # select a subset of sequences if want to
+            self.possible_starts = self.possible_starts[:max_num_sequences]
         self.N_sequences = len(self.possible_starts)
         assert self.N_sequences > 0
         super(SequenceGenerator, self).__init__(len(self.possible_starts), batch_size, shuffle, seed)

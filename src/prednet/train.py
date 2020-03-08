@@ -143,6 +143,13 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
                                 ):
   """
   At most `max_validation_sequences` frame sequences will be used for validation.
+  The validation data will be used at the end of each epoch.
+  The loss function on validation data will be reported as val_loss.
+  https://keras.io/models/sequential/#fit_generator
+Epoch 3/8
+16/16 [==============================] - 25s 2s/step - loss: 0.0064 - val_loss: 0.0064
+Epoch 4/8
+16/16 [==============================] - 27s 2s/step - loss: 0.0067 - val_loss: 0.0066
 
   `sequence_length` is the number of frames in each training sequence.
   """

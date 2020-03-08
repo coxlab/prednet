@@ -34,7 +34,7 @@ def train_on_single_video(path_to_video,
                           number_of_epochs=150, steps_per_epoch=125,
                           batch_size=4,
                           sequence_length=8,
-                          number_of_validation_sequences=100,
+                          fraction_to_use_for_validation=0.5,
                           ):
   """
   Picking which frames to use for validation is tricky, because when using sequence_start_mode='all',
@@ -76,6 +76,7 @@ def train_on_single_video(path_to_video,
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]
   numberOfFrames = array.shape[0]
+  number_of_validation_sequences = int(numberOfFrames * fraction_to_use_for_validation / sequence_length)
   numberOfValidationFrames = number_of_validation_sequences * sequence_length
   return train_on_arrays_and_sources(array[:-numberOfValidationFrames], source_list[:-numberOfValidationFrames],
                                      array[-numberOfValidationFrames:], source_list[-numberOfValidationFrames:],

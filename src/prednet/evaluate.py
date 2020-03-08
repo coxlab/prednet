@@ -133,8 +133,13 @@ def default_prediction_filepath(path_to_video):
 
 
 def save_video_as_images(path_to_save, frames_to_save):
+  if type(frames_to_save) is not np.ndarray:
+    raise ValueError(frames_to_save)
   for sequenceIndex, indexWithinSequence in np.ndindex(frames_to_save.shape[:2]):
-    frame = Image.fromarray(frames_to_save[sequenceIndex, indexWithinSequence])
+    frame = frames_to_save[sequenceIndex, indexWithinSequence]
+    assert type(frame) is np.ndarray
+    assert len(frame.shape) == 3  # length, width, channels
+    frame = Image.fromarray(frame)
     frame.save(path_to_save + '_' + str(sequenceIndex) + '_' + str(indexWithinSequence) + '.png')
 
 

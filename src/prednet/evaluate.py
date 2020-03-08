@@ -154,6 +154,11 @@ def save_predicted_frames_for_single_video(path_to_video,
   path_to_save_comparison_video = os.path.splitext(path_to_video)[0] + '.comparison' + os.path.splitext(path_to_video)[1]
   predictedFrames = get_predicted_frames_for_single_video(path_to_video, number_of_epochs, steps_per_epoch, nt=nt,
                                                           model_file_path=model_file_path)
+
+  assert predictedFrames.dtype == np.float32
+  predictedFrames = (predictedFrames * 255).astype(np.uint8)
+  assert predictedFrames.dtype == np.uint8
+
   if os.path.splitext(path_to_save_predicted_frames)[1] == '':
     save_video_as_images(path_to_save_predicted_frames, predictedFrames)
 
@@ -161,9 +166,6 @@ def save_predicted_frames_for_single_video(path_to_video,
   assert len(predictedFrames.shape) == 5
   predictedFrames = predictedFrames.reshape(-1, *predictedFrames.shape[2:])
   assert len(predictedFrames.shape) == 4
-  assert predictedFrames.dtype == np.float32
-  predictedFrames = (predictedFrames * 255).astype(np.uint8)
-  assert predictedFrames.dtype == np.uint8
 
   if '.' in path_to_save_predicted_frames:
     skvideo.io.vwrite(path_to_save_predicted_frames, predictedFrames)

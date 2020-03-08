@@ -137,12 +137,14 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
                                 path_to_save_model_json='prednet_model.json', path_to_save_weights_hdf5='prednet_weights.hdf5',
                                 model_path=None,
                                 number_of_epochs=150, steps_per_epoch=125,
+                                batch_size=4,
                                 ):
+  """
+  """
 
   save_model = True  # if weights will be saved
 
   # Training parameters
-  batch_size = 4
   samples_per_epoch = steps_per_epoch * batch_size
   N_seq_val = 100  # number of sequences to use for validation
 

@@ -1,13 +1,23 @@
 import hickle as hkl
 import numpy as np
+import typing
+
 from keras import backend as K
 from keras.preprocessing.image import Iterator
 
 # Data generator that creates sequences for input into PredNet.
 class SequenceGenerator(Iterator):
-    def __init__(self, data_file, source_file, nt,
+    """
+    `possible_starts` is an array of all indices of frames that could serve as the start of a sequence.
+    If sequence_start_mode='all', then `possible_starts` is simply
+    all indices such that the next few frames are from the same source.
+    If sequence_start_mode='unique', then `possible_starts` is spaced out to be non-overlapping.
+    """
+    def __init__(self, data_file, source_file,
+                 sequence_length,
                  batch_size=8, shuffle=False, seed=None,
-                 output_mode='error', sequence_start_mode='all', N_seq=None,
+                 output_mode='error', sequence_start_mode='all',
+                 N_seq=None,
                  data_format=K.image_data_format()):
         try:
             self.X = hkl.load(data_file)  # X will be like (n_images, nb_cols, nb_rows, nb_channels)
@@ -15,15 +25,15 @@ class SequenceGenerator(Iterator):
             assert isinstance(data_file, np.ndarray)
             assert data_file.dtype == np.uint8
             self.X = data_file
-        if self.X.shape[0] < nt:
-            # If nt > X.shape[0], the generator will generate zero items. That is almost certainly not what the user intended.
-            raise ValueError(self.X.shape[0], nt)
+        if self.X.shape[0] < sequence_length:
+            # If sequence_length > X.shape[0], the generator will generate zero items. That is almost certainly not what the user intended.
+            raise ValueError(self.X.shape[0], sequence_length)
         try:
             self.sources = hkl.load(source_file) # source for each image so when creating sequences can assure that consecutive frames are from same video
         except hkl.hickle.FileError:
             assert isinstance(source_file, list)
             self.sources = source_file
-        self.nt = nt
+        self.sequence_length = sequence_length
         self.batch_size = batch_size
         self.data_format = data_format
         assert sequence_start_mode in {'all', 'unique'}, 'sequence_start_mode must be in {all, unique}'
@@ -36,16 +46,16 @@ class SequenceGenerator(Iterator):
         self.im_shape = self.X[0].shape
 
         if self.sequence_start_mode == 'all':  # allow for any possible sequence, starting from any frame
-            self.possible_starts = np.array([i for i in range(self.X.shape[0] - self.nt + 1)
-                                             if self.sources[i] == self.sources[i + self.nt - 1]])
+            self.possible_starts = np.array([i for i in range(self.X.shape[0] - self.sequence_length + 1)
+                                             if self.sources[i] == self.sources[i + self.sequence_length - 1]])
         elif self.sequence_start_mode == 'unique':  #create sequences where each unique frame is in at most one sequence
             curr_location = 0
             possible_starts = []
-            assert curr_location < self.X.shape[0] - self.nt + 1
-            while curr_location < self.X.shape[0] - self.nt + 1:
-                if self.sources[curr_location] == self.sources[curr_location + self.nt - 1]:
+            assert curr_location < self.X.shape[0] - self.sequence_length + 1
+            while curr_location < self.X.shape[0] - self.sequence_length + 1:
+                if self.sources[curr_location] == self.sources[curr_location + self.sequence_length - 1]:
                     possible_starts.append(curr_location)
-                    curr_location += self.nt
+                    curr_location += self.sequence_length
                 else:
                     curr_location += 1
             self.possible_starts = possible_starts
@@ -61,15 +71,18 @@ class SequenceGenerator(Iterator):
     def __getitem__(self, null):
         return self.next()
 
-    def next(self):
+    def next(self) -> typing.Tuple[np.ndarray, np.ndarray]:
+        """
+        The first is a batch of frame sequences.
+        """
         with self.lock:
             current_index = (self.batch_index * self.batch_size) % self.n
             # self.index_generator is inherited from keras_preprocessing.image.iterator.Iterator
             index_array, current_batch_size = next(self.index_generator), self.batch_size
-        batch_x = np.zeros((current_batch_size, self.nt) + self.im_shape, np.float32)
+        batch_x = np.zeros((current_batch_size, self.sequence_length) + self.im_shape, np.float32)
         for i, idx in enumerate(index_array):
             idx = self.possible_starts[idx]
-            batch_x[i] = self.preprocess(self.X[idx:idx+self.nt])
+            batch_x[i] = self.preprocess(self.X[idx:idx+self.sequence_length])
         if self.output_mode == 'error':  # model outputs errors, so y should be zeros
             batch_y = np.zeros(current_batch_size, np.float32)
         elif self.output_mode == 'prediction':  # output actual pixels
@@ -88,9 +101,9 @@ class SequenceGenerator(Iterator):
         return X.astype(np.float32) / 255
 
     def create_all(self):
-        X_all = np.zeros((self.N_sequences, self.nt) + self.im_shape, np.float32)
+        X_all = np.zeros((self.N_sequences, self.sequence_length) + self.im_shape, np.float32)
         for i, idx in enumerate(self.possible_starts):
-            X_all[i] = self.preprocess(self.X[idx:idx+self.nt])
+            X_all[i] = self.preprocess(self.X[idx:idx+self.sequence_length])
         return X_all
 
 

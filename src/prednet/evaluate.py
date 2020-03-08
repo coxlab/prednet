@@ -132,24 +132,36 @@ def default_prediction_filepath(path_to_video):
   return os.path.splitext(path_to_video)[0] + '.predicted' + os.path.splitext(path_to_video)[1]
 
 
+def save_video_as_images(path_to_save, frames_to_save):
+  for sequenceIndex, indexWithinSequence in np.ndindex(frames_to_save.shape[:2]):
+    frame = Image.fromarray(frames_to_save[sequenceIndex, indexWithinSequence])
+    frame.save(path_to_save + '_' + str(sequenceIndex) + '_' + str(indexWithinSequence) + '.png')
+
+
 def save_predicted_frames_for_single_video(path_to_video,
-                                          number_of_epochs=150, steps_per_epoch=125,
-                                          nt=8,
-                                          model_file_path=None,
-                                          path_to_save_predicted_frames=None,
-                                          ):
+                                           number_of_epochs=150, steps_per_epoch=125,
+                                           nt=8,
+                                           model_file_path=None,
+                                           path_to_save_predicted_frames=None,
+                                           ):
   if path_to_save_predicted_frames is None:
     path_to_save_predicted_frames = default_prediction_filepath(path_to_video)
   path_to_save_comparison_video = os.path.splitext(path_to_video)[0] + '.comparison' + os.path.splitext(path_to_video)[1]
   predictedFrames = get_predicted_frames_for_single_video(path_to_video, number_of_epochs, steps_per_epoch, nt=nt,
                                                           model_file_path=model_file_path)
+  if os.path.splitext(path_to_save_predicted_frames)[1] == '':
+    save_video_as_images(path_to_save_predicted_frames, predictedFrames)
+
+  # predictedFrames is as sequences, turn it into a regular video.
   assert len(predictedFrames.shape) == 5
   predictedFrames = predictedFrames.reshape(-1, *predictedFrames.shape[2:])
   assert len(predictedFrames.shape) == 4
   assert predictedFrames.dtype == np.float32
   predictedFrames = (predictedFrames * 255).astype(np.uint8)
   assert predictedFrames.dtype == np.uint8
-  skvideo.io.vwrite(path_to_save_predicted_frames, predictedFrames)
+
+  if '.' in path_to_save_predicted_frames:
+    skvideo.io.vwrite(path_to_save_predicted_frames, predictedFrames)
   # raise Exception(path_to_save_predicted_frames, predictedFrames.shape)
   return predictedFrames
 

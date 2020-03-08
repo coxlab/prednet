@@ -138,10 +138,13 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
                                 model_path=None,
                                 number_of_epochs=150, steps_per_epoch=125,
                                 batch_size=4,
+                                sequence_length=8,
                                 max_validation_sequences=100,
                                 ):
   """
   At most `max_validation_sequences` frame sequences will be used for validation.
+
+  `sequence_length` is the number of frames in each training sequence.
   """
 
   save_model = True  # if weights will be saved
@@ -149,16 +152,18 @@ def train_on_arrays_and_sources(train_file, train_sources, val_file, val_sources
   # Training parameters
   samples_per_epoch = steps_per_epoch * batch_size
 
-  nt = 8  # number of timesteps used for sequences in training
-
-  train_generator = prednet.data_utils.SequenceGenerator(train_file, train_sources, nt, batch_size=batch_size, shuffle=True)
-  val_generator = prednet.data_utils.SequenceGenerator(val_file, val_sources, nt, batch_size=batch_size, max_num_sequences=max_validation_sequences)
+  train_generator = prednet.data_utils.SequenceGenerator(train_file, train_sources,
+                                                         sequence_length=sequence_length, batch_size=batch_size,
+                                                         shuffle=True)
+  val_generator = prednet.data_utils.SequenceGenerator(val_file, val_sources,
+                                                       sequence_length=sequence_length, batch_size=batch_size,
+                                                       max_num_sequences=max_validation_sequences)
   assert train_generator.im_shape == val_generator.im_shape
 
   if model_path and os.path.exists(model_path):
     model = keras.models.load_model(model_path, custom_objects = {'PredNet': prednet.prednet.PredNet})
   else:
-    model = make_training_model(nt, train_generator.im_shape)
+    model = make_training_model(sequence_length, train_generator.im_shape)
 
   lr_schedule = lambda epoch: 0.001 if epoch < 75 else 0.0001    # start with lr of 0.001 and then drop to 0.0001 after 75 epochs
   callbacks = [keras.callbacks.LearningRateScheduler(lr_schedule)]

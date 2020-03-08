@@ -77,8 +77,8 @@ def train_on_single_video(path_to_video,
   assert len(source_list) == array.shape[0]
   numberOfFrames = array.shape[0]
   numberOfValidationFrames = number_of_validation_sequences * sequence_length
-  return train_on_arrays_and_sources(array[:numberOfFrames//2], source_list[:numberOfFrames//2],
-                                     array[numberOfFrames//2:], source_list[numberOfFrames//2:],
+  return train_on_arrays_and_sources(array[:-numberOfValidationFrames], source_list[:-numberOfValidationFrames],
+                                     array[-numberOfValidationFrames:], source_list[-numberOfValidationFrames:],
                                      path_to_save_model_json=path_to_save_model_json,
                                      path_to_save_weights_hdf5=path_to_save_weights_hdf5,
                                      model_path=path_to_save_model_file,

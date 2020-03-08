@@ -170,13 +170,19 @@ def save_predicted_frames_for_single_video(path_to_video,
 
 
 def save_predicted_frames_for_video_list(paths_to_videos,
-                                        model_file_path,
-                                        number_of_epochs=150, steps_per_epoch=125,
-                                        nt=8,
-                                        ):
+                                         model_file_path,
+                                         number_of_epochs=150, steps_per_epoch=125,
+                                         nt=8,
+                                         prediction_save_extension=None,
+                                         ):
   for path_to_video in paths_to_videos:
+    if prediction_save_extension == 'png':
+      path_to_save_predicted_frames = os.path.join(os.path.splitext(path_to_video)[0] + '_predicted_frames', 'predicted')
+    else:
+      path_to_save_predicted_frames = None
     save_predicted_frames_for_single_video(path_to_video, model_file_path=model_file_path,
-                                           number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, nt=nt)
+                                           number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, nt=nt,
+                                           path_to_save_predicted_frames=path_to_save_predicted_frames)
 
 
 def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',

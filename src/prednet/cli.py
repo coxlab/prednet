@@ -40,6 +40,7 @@ predictParser = subparsers.add_parser('predict', help='Predict frames using a mo
 jupyterParser = subparsers.add_parser('jupyter', help='Launch a Jupyter instance showing how you can use PredNet programmatically.')
 trainParser.add_argument('paths_to_videos', nargs='+', help="Paths to source video files.")
 predictParser.add_argument('paths_to_videos', nargs='+', help="Paths to source video files.")
+predictParser.add_argument('--prediction-save-extension', help="Type of file to use to save the prediction.")
 jupyterParser.add_argument('--jupyter-lab-arguments', nargs=argparse.REMAINDER,
                            help="All further arguments will be passed through to jupyter lab just as if you invoked jupyter lab directly. We need to have --jupyter-lab-arguments due to a bug in argparse. https://bugs.python.org/issue17050")
 # jupyterParser.add_argument('--port', type=int, default=8888, help="The port the notebook server will listen on.")
@@ -77,6 +78,7 @@ def main(args=None):
             number_of_epochs=args.number_of_epochs, steps_per_epoch=args.steps_per_epoch,
             model_file_path=args.model_file,
             nt=args.subsequence_length,
+            prediction_save_extension=args.prediction_save_extension,
             )
       else:
         assert args.subparser_name is None

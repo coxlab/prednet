@@ -89,13 +89,14 @@ def train_on_single_video(path_to_video,
     return
 
   json = ffmpeg.probe(path_to_video)
-  totalPixels = json['width'] * json['height']
-  if max_pixels_per_frame and max_pixels_per_frame < totalPixels:
-    reductionFactor = max_pixels_per_frame/totalPixels
-    newWidth = int(json['width'] * reductionFactor)
-    newHeight = int(json['height'] * reductionFactor)
-    # (width, height)
-    make_reduced_video(path_to_video, (newWidth, newHeight))
+  if 'width' in json and 'height' in json:
+    totalPixels = json['width'] * json['height']
+    if max_pixels_per_frame and max_pixels_per_frame < totalPixels:
+      reductionFactor = max_pixels_per_frame/totalPixels
+      newWidth = int(json['width'] * reductionFactor)
+      newHeight = int(json['height'] * reductionFactor)
+      # (width, height)
+      make_reduced_video(path_to_video, (newWidth, newHeight))
 
   print('train_on_single_video about to call skvideo.io.vread')
   array = skvideo.io.vread(path_to_video)

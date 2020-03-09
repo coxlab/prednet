@@ -2,8 +2,11 @@
 import os.path
 import numpy as np
 import skvideo.io
+import ffmpeg
+
 import prednet.prednet
 import prednet.data_utils
+
 import keras.layers
 import keras.callbacks
 import keras.models

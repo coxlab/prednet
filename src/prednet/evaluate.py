@@ -101,9 +101,9 @@ def get_predicted_frames_for_single_video(path_to_video,
   frameShape = frame_shape_required_by_model_file(model_file_path)
   noExtension, extension = os.path.splitext(path_to_video)
   path_to_scaled_video = noExtension + '_' + str(frameShape[0]) + '_' + str(frameShape[1]) + extension
-  ffmpeg.input(path_to_video).filter('scale', frameShape[0], frameShape[1]).output(path_to_scaled_video).run()
+  ffmpeg.input(path_to_video).filter('scale', frameShape[0], frameShape[1]).output(path_to_scaled_video).overwrite_output().run()
 
-  array = skvideo.io.vread(path_to_scaled_video)
+  array = skvideo.io.vread(path_to_video)
   print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',
         resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
   assert array.dtype == np.uint8

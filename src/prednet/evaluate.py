@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 from PIL import Image, ImageChops
+import ffmpeg
 
 from keras import backend as K
 from keras.models import Model, model_from_json
@@ -96,6 +97,8 @@ def get_predicted_frames_for_single_video(path_to_video,
                                         number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
                                         *args, **kwargs)
 
+  frameShape = frame_shape_required_by_model_file(model_file_path)
+
   array = skvideo.io.vread(path_to_video)
   print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',
         resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
@@ -103,6 +106,8 @@ def get_predicted_frames_for_single_video(path_to_video,
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]
   assert len(array.shape) == 4
+  if array.shape[1:] != frameShape:
+    raise ValueError(frameShape, array.shape)
   if nt is None:
     # Just evaluate the whole thing as one long sequence.
     nt = array.shape[0]
@@ -199,11 +204,26 @@ def frame_sequence_shape_required_by_trained_model(trained_model: keras.models.M
   return list(trained_model.layers[0].batch_input_shape[1:])
 
 
+def frame_shape_required_by_trained_model(trained_model: keras.models.Model):
+  """
+  The first is the number of frames per sequence, so we drop that.
+  """
+  return frame_sequence_shape_required_by_trained_model(trained_model)[1:]
+
+
+def frame_shape_required_by_model_file(model_file_path):
+  return frame_shape_required_by_trained_model(load_model(model_file_path))
+
+
+def load_model(model_file_path):
+  return keras.models.load_model(model_file_path, custom_objects = {'PredNet': PredNet})
+
+
 def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',
                           model_file_path=None,
                           nt=8):
   if model_file_path:
-    train_model = keras.models.load_model(model_file_path, custom_objects = {'PredNet': PredNet})
+    train_model = load_model(model_file_path)
   else:
     # Load the model and its trained weights.
     with open(path_to_model_json) as f:

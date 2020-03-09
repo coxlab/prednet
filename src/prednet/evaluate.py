@@ -98,8 +98,11 @@ def get_predicted_frames_for_single_video(path_to_video,
                                         *args, **kwargs)
 
   frameShape = frame_shape_required_by_model_file(model_file_path)
+  noExtension, extension = os.path.splitext(path_to_video)
+  path_to_scaled_video = noExtension + '_' + str(frameShape[0]) + '_' + str(frameShape[1]) + extension
+  ffmpeg.input(path_to_video).filter('scale', frameShape[0], frameShape[1]).output(path_to_scaled_video).run()
 
-  array = skvideo.io.vread(path_to_video)
+  array = skvideo.io.vread(path_to_scaled_video)
   print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',
         resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
   assert array.dtype == np.uint8
@@ -201,7 +204,7 @@ def save_predicted_frames_for_video_list(paths_to_videos,
 
 
 def frame_sequence_shape_required_by_trained_model(trained_model: keras.models.Model):
-  return list(trained_model.layers[0].batch_input_shape[1:])
+  return tuple(trained_model.layers[0].batch_input_shape[1:])
 
 
 def frame_shape_required_by_trained_model(trained_model: keras.models.Model):
@@ -239,7 +242,7 @@ def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path=
   input_shape = frame_sequence_shape_required_by_trained_model(train_model)
   # We can change the input shape enough to change the number of frames per sequence, if we want. Somehow.
   input_shape[0] = nt
-  inputs = Input(shape=tuple(input_shape))
+  inputs = Input(shape=(nt,) + frame_shape_required_by_trained_model(train_model))
   predictions = test_prednet(inputs)
   data_format = layer_config['data_format'] if 'data_format' in layer_config else layer_config['dim_ordering']
   return Model(inputs=inputs, outputs=predictions), data_format

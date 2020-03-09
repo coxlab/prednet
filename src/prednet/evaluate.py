@@ -195,6 +195,10 @@ def save_predicted_frames_for_video_list(paths_to_videos,
                                            path_to_save_predicted_frames=path_to_save_predicted_frames)
 
 
+def frame_sequence_shape_required_by_trained_model(trained_model: keras.models.Model):
+  return list(trained_model.layers[0].batch_input_shape[1:])
+
+
 def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',
                           model_file_path=None,
                           nt=8):
@@ -212,7 +216,8 @@ def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path=
   layer_config = train_model.layers[1].get_config()
   layer_config['output_mode'] = 'prediction'
   test_prednet = PredNet(weights=train_model.layers[1].get_weights(), **layer_config)
-  input_shape = list(train_model.layers[0].batch_input_shape[1:])
+  input_shape = frame_sequence_shape_required_by_trained_model(train_model)
+  # We can change the input shape enough to change the number of frames per sequence, if we want. Somehow.
   input_shape[0] = nt
   inputs = Input(shape=tuple(input_shape))
   predictions = test_prednet(inputs)

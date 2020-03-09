@@ -118,11 +118,15 @@ def train_on_video_list(paths_to_videos,
                          *args, **kwargs)
 
 
-def make_training_model(nt, input_shape):
+def make_training_model(nt, frame_shape):
+  """
+  The model depends on the input shape: the height, width, and number of channels.
+  A model trained on one frame shape will not be applicable to another frame shape.
+  """
   # Model parameters
   n_channels = 3
-  # input_shape = (n_channels, im_height, im_width) if keras.backend.image_data_format() == 'channels_first' else (im_height, im_width, n_channels)
-  # assert input_shape == train_generator.im_shape
+  # frame_shape = (n_channels, im_height, im_width) if keras.backend.image_data_format() == 'channels_first' else (im_height, im_width, n_channels)
+  # assert frame_shape == train_generator.im_shape
   stack_sizes = (n_channels, 48, 96, 192)
   R_stack_sizes = stack_sizes
   A_filt_sizes = (3, 3, 3)
@@ -137,7 +141,7 @@ def make_training_model(nt, input_shape):
                     A_filt_sizes, Ahat_filt_sizes, R_filt_sizes,
                     output_mode='error', return_sequences=True)
   
-  inputs = keras.layers.Input(shape=(nt,) + input_shape)
+  inputs = keras.layers.Input(shape=(nt,) + frame_shape)
   errors = predictor(inputs)  # errors will be (batch_size, nt, nb_layers)
   errors_by_time = keras.layers.TimeDistributed(keras.layers.Dense(1, trainable=False),
                                                 weights=[layer_loss_weights, np.zeros(1)],

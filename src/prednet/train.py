@@ -28,6 +28,20 @@ def default_path_to_save_model(path_to_video):
   return os.path.splitext(path_to_video)[0] + '.model.save.hdf5'
 
 
+def make_reduced_video(path_to_video, frame_shape):
+  """
+  https://trac.ffmpeg.org/wiki/Scaling
+   Sometimes you want to scale an image, but avoid upscaling it if its dimensions are too low.
+   This can be done using min expressions:
+  ffmpeg -i input.jpg -vf "scale='min(320,iw)':'min(240,ih)'" input_not_upscaled.png
+  But do we want to? If we have too many total pixels, more than we can fit on the GPU, it doesn't matter if one direction is okay.
+  """
+  noExtension, extension = os.path.splitext(path_to_video)
+  path_to_scaled_video = noExtension + '_' + str(frame_shape[0]) + '_' + str(frame_shape[1]) + extension
+  ffmpeg.input(path_to_video).filter('scale', frame_shape[0], frame_shape[1]).output(path_to_scaled_video).overwrite_output().run()
+  return path_to_scaled_video
+
+
 def train_on_single_video(path_to_video,
                           path_to_save_model_json=None, path_to_save_weights_hdf5=None,
                           path_to_save_model_file=None,
@@ -35,6 +49,7 @@ def train_on_single_video(path_to_video,
                           batch_size=4,
                           sequence_length=8,
                           fraction_to_use_for_validation=0.5,
+                          max_pixels_per_frame=None,
                           ):
   """
   Picking which frames to use for validation is tricky, because when using sequence_start_mode='all',
@@ -69,6 +84,15 @@ def train_on_single_video(path_to_video,
       model.load_weights(path_to_save_weights_hdf5)
       model.save(path_to_save_model_file)
     return
+
+  json = ffmpeg.probe(path_to_video)
+  totalPixels = json['width'] * json['height']
+  if max_pixels_per_frame and max_pixels_per_frame < totalPixels:
+    reductionFactor = max_pixels_per_frame/totalPixels
+    newWidth = int(json['width'] * reductionFactor)
+    newHeight = int(json['height'] * reductionFactor)
+    # (width, height)
+    make_reduced_video(path_to_video, (newWidth, newHeight))
 
   print('train_on_single_video about to call skvideo.io.vread')
   array = skvideo.io.vread(path_to_video)

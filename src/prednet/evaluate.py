@@ -8,6 +8,7 @@ import numpy as np
 import skvideo.io
 # import skvideo.measure.view_diff
 from six.moves import cPickle
+import typing
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -203,22 +204,24 @@ def save_predicted_frames_for_video_list(paths_to_videos,
                                            path_to_save_predicted_frames=path_to_save_predicted_frames)
 
 
-def frame_sequence_shape_required_by_trained_model(trained_model: keras.models.Model):
-  return tuple(trained_model.layers[0].batch_input_shape[1:])
+def frame_sequence_shape_required_by_trained_model(trained_model: keras.models.Model) -> typing.Tuple[int, int, int, int]:
+  inputLayer = trained_model.layers[0]
+  assert inputLayer.batch_input_shape[1:] == inputLayer.input_shape[1:]
+  return trained_model.layers[0].input_shape[1:]
 
 
-def frame_shape_required_by_trained_model(trained_model: keras.models.Model):
+def frame_shape_required_by_trained_model(trained_model: keras.models.Model) -> typing.Tuple[int, int, int]:
   """
   The first is the number of frames per sequence, so we drop that.
   """
   return frame_sequence_shape_required_by_trained_model(trained_model)[1:]
 
 
-def frame_shape_required_by_model_file(model_file_path):
+def frame_shape_required_by_model_file(model_file_path) -> typing.Tuple[int, int, int]:
   return frame_shape_required_by_trained_model(load_model(model_file_path))
 
 
-def load_model(model_file_path):
+def load_model(model_file_path) -> keras.models.Model:
   return keras.models.load_model(model_file_path, custom_objects = {'PredNet': PredNet})
 
 
@@ -241,7 +244,6 @@ def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path=
   test_prednet = PredNet(weights=train_model.layers[1].get_weights(), **layer_config)
   input_shape = frame_sequence_shape_required_by_trained_model(train_model)
   # We can change the input shape enough to change the number of frames per sequence, if we want. Somehow.
-  input_shape[0] = nt
   inputs = Input(shape=(nt,) + frame_shape_required_by_trained_model(train_model))
   predictions = test_prednet(inputs)
   data_format = layer_config['data_format'] if 'data_format' in layer_config else layer_config['dim_ordering']

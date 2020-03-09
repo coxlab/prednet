@@ -85,6 +85,7 @@ setup(
         'pillow',
         # 'scikit-video @ git+https://github.com/dHannasch/scikit-video.git@branch-to-install',
         'scikit-video',
+        'ffmpeg-python',
         'matplotlib',
         'jupyterlab',
         'hickle',

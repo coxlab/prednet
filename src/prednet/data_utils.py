@@ -15,10 +15,15 @@ class SequenceGenerator(Iterator):
 
     If `max_num_sequences` is set, then `possible_starts` will be truncated to have
     only `max_num_sequences` starting points (and thus the SequenceGenerator will generate at most `max_num_sequences` sequences.
+
+    `possible_starts` might be shuffled if `shuffle` is set.
+    This is the main reason the video cannot be provided as an iterator to save memory.
     """
-    def __init__(self, data_file, source_file,
+    def __init__(self, data_file,
+                 source_file,
                  sequence_length,
-                 batch_size=8, shuffle=False, seed=None,
+                 batch_size=8,
+                 shuffle=False, seed=None,
                  output_mode='error', sequence_start_mode='all',
                  max_num_sequences=None,
                  data_format=K.image_data_format()):
@@ -71,6 +76,7 @@ class SequenceGenerator(Iterator):
         assert self.N_sequences > 0
         super(SequenceGenerator, self).__init__(len(self.possible_starts), batch_size, shuffle, seed)
 
+    # Something seems terribly wrong here. sequenceGenerator[idx] will ignore the index. How is this used?
     def __getitem__(self, null):
         return self.next()
 

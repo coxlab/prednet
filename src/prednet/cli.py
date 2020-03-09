@@ -18,6 +18,8 @@ import argparse
 import os.path
 import pkg_resources
 
+import ffmpeg
+
 import jupyterlab.labapp
 
 parser = argparse.ArgumentParser(description='Train and evaluate on single video.')

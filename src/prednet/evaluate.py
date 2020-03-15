@@ -219,7 +219,7 @@ def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path=
                           model_file_path=None,
                           nt=8):
   if model_file_path:
-    train_model = keras.models.load_model(model_file_path, custom_objects = {'PredNet': PredNet})
+    train_model = load_model(model_file_path)
   else:
     # Load the model and its trained weights.
     with open(path_to_model_json) as f:

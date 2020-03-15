@@ -35,6 +35,7 @@ def train_on_single_video(path_to_video,
                           batch_size=4,
                           sequence_length=8,
                           fraction_to_use_for_validation=0.5,
+                          max_pixels_per_frame=None,
                           ):
   """
   Picking which frames to use for validation is tricky, because when using sequence_start_mode='all',

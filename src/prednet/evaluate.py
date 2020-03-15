@@ -81,6 +81,20 @@ def evaluate_on_hickles(DATA_DIR,
                              path_to_save_prediction_scores=path_to_save_prediction_scores)
 
 
+def make_reduced_video(path_to_video, frame_shape):
+  """
+  https://trac.ffmpeg.org/wiki/Scaling
+   Sometimes you want to scale an image, but avoid upscaling it if its dimensions are too low.
+   This can be done using min expressions:
+  ffmpeg -i input.jpg -vf "scale='min(320,iw)':'min(240,ih)'" input_not_upscaled.png
+  But do we want to? If we have too many total pixels, more than we can fit on the GPU, it doesn't matter if one direction is okay.
+  """
+  noExtension, extension = os.path.splitext(path_to_video)
+  path_to_scaled_video = noExtension + '_' + str(frame_shape[0]) + '_' + str(frame_shape[1]) + extension
+  ffmpeg.input(path_to_video).filter('scale', frame_shape[0], frame_shape[1]).output(path_to_scaled_video).overwrite_output().run()
+  return path_to_scaled_video
+
+
 def get_predicted_frames_for_single_video(path_to_video,
                                           number_of_epochs=150, steps_per_epoch=125,
                                           nt=8,
@@ -103,8 +117,7 @@ def get_predicted_frames_for_single_video(path_to_video,
   # calling frame_shape_required_by_model_file causes test_moving_dot to fail on
   # assert np.mean( (rightToLeftPredicted[:-1] - rightToLeft[1:])**2 ) >= np.mean( (predicted[:-1] - leftToRight[1:])**2 )
   # How is that possible?
-  # path_to_scaled_video = noExtension + '_' + str(frameShape[0]) + '_' + str(frameShape[1]) + extension
-  # ffmpeg.input(path_to_video).filter('scale', frameShape[0], frameShape[1]).output(path_to_scaled_video).run()
+  # path_to_scaled_video = prednet.train.make_reduced_video(path_to_video, frameShape)
 
   array = skvideo.io.vread(path_to_video)
   print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',
@@ -213,18 +226,18 @@ def frame_sequence_shape_required_by_trained_model(trained_model: keras.models.M
   return trained_model.layers[0].input_shape[1:]
 
 
-def frame_shape_required_by_trained_model(trained_model: keras.models.Model):
+def frame_shape_required_by_trained_model(trained_model: keras.models.Model) -> typing.Tuple[int, int, int]:
   """
   The first is the number of frames per sequence, so we drop that.
   """
   return frame_sequence_shape_required_by_trained_model(trained_model)[1:]
 
 
-def frame_shape_required_by_model_file(model_file_path):
+def frame_shape_required_by_model_file(model_file_path) -> typing.Tuple[int, int, int]:
   return frame_shape_required_by_trained_model(load_model(model_file_path))
 
 
-def load_model(model_file_path):
+def load_model(model_file_path) -> keras.models.Model:
   return keras.models.load_model(model_file_path, custom_objects = {'PredNet': PredNet})
 
 
@@ -247,7 +260,6 @@ def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path=
   test_prednet = PredNet(weights=train_model.layers[1].get_weights(), **layer_config)
   input_shape = frame_shape_required_by_trained_model(train_model)
   # We can change the input shape enough to change the number of frames per sequence, if we want. Somehow.
-  # input_shape[0] = nt
   inputs = Input(shape=(nt,) + input_shape)
   predictions = test_prednet(inputs)
   data_format = layer_config['data_format'] if 'data_format' in layer_config else layer_config['dim_ordering']

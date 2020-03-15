@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 from PIL import Image, ImageChops
+import ffmpeg
 
 from keras import backend as K
 from keras.models import Model, model_from_json
@@ -197,6 +198,21 @@ def save_predicted_frames_for_video_list(paths_to_videos,
 
 def frame_sequence_shape_required_by_trained_model(trained_model: keras.models.Model):
   return list(trained_model.layers[0].batch_input_shape[1:])
+
+
+def frame_shape_required_by_trained_model(trained_model: keras.models.Model):
+  """
+  The first is the number of frames per sequence, so we drop that.
+  """
+  return frame_sequence_shape_required_by_trained_model(trained_model)[1:]
+
+
+def frame_shape_required_by_model_file(model_file_path):
+  return frame_shape_required_by_trained_model(load_model(model_file_path))
+
+
+def load_model(model_file_path):
+  return keras.models.load_model(model_file_path, custom_objects = {'PredNet': PredNet})
 
 
 def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path='prednet_weights.hdf5',

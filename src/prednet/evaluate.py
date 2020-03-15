@@ -97,6 +97,8 @@ def get_predicted_frames_for_single_video(path_to_video,
                                         number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
                                         *args, **kwargs)
 
+  frameShape = frame_shape_required_by_model_file(model_file_path)
+
   array = skvideo.io.vread(path_to_video)
   print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',
         resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)

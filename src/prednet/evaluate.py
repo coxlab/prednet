@@ -8,6 +8,7 @@ import numpy as np
 import skvideo.io
 # import skvideo.measure.view_diff
 from six.moves import cPickle
+import typing
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -97,11 +98,13 @@ def get_predicted_frames_for_single_video(path_to_video,
                                         number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
                                         *args, **kwargs)
 
+  noExtension, extension = os.path.splitext(path_to_video)
   # frameShape = frame_shape_required_by_model_file(model_file_path)
   # calling frame_shape_required_by_model_file causes test_moving_dot to fail on
   # assert np.mean( (rightToLeftPredicted[:-1] - rightToLeft[1:])**2 ) >= np.mean( (predicted[:-1] - leftToRight[1:])**2 )
   # How is that possible?
-  noExtension, extension = os.path.splitext(path_to_video)
+  # path_to_scaled_video = noExtension + '_' + str(frameShape[0]) + '_' + str(frameShape[1]) + extension
+  # ffmpeg.input(path_to_video).filter('scale', frameShape[0], frameShape[1]).output(path_to_scaled_video).run()
 
   array = skvideo.io.vread(path_to_video)
   print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',
@@ -204,8 +207,10 @@ def save_predicted_frames_for_video_list(paths_to_videos,
                                            path_to_save_predicted_frames=path_to_save_predicted_frames)
 
 
-def frame_sequence_shape_required_by_trained_model(trained_model: keras.models.Model):
-  return tuple(trained_model.layers[0].batch_input_shape[1:])
+def frame_sequence_shape_required_by_trained_model(trained_model: keras.models.Model) -> typing.Tuple[int, int, int, int]:
+  inputLayer = trained_model.layers[0]
+  assert inputLayer.batch_input_shape[1:] == inputLayer.input_shape[1:]
+  return trained_model.layers[0].input_shape[1:]
 
 
 def frame_shape_required_by_trained_model(trained_model: keras.models.Model):

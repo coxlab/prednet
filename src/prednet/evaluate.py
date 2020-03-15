@@ -97,7 +97,11 @@ def get_predicted_frames_for_single_video(path_to_video,
                                         number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
                                         *args, **kwargs)
 
-  frameShape = frame_shape_required_by_model_file(model_file_path)
+  # frameShape = frame_shape_required_by_model_file(model_file_path)
+  # calling frame_shape_required_by_model_file causes test_moving_dot to fail on
+  # assert np.mean( (rightToLeftPredicted[:-1] - rightToLeft[1:])**2 ) >= np.mean( (predicted[:-1] - leftToRight[1:])**2 )
+  # How is that possible?
+  noExtension, extension = os.path.splitext(path_to_video)
 
   array = skvideo.io.vread(path_to_video)
   print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',
@@ -106,6 +110,8 @@ def get_predicted_frames_for_single_video(path_to_video,
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]
   assert len(array.shape) == 4
+  # if array.shape[1:] != frameShape:
+  #   raise ValueError(frameShape, array.shape)
   if nt is None:
     # Just evaluate the whole thing as one long sequence.
     nt = array.shape[0]
@@ -199,7 +205,7 @@ def save_predicted_frames_for_video_list(paths_to_videos,
 
 
 def frame_sequence_shape_required_by_trained_model(trained_model: keras.models.Model):
-  return list(trained_model.layers[0].batch_input_shape[1:])
+  return tuple(trained_model.layers[0].batch_input_shape[1:])
 
 
 def frame_shape_required_by_trained_model(trained_model: keras.models.Model):
@@ -234,10 +240,10 @@ def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path=
   layer_config = train_model.layers[1].get_config()
   layer_config['output_mode'] = 'prediction'
   test_prednet = PredNet(weights=train_model.layers[1].get_weights(), **layer_config)
-  input_shape = frame_sequence_shape_required_by_trained_model(train_model)
+  input_shape = frame_shape_required_by_trained_model(train_model)
   # We can change the input shape enough to change the number of frames per sequence, if we want. Somehow.
-  input_shape[0] = nt
-  inputs = Input(shape=tuple(input_shape))
+  # input_shape[0] = nt
+  inputs = Input(shape=(nt,) + input_shape)
   predictions = test_prednet(inputs)
   data_format = layer_config['data_format'] if 'data_format' in layer_config else layer_config['dim_ordering']
   return Model(inputs=inputs, outputs=predictions), data_format

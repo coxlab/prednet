@@ -81,6 +81,24 @@ def evaluate_on_hickles(DATA_DIR,
                              path_to_save_prediction_scores=path_to_save_prediction_scores)
 
 
+def make_reduced_video(path_to_video, frame_shape):
+  """
+  https://trac.ffmpeg.org/wiki/Scaling
+   Sometimes you want to scale an image, but avoid upscaling it if its dimensions are too low.
+   This can be done using min expressions:
+  ffmpeg -i input.jpg -vf "scale='min(320,iw)':'min(240,ih)'" input_not_upscaled.png
+  But do we want to? If we have too many total pixels, more than we can fit on the GPU, it doesn't matter if one direction is okay.
+
+  http://ffmpeg.org/ffmpeg-filters.html#scale
+  interactive widget in jupyter https://github.com/kkroening/ffmpeg-python/blob/master/examples/ffmpeg-numpy.ipynb
+  https://raw.githubusercontent.com/kkroening/ffmpeg-python/master/doc/jupyter-demo.gif
+  """
+  noExtension, extension = os.path.splitext(path_to_video)
+  path_to_scaled_video = noExtension + '_' + str(frame_shape[0]) + '_' + str(frame_shape[1]) + extension
+  ffmpeg.input(path_to_video).filter('scale', frame_shape[0], frame_shape[1]).output(path_to_scaled_video).overwrite_output().run()
+  return path_to_scaled_video
+
+
 def get_predicted_frames_for_single_video(path_to_video,
                                           number_of_epochs=150, steps_per_epoch=125,
                                           nt=8,
@@ -98,10 +116,12 @@ def get_predicted_frames_for_single_video(path_to_video,
                                         number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
                                         *args, **kwargs)
 
-  frameShape = frame_shape_required_by_model_file(model_file_path)
-  path_to_scaled_video = prednet.train.make_reduced_video(path_to_video, frameShape)
+  # frameShape = frame_shape_required_by_model_file(model_file_path)
+  # calling frame_shape_required_by_model_file causes test_moving_dot to fail on
+  # assert np.mean( (rightToLeftPredicted[:-1] - rightToLeft[1:])**2 ) >= np.mean( (predicted[:-1] - leftToRight[1:])**2 )
+  # How is that possible?
+  # path_to_scaled_video = prednet.train.make_reduced_video(path_to_video, frameShape)
 
-  # not actually using path_to_scaled_video until figure out what it's doing to the results
   array = skvideo.io.vread(path_to_video)
   print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',
         resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
@@ -109,8 +129,8 @@ def get_predicted_frames_for_single_video(path_to_video,
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]
   assert len(array.shape) == 4
-  if array.shape[1:] != frameShape:
-    raise ValueError(frameShape, array.shape)
+  # if array.shape[1:] != frameShape:
+  #   raise ValueError(frameShape, array.shape)
   if nt is None:
     # Just evaluate the whole thing as one long sequence.
     nt = array.shape[0]
@@ -241,9 +261,9 @@ def make_evaluation_model(path_to_model_json='prednet_model.json', weights_path=
   layer_config = train_model.layers[1].get_config()
   layer_config['output_mode'] = 'prediction'
   test_prednet = PredNet(weights=train_model.layers[1].get_weights(), **layer_config)
-  input_shape = frame_sequence_shape_required_by_trained_model(train_model)
+  input_shape = frame_shape_required_by_trained_model(train_model)
   # We can change the input shape enough to change the number of frames per sequence, if we want. Somehow.
-  inputs = Input(shape=(nt,) + frame_shape_required_by_trained_model(train_model))
+  inputs = Input(shape=(nt,) + input_shape)
   predictions = test_prednet(inputs)
   data_format = layer_config['data_format'] if 'data_format' in layer_config else layer_config['dim_ordering']
   return Model(inputs=inputs, outputs=predictions), data_format

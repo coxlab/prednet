@@ -2,6 +2,7 @@
 import os.path
 import numpy as np
 import skvideo.io
+import ffmpeg
 import prednet.prednet
 import prednet.data_utils
 import keras.layers
@@ -70,6 +71,19 @@ def train_on_single_video(path_to_video,
       model.load_weights(path_to_save_weights_hdf5)
       model.save(path_to_save_model_file)
     return
+
+  json = ffmpeg.probe(path_to_video)
+  # strangely, 'width' and 'height' are not in the JSON on Travis
+  if 'width' in json and 'height' in json:
+    totalPixels = json['width'] * json['height']
+    if max_pixels_per_frame and max_pixels_per_frame < totalPixels:
+      reductionFactor = max_pixels_per_frame/totalPixels
+      newWidth = int(json['width'] * reductionFactor)
+      newHeight = int(json['height'] * reductionFactor)
+      # (width, height)
+      # make_reduced_video(path_to_video, (newWidth, newHeight))
+  else:
+    print(json, '= ffmpeg.probe({})'.format(path_to_video))
 
   print('train_on_single_video about to call skvideo.io.vread')
   array = skvideo.io.vread(path_to_video)

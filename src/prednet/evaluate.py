@@ -88,6 +88,10 @@ def make_reduced_video(path_to_video, frame_shape):
    This can be done using min expressions:
   ffmpeg -i input.jpg -vf "scale='min(320,iw)':'min(240,ih)'" input_not_upscaled.png
   But do we want to? If we have too many total pixels, more than we can fit on the GPU, it doesn't matter if one direction is okay.
+
+  http://ffmpeg.org/ffmpeg-filters.html#scale
+  interactive widget in jupyter https://github.com/kkroening/ffmpeg-python/blob/master/examples/ffmpeg-numpy.ipynb
+  https://raw.githubusercontent.com/kkroening/ffmpeg-python/master/doc/jupyter-demo.gif
   """
   noExtension, extension = os.path.splitext(path_to_video)
   path_to_scaled_video = noExtension + '_' + str(frame_shape[0]) + '_' + str(frame_shape[1]) + extension

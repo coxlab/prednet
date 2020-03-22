@@ -41,6 +41,8 @@ trainParser = subparsers.add_parser('train', help='Train a model.')
 predictParser = subparsers.add_parser('predict', help='Predict frames using a model (train if necessary).')
 jupyterParser = subparsers.add_parser('jupyter', help='Launch a Jupyter instance showing how you can use PredNet programmatically.')
 trainParser.add_argument('paths_to_videos', nargs='+', help="Paths to source video files.")
+trainParser.add_argument('--batch-size', type=int, default=4, help="Number of sequences to train on in a single batch.")
+trainParser.add_argument('--validation-fraction', type=float, default=0.5, help="Fraction of the video (taken from the end) to use as the validation set.")
 predictParser.add_argument('paths_to_videos', nargs='+', help="Paths to source video files.")
 predictParser.add_argument('--prediction-save-extension', help="Type of file to use to save the prediction.")
 jupyterParser.add_argument('--jupyter-lab-arguments', nargs=argparse.REMAINDER,
@@ -70,8 +72,13 @@ def main(args=None):
       import prednet.evaluate
       if args.subparser_name == 'train':
           prednet.train.train_on_video_list(args.paths_to_videos,
+                                            path_to_save_model_file=args.model_file,
                                             number_of_epochs=args.number_of_epochs,
-                                            steps_per_epoch=args.steps_per_epoch)
+                                            steps_per_epoch=args.steps_per_epoch,
+                                            batch_size=args.batch_size,
+                                            sequence_length=args.subsequence_length,
+                                            fraction_to_use_for_validation=args.validation_fraction,
+                                           )
       elif args.subparser_name == 'predict':
         # This might not be the best way to do things, but this function will
         # automatically use the saved model if the file(s) already exist.

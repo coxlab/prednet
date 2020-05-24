@@ -205,6 +205,18 @@ def save_predicted_frames_for_single_video(path_to_video,
   skvideo.io.vwrite(path_to_save_comparison_video, comparisonFrames)
 
 
+def save_predicted_frames_for_single_path(path, *args, **kwargs):
+  # os.walk() on a file name returns an empty list instead of a list containing only that entry,
+  # so we need to specifically check whether the path is a directory.
+  if os.path.isdir(path):
+    for root, dirs, files in os.walk(path):
+      for filename in files:
+        # should probably check whether it's actually a video file
+        save_predicted_frames_for_single_video(os.path.join(root, filename), *args, **kwargs)
+  else:
+    save_predicted_frames_for_single_video(path, *args, **kwargs)
+
+
 def save_predicted_frames_for_video_list(paths_to_videos,
                                          model_file_path,
                                          number_of_epochs=150, steps_per_epoch=125,

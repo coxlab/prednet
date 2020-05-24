@@ -1,3 +1,4 @@
+# conda install --name tensorflow1 --file conda-requirements.txt
 tensorflow-gpu>=1.13.1,<2.0
 Keras>=2.2.4
 requests

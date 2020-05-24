@@ -3,9 +3,6 @@ import typing
 import numpy as np
 import matplotlib.pyplot as plt
 
-import skvideo.utils.image
-
-
 
 # https://github.com/stoyanovgeorge/ffmpeg/wiki/How-to-Compare-Video
 # https://www.pyimagesearch.com/2017/06/19/image-difference-with-opencv-and-python/

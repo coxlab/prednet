@@ -6,7 +6,8 @@ import os
 import resource
 import numpy as np
 import skvideo.io
-# import skvideo.measure.view_diff
+from prednet import view_diff
+from prednet.diffs import mse
 from six.moves import cPickle
 import typing
 import matplotlib
@@ -200,8 +201,8 @@ def save_predicted_frames_for_single_video(path_to_video,
   # raise Exception(path_to_save_predicted_frames, predictedFrames.shape)
   return predictedFrames
 
-  # comparisonFrames = skvideo.measure.view_diff.make_comparison_video(skvideo.io.vread(path_to_video), predictedFrames, ImageChops_on_ndarrays, skvideo.measure.mse_rgb)
-  # skvideo.io.vwrite(path_to_save_comparison_video, comparisonFrames)
+  comparisonFrames = view_diff.make_comparison_video(skvideo.io.vread(path_to_video), predictedFrames, ImageChops_on_ndarrays, mse.mse_rgb)
+  skvideo.io.vwrite(path_to_save_comparison_video, comparisonFrames)
 
 
 def save_predicted_frames_for_video_list(paths_to_videos,

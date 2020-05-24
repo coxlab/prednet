@@ -147,7 +147,7 @@ anyone thinks of a better implementation.
 .. _here: https://coxlab.github.io/prednet/
 .. _Keras: http://keras.io/
 .. _KITTI: http://www.cvlibs.net/datasets/kitti/
-.. _Keras FAQ: http://keras.io/getting-started/faq/#how-can-i-run-keras-on-gpu
+.. _Keras FAQ: https://www.tensorflow.org/guide/gpu
 
 Documentation
 =============

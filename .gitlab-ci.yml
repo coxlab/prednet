@@ -1,4 +1,4 @@
-image: dahanna/python:3.6-tensorflow-1.15-ffmpeg
+image: dahanna/python:3.6-tensorflow-1.15-ffmpeg-jupyter
 
 default:
   before_script:

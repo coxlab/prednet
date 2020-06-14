@@ -145,7 +145,7 @@ anyone thinks of a better implementation.
 
 .. _Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning: https://arxiv.org/abs/1605.08104
 .. _here: https://coxlab.github.io/prednet/
-.. _Keras: http://keras.io/
+.. _Keras: https://github.com/keras-team/keras
 .. _KITTI: http://www.cvlibs.net/datasets/kitti/
 .. _Keras FAQ: https://www.tensorflow.org/guide/gpu
 

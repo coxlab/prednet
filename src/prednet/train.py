@@ -5,6 +5,7 @@ import skvideo.io
 import ffmpeg
 
 import prednet.prednet
+import prednet.data_input
 import prednet.data_utils
 
 import keras.layers
@@ -128,16 +129,7 @@ def train_on_single_path(path,
                          path_to_save_model_file=None,
                          number_of_epochs=150, steps_per_epoch=125,
                          *args, **kwargs):
-  # os.walk() on a file name returns an empty list instead of a list containing only that entry,
-  # so we need to specifically check whether the path is a directory.
-  if os.path.isdir(path):
-    for root, dirs, files in os.walk(path):
-      for filename in files:
-        # should probably check whether it's actually a video file
-        train_on_single_video(os.path.join(root, filename), path_to_save_model_file=path_to_save_model_file,
-                              number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
-                              *args, **kwargs)
-  else:
+  for filepath in prednet.data_input.walk_videos(path):
     train_on_single_video(path, path_to_save_model_file=path_to_save_model_file,	
                           number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
                           *args, **kwargs)

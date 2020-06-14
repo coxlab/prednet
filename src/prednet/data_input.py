@@ -29,3 +29,27 @@ def load_video(filepath, dirToSaveHKL):
     source_list = [filepath for frame in array]
     save_array_as_hickle(array, source_list, dirToSaveHKL)
 
+
+def is_video_file(filepath) -> bool:
+  try:
+    ffmpeg.probe(path_to_video)
+    return True
+  except:
+    return False
+
+
+def walk_videos(path):
+  # os.walk() on a file name returns an empty list instead of a list containing only that entry,
+  # so we need to specifically check whether the path is a directory.
+  if os.path.isdir(path):
+    for root, dirs, files in os.walk(path):
+      for filename in files:
+        if is_video_file(os.path.join(root, filename)):
+          yield os.path.join(root, filename)
+  else:
+    # os.walk will yield nothing on a plain file,
+    # but we want to run on a single video if given one.
+    if not is_video_file(path):
+      raise ValueError(path)
+    yield path
+

@@ -93,7 +93,10 @@ def train_on_single_video(path_to_video,
       model.save(path_to_save_model_file)
     return
 
-  json = ffmpeg.probe(path_to_video)
+  try:
+    json = ffmpeg.probe(path_to_video)
+  except Exception as ex:
+    raise ValueError(path_to_video + str(ex))
   # strangely, 'width' and 'height' are not in the JSON on Travis
   if 'width' in json and 'height' in json:
     totalPixels = json['width'] * json['height']

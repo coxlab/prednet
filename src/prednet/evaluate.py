@@ -161,6 +161,10 @@ def default_prediction_filepath(path_to_video):
   return os.path.splitext(path_to_video)[0] + '.predicted' + os.path.splitext(path_to_video)[1]
 
 
+def default_comparison_filepath(path_to_video):
+  return os.path.splitext(path_to_video)[0] + '.comparison' + os.path.splitext(path_to_video)[1]
+
+
 def save_video_as_images(path_to_save, frames_to_save):
   if type(frames_to_save) is not np.ndarray:
     raise ValueError(frames_to_save)
@@ -177,10 +181,12 @@ def save_predicted_frames_for_single_video(path_to_video,
                                            nt=8,
                                            model_file_path=None,
                                            path_to_save_predicted_frames=None,
+                                           path_to_save_comparison_video=None,
                                            ):
   if path_to_save_predicted_frames is None:
     path_to_save_predicted_frames = default_prediction_filepath(path_to_video)
-  path_to_save_comparison_video = os.path.splitext(path_to_video)[0] + '.comparison' + os.path.splitext(path_to_video)[1]
+  if path_to_save_comparison_video is None:
+    path_to_save_comparison_video = default_comparison_filepath(path_to_video)
   predictedFrames = get_predicted_frames_for_single_video(path_to_video, number_of_epochs, steps_per_epoch, nt=nt,
                                                           model_file_path=model_file_path)
 
@@ -199,10 +205,11 @@ def save_predicted_frames_for_single_video(path_to_video,
   if '.' in path_to_save_predicted_frames:
     skvideo.io.vwrite(path_to_save_predicted_frames, predictedFrames)
   # raise Exception(path_to_save_predicted_frames, predictedFrames.shape)
-  return predictedFrames
-
   comparisonFrames = view_diff.make_comparison_video(skvideo.io.vread(path_to_video), predictedFrames, ImageChops_on_ndarrays, mse.mse_rgb)
   skvideo.io.vwrite(path_to_save_comparison_video, comparisonFrames)
+
+  return predictedFrames
+
 
 
 def save_predicted_frames_for_single_path(path, *args, **kwargs):

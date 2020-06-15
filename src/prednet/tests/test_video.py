@@ -109,7 +109,7 @@ def test_moving_dot(capsys):
   for i in range(32):
     rightToLeft[i, 4, -i % 8, :] = 255
   skvideo.io.vwrite(rightToLeftFilepath, rightToLeft)
-  rightToLeftPredicted = prednet.evaluate.save_predicted_frames_for_single_video(rightToLeftFilepath,
+  rightToLeftPredicted = prednet.evaluate.get_predicted_frames_for_single_video(rightToLeftFilepath,
             nt=None,
             model_file_path=prednet.train.default_path_to_save_model(filepath))
   assert rightToLeftPredicted.shape == rightToLeft.shape

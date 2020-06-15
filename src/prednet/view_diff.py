@@ -162,9 +162,9 @@ def make_comparison_video(video: np.ndarray, referenceVideo: np.ndarray,
     assert len(differenceVector.shape) == 1
     assert differenceVector.shape[0] == video.shape[0]
     numberOfFrames = video.shape[0]
-    compositeVideo = np.empty((numberOfFrames,) + skvideo.measure.view_diff.combined_frame_shape(video[0], referenceVideo[0], differenceImgFunc, differenceVector, 0))
+    compositeVideo = np.empty((numberOfFrames,) + combined_frame_shape(video[0], referenceVideo[0], differenceImgFunc, differenceVector, 0))
     for frameIndex, (pristineFrame, distortedFrame) in enumerate(zip(referenceVideo, video)):
-        compositeVideo[frameIndex, :] = skvideo.measure.view_diff.make_comparison_image(distortedFrame, pristineFrame, differenceImgFunc, differenceVector, frameIndex)
+        compositeVideo[frameIndex, :] = make_comparison_image(distortedFrame, pristineFrame, differenceImgFunc, differenceVector, frameIndex)
     return compositeVideo
 
 

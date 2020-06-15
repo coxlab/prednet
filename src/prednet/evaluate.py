@@ -208,13 +208,12 @@ def save_predicted_frames_for_single_video(path_to_video,
   comparisonFrames = view_diff.make_comparison_video(skvideo.io.vread(path_to_video), predictedFrames, ImageChops_on_ndarrays, mse.mse_rgb)
   skvideo.io.vwrite(path_to_save_comparison_video, comparisonFrames)
 
-  return predictedFrames
+  return comparisonFrames
 
 
 
 def save_predicted_frames_for_single_path(path, *args, **kwargs):
-  for filepath in prednet.data_input.walk_videos(path):
-    save_predicted_frames_for_single_video(path, *args, **kwargs)
+  return [save_predicted_frames_for_single_video(path, *args, **kwargs) for filepath in prednet.data_input.walk_videos(path)]
 
 
 def save_predicted_frames_for_video_list(paths_to_videos,

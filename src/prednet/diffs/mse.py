@@ -30,5 +30,5 @@ def mse_rgb(referenceVideoData: np.ndarray, distortedVideoData: np.ndarray):
     for frameIndex in range(referenceVideoData.shape[0]):
         referenceVideoLuminance[frameIndex, :, :] = Image.fromarray(referenceVideoData[frameIndex, :, :, :]).convert('L')
         distortedVideoLuminance[frameIndex, :, :] = Image.fromarray(distortedVideoData[frameIndex, :, :, :]).convert('L')
-    return skvideo.measure.mse.mse(referenceVideoLuminance, distortedVideoLuminance)
+    return skvideo.measure.mse(referenceVideoLuminance, distortedVideoLuminance)
 

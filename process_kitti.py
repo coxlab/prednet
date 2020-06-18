@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import urllib.request
 import numpy as np
 from imageio import imread
-from scipy.misc import imresize
+from PIL import Image
 import hickle as hkl
 from kitti_settings import *
 
@@ -32,7 +32,7 @@ def download_data():
         r = requests.get(url)
         soup = BeautifulSoup(r.content)
         drive_list = soup.find_all("h3")
-        drive_list = [d.text[:d.text.find(' ')] for d in drive_list]
+        drive_list = [d.text[:d.text.find(' ')] for d in drive_list] 
         print( "Downloading set: " + c)
         c_dir = base_dir + c + '/'
         if not os.path.exists(c_dir): os.mkdir(c_dir)
@@ -77,6 +77,8 @@ def process_data():
 
         print( 'Creating ' + split + ' data: ' + str(len(im_list)) + ' images')
         X = np.zeros((len(im_list),) + desired_im_sz + (3,), np.uint8)
+        # print('the shape of X: ' + str(X.shape))
+        print(X[2].shape)
         for i, im_file in enumerate(im_list):
             im = imread(im_file)
             X[i] = process_im(im, desired_im_sz)
@@ -88,13 +90,15 @@ def process_data():
 # resize and crop image
 def process_im(im, desired_sz):
     target_ds = float(desired_sz[0])/im.shape[0]
-    im = imresize(im, (desired_sz[0], int(np.round(target_ds * im.shape[1]))))
+    im = np.array(Image.fromarray(im).resize((int(np.round(target_ds * im.shape[1])), desired_sz[0] )))
+   
+
     d = int((im.shape[1] - desired_sz[1]) / 2)
     im = im[:, d:d+desired_sz[1]]
     return im
 
 
 if __name__ == '__main__':
-    download_data()
-    extract_data()
+    # download_data()
+    # extract_data()
     process_data()

@@ -77,8 +77,6 @@ def process_data():
 
         print( 'Creating ' + split + ' data: ' + str(len(im_list)) + ' images')
         X = np.zeros((len(im_list),) + desired_im_sz + (3,), np.uint8)
-        # print('the shape of X: ' + str(X.shape))
-        print(X[2].shape)
         for i, im_file in enumerate(im_list):
             im = imread(im_file)
             X[i] = process_im(im, desired_im_sz)
@@ -99,6 +97,6 @@ def process_im(im, desired_sz):
 
 
 if __name__ == '__main__':
-    # download_data()
-    # extract_data()
+    download_data()
+    extract_data()
     process_data()

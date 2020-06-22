@@ -2,7 +2,7 @@ import numpy as np
 
 from keras import backend as K
 from keras import activations
-from keras.layers import Recurrent
+from keras.layers import Recurrent, Dropout
 from keras.layers import Conv2D, UpSampling2D, MaxPooling2D
 from keras.engine import InputSpec
 from keras_utils import legacy_prednet_support
@@ -52,6 +52,10 @@ class PredNet(Recurrent):
         data_format: 'channels_first' or 'channels_last'.
             It defaults to the `image_data_format` value found in your
             Keras config file at `~/.keras/keras.json`.
+
+    # To-do:
+
+        - implement an encoder and decoder for label classfication.
 
     # References
         - [Deep predictive coding networks for video prediction and unsupervised learning](https://arxiv.org/abs/1605.08104)
@@ -181,7 +185,7 @@ class PredNet(Recurrent):
 
         for l in range(self.nb_layers):
             for c in ['i', 'f', 'c', 'o']:
-                act = self.LSTM_activation if c == 'c' else self.LSTM_inner_activation
+                act = self.LSTM_activation if c == 'c' else self.LSTM_inner_activation # inner activation = hard sigmoid activation function
                 self.conv_layers[c].append(Conv2D(self.R_stack_sizes[l], self.R_filt_sizes[l], padding='same', activation=act, data_format=self.data_format))
 
             act = 'relu' if l == 0 else self.A_activation

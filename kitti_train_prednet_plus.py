@@ -15,7 +15,7 @@ from keras.layers import TimeDistributed
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 from keras.optimizers import Adam
 
-from prednet import PredNet
+from prednet-plus import PredNet
 from data_utils import SequenceGenerator
 from kitti_settings import *
 
@@ -83,6 +83,6 @@ if save_model:
         f.write(json_string)
 
     loss_history = history.history["loss"]
-	numpy_loss_history = np.array(loss_history)
-	np.savetxt("loss_history_prednet.txt", numpy_loss_history, delimiter=",")
+	 numpy_loss_history = np.array(loss_history)
+	   np.savetxt("loss_history_prednet.txt", numpy_loss_history, delimiter=",")
 

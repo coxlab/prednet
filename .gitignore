@@ -9,6 +9,9 @@ __pycache__/
 # Video and data folders
 kitti_data/
 model_data_keras*/
+nfs_data/
+PredNet-20200617T064538Z-001/
+PredNet-DO-results/
 
 # Distribution / packaging
 .Python

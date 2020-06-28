@@ -1,0 +1,273 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"we",
+				"weigthPath"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/Edward/Anaconda3/envs/prednet_fixed/Lib/site-packages/keras/layers/recurrent.py",
+		"/D/PredNet_Fixed/prednet.py",
+		"/D/PredNet_Fixed/kitti_settings.py",
+		"/D/PredNet_Fixed/keras_utils.py",
+		"/D/PredNet_Fixed/data_utils.py",
+		"/D/PredNet_Fixed/kitti_extrap_finetune.py",
+		"/D/PredNet_Fixed/kitti_evaluate.py",
+		"/D/PredNet_Fixed/kitti_train.py",
+		"/D/PredNet_Fixed/process_kitti.py",
+		"/C/Users/Edward/Anaconda3/envs/prednet_fixed/Lib/site-packages/keras/backend/tensorflow_backend.py",
+		"/C/Users/Edward/Desktop/column.csv",
+		"/C/Users/Edward/Downloads/CalcMeasures.txt",
+		"/C/Users/Edward/Desktop/Readme.txt",
+		"/D/csci926/CSCI926/PythonAPI/PythonAPI/examples/output.txt",
+		"/D/csci926/CSCI926/PythonAPI/PythonAPI/examples/AutomaticTestGenerationToolV3.py",
+		"/D/CARLA_0.9.9/WindowsNoEditor/PythonAPI/examples/automatic_control.py",
+		"/C/Program Files/PuTTY/README.txt",
+		"/D/research_prednet/kitti_data/X_test.hkl",
+		"/D/research_prednet/prednet.py",
+		"/D/INFO911/YearPredictionMSD.txt/YearPredictionMSD.csv",
+		"/D/research_prednet/convert_hickle.py",
+		"/D/research_prednet/kitti_data/convert_hickle.py",
+		"/D/research_prednet/kitti_train.py",
+		"/D/research_prednet/prednet/kitti_evaluate.py",
+		"/D/research_prednet/prednet/prednet.py",
+		"/D/research_prednet/prednet_37/prednet.py",
+		"/D/research_prednet/prednet_37/data_utils.py",
+		"/D/research_prednet/prednet_37/kitti_train.py",
+		"/D/research_prednet/prednet_37/process_kitti.py",
+		"/D/research_prednet/prednet/process_kitti.py",
+		"/D/research_prednet/prednet/data_utils.py",
+		"/D/research_prednet/prednet_37/environment.yml",
+		"/D/research_prednet/prednet/environment.yml",
+		"/D/research_prednet/prednet/.gitignore",
+		"/D/research_prednet/new/kitti_train.py",
+		"/D/research_prednet/new/kitti_extrap_finetune.py",
+		"/D/research_prednet/new/kitti_evaluate.py",
+		"/C/Users/Edward/Desktop/Task2_LeNet-5.py",
+		"/D/research_prednet/new/keras_utils.py",
+		"/D/research_prednet/new/data_utils.py",
+		"/D/research_prednet/new/prednet.py",
+		"/D/research_prednet/tree_report.txt",
+		"/D/research_prednet/keras_utils.py",
+		"/C/Users/Edward/Anaconda3/envs/pred_net/Lib/site-packages/keras/callbacks.py",
+		"/D/research_prednet/download_data.sh",
+		"/C/Users/Edward/Anaconda3/envs/pred_net/Lib/sched.py",
+		"/C/Users/Edward/Anaconda3/envs/research36/Lib/site-packages/keras/layers/recurrent.py",
+		"/D/research_prednet/data_utils.py",
+		"/D/animalcrossing/showoff/requirements.txt",
+		"/D/CARLA_0.9.9/WindowsNoEditor/PythonAPI/examples/drive_forward_tutorial_2.py",
+		"/C/Users/Edward/Documents/CSCI991/requirements",
+		"/D/ai/a1/definitions.txt",
+		"/C/Users/Edward/Documents/ai/a1/activity.py",
+		"/D/ai/a1/Student_Taxi_Mapping.txt",
+		"/D/ai/a1/test_.R",
+		"/C/Users/Edward/Documents/DeepLearning/Prism-ColouringGreyscalePhotos/Prism.py",
+		"/C/Users/Edward/Documents/DeepLearning/Prism-ColouringGreyscalePhotos/main.py",
+		"/C/Users/Edward/Desktop/lab.R",
+		"/D/CARLA_0.9.9/WindowsNoEditor/PythonAPI/examples/drive_forward_tutorial_2",
+		"/C/Users/Edward/Downloads/README_format_release2.txt",
+		"/C/Users/Edward/Downloads/VIRAT_S_000002.viratdata.objects.txt",
+		"/C/Users/Edward/AppData/Local/Temp/Temp1_FM20 Transfers & Data Update Pack 3.3 (by pr0 & FMTU).zip/Instructions-Donation info/How to install correctly.txt",
+		"/C/Users/Edward/Documents/CSCI991/utils.py",
+		"/C/Users/Edward/Documents/CSCI991/ImageNet-Datasets-Downloader-master/requirements.txt",
+		"/C/Users/Edward/Documents/CSCI991/main_cifar.py",
+		"/D/DeepLearning/Standnews/politician/recognize_faces_image.py",
+		"/D/DeepLearning/Standnews/politician/encode_faces.py",
+		"/D/DeepLearning/Standnews/politician/search_bing_api.py",
+		"/D/DeepLearning/Standnews/politician/build_face_dataset.py",
+		"/D/CSCI946/datasets/train_label.txt",
+		"/C/Users/Edward/Documents/gekko-develop/web/vue/public/UIconfig.js",
+		"/C/Users/Edward/Downloads/LeNet-5.py",
+		"/C/Users/Edward/Downloads/Logistic_Regression.py",
+		"/D/CSCI946/datasets/test_labels.txt",
+		"/D/CSCI946/datasets/test_label.txt",
+		"/D/CSCI946/train.csv",
+		"/C/Users/Edward/Documents/CSCI946/Week_8/section_9_7.py",
+		"/D/CSCI946/Neural Network Implementation/YOLO/yolo.py",
+		"/D/CSCI946/datasets/label.txt",
+		"/D/CSCI946/Assignment 2/Task 1/test.map",
+		"/D/CSCI946/Assignment 2/Task 1/train.label",
+		"/C/Users/Edward/Downloads/Untitled1.py",
+		"/D/CSCI946/Neural Network Implementation/PCN/main_cifar.py",
+		"/D/DeepLearning/mnist.py",
+		"/C/Users/Edward/Anaconda3/envs/bigdata/etc/keras/load_config.py",
+		"/C/Users/Edward/.jupyter/jupyter_notebook_config.py",
+		"/C/Users/Edward/Downloads/20news-19997.tar/20news-19997/20_newsgroups/alt.atheism/51121",
+		"/D/CSCI946/Assignment 2/Task 1/train.data",
+		"/D/CSCI946/Assignment 2/final_tweet2.csv",
+		"/C/Users/Edward/Downloads/Untitled1-Copy2.py",
+		"/C/Users/Edward/Downloads/siftImages.cpp",
+		"/C/Users/Edward/Documents/GitHub/PCN-with-Local-Recurrent-Processing/main_imagenet.py",
+		"/C/Users/Edward/Anaconda3/envs/cv/Lib/site-packages/cv2/__init__.py",
+		"/C/Users/Edward/Downloads/openCVex-4.1.1-v15/openCVex-4.1.1-v15/build/python/cv2/__init__.py",
+		"/C/Users/Edward/Downloads/openCVex-4.1.1-v15/openCVex-4.1.1-v15/build/python/cv2/load_config_py3.py",
+		"/C/Users/Edward/Downloads/openCVex-4.1.1-v15/openCVex-4.1.1-v15/build/python/cv2/config-3.7.py",
+		"/C/Users/Edward/Downloads/20news-19997.tar/20news-19997/20_newsgroups/rec.sport.baseball/102584",
+		"/C/Users/Edward/Downloads/openCVex-4.1.1-v15/openCVex-4.1.1-v15/build/setup_vars_opencv4.cmd",
+		"/C/Users/Edward/Downloads/openCVex-4.1.1-v15/openCVex-4.1.1-v15/build/LICENSE",
+		"/C/Users/Edward/Downloads/openCVex-4.1.1-v15/openCVex-4.1.1-v15/build/python/cv2/python-3.7/cv2.cp37-win_amd64.pyd",
+		"/D/Downloads/RC_2015-01/RC_2015-01",
+		"/D/GAN/environment.yml",
+		"/D/GAN/datasets/download_cyclegan_dataset.sh",
+		"/D/CSCI946/Week7_tutorial/Chapter 7/DTdata.csv",
+		"/C/Users/Edward/Downloads/bzip2-1.0.8.0-win-x64/bzip2.exe"
+	],
+	"find":
+	{
+		"height": 22.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 22.0
+	},
+	"input":
+	{
+		"height": 34.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "prednet.sublime-project",
+	"replace":
+	{
+		"height": 40.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

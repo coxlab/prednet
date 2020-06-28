@@ -53,6 +53,10 @@ class PredNet(Recurrent):
             It defaults to the `image_data_format` value found in your
             Keras config file at `~/.keras/keras.json`.
 
+    # To-do:
+
+        - implement an encoder and decoder for label classfication.
+
     # References
         - [Deep predictive coding networks for video prediction and unsupervised learning](https://arxiv.org/abs/1605.08104)
         - [Long short-term memory](http://deeplearning.cs.cmu.edu/pdfs/Hochreiter97_lstm.pdf)
@@ -177,18 +181,23 @@ class PredNet(Recurrent):
 
     def build(self, input_shape):
         self.input_spec = [InputSpec(shape=input_shape)]
+        self.dropout_layer = Dropout(0.2, input_shape=input_shape)
         self.conv_layers = {c: [] for c in ['i', 'f', 'c', 'o', 'a', 'ahat']}
+        
 
         for l in range(self.nb_layers):
             for c in ['i', 'f', 'c', 'o']:
-                act = self.LSTM_activation if c == 'c' else self.LSTM_inner_activation
+                act = self.LSTM_activation if c == 'c' else self.LSTM_inner_activation # inner activation = hard sigmoid activation function
                 self.conv_layers[c].append(Conv2D(self.R_stack_sizes[l], self.R_filt_sizes[l], padding='same', activation=act, data_format=self.data_format))
+                
 
             act = 'relu' if l == 0 else self.A_activation
             self.conv_layers['ahat'].append(Conv2D(self.stack_sizes[l], self.Ahat_filt_sizes[l], padding='same', activation=act, data_format=self.data_format))
 
             if l < self.nb_layers - 1:
                 self.conv_layers['a'].append(Conv2D(self.stack_sizes[l+1], self.A_filt_sizes[l], padding='same', activation=self.A_activation, data_format=self.data_format))
+
+
 
         self.upsample = UpSampling2D(data_format=self.data_format)
         self.pool = MaxPooling2D(data_format=self.data_format)

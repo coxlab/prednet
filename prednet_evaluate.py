@@ -64,6 +64,7 @@ f.write("Previous Frame MSE: %f" % mse_prev)
 f.close()
 
 # Plot some predictions
+# To-do: plot bounding box
 aspect_ratio = float(X_hat.shape[2]) / X_hat.shape[3]
 plt.figure(figsize = (nt, 2*aspect_ratio))
 gs = gridspec.GridSpec(2, nt)
@@ -85,3 +86,6 @@ for i in plot_idx:
 
     plt.savefig(plot_save_dir +  'plot_' + str(i) + '.png')
     plt.clf()
+
+
+# https://stackoverflow.com/questions/38445982/how-to-log-keras-loss-output-to-a-file

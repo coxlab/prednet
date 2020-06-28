@@ -183,6 +183,7 @@ class PredNet(Recurrent):
             for c in ['i', 'f', 'c', 'o']:
                 act = self.LSTM_activation if c == 'c' else self.LSTM_inner_activation
                 self.conv_layers[c].append(Conv2D(self.R_stack_sizes[l], self.R_filt_sizes[l], padding='same', activation=act, data_format=self.data_format))
+                
 
             act = 'relu' if l == 0 else self.A_activation
             self.conv_layers['ahat'].append(Conv2D(self.stack_sizes[l], self.Ahat_filt_sizes[l], padding='same', activation=act, data_format=self.data_format))

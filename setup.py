@@ -77,7 +77,7 @@ setup(
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
     install_requires=[
         'tensorflow-gpu>=1.13.1,<2.0',
-        'Keras>=2.2.4',
+        'Keras>=2.2.4,<2.4.0',
         'requests',
         'bs4',
         'imageio',

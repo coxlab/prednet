@@ -38,7 +38,7 @@ class SequenceGenerator(Iterator):
             raise ValueError(self.X.shape[0], sequence_length)
         try:
             self.sources = hkl.load(source_file) # source for each image so when creating sequences can assure that consecutive frames are from same video
-        except hkl.hickle.FileError:
+        except (hkl.hickle.FileError, ValueError):
             assert isinstance(source_file, list)
             self.sources = source_file
         self.sequence_length = sequence_length

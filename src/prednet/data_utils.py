@@ -29,7 +29,7 @@ class SequenceGenerator(Iterator):
                  data_format=K.image_data_format()):
         try:
             self.X = hkl.load(data_file)  # X will be like (n_images, nb_cols, nb_rows, nb_channels)
-        except hkl.hickle.FileError:
+        except (hkl.hickle.FileError, ValueError):
             assert isinstance(data_file, np.ndarray)
             assert data_file.dtype == np.uint8
             self.X = data_file

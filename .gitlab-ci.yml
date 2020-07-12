@@ -353,6 +353,9 @@ pages:
 test:
   tags:
   - docker
+  image:
+    name: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    entrypoint: [""]
   stage: test
   script:
   # apk add any needed packages not included in the image.
@@ -363,10 +366,10 @@ test:
   # need to pip install tox here.
   # With --sitepackages, we can save time by installing once
   # for both regular tests and documentation checks.
-  - python -c "import enum; print(enum.__file__)"
-  - pip uninstall --yes enum34
-  - pip uninstall --yes prednet || echo "PredNet is not installed."
-  - pip install .
+  # - python -c "import enum; print(enum.__file__)"
+  # - pip uninstall --yes enum34
+  # - pip uninstall --yes prednet || echo "PredNet is not installed."
+  # - pip install .
   - pip install tox
   - git --version
   - python --version

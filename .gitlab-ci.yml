@@ -183,6 +183,7 @@ get-latest-git-version:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   stage: build
+  before_script: []
   script:
     - | 
       echo "Building and shipping image to $CI_REGISTRY_IMAGE"

@@ -24,6 +24,7 @@ RUN cat /etc/apt/sources.list \
     && rm /etc/apt/sources.list.d/cuda.list \
     # && add-apt-repository "ppa:jonathonf/ffmpeg-4" \
     && apt-get update && apt-get install --assume-yes ffmpeg
+RUN (python -c "import sphinx" && pip install --upgrade sphinx) || echo "Sphinx is not installed."
 
 RUN mkdir ./video_files
 RUN touch ./video_files/dummyfile

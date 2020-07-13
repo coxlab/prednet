@@ -26,7 +26,7 @@ RUN cat /etc/apt/sources.list \
     && add-apt-repository --remove nvidia-ml.list \
     && rm /etc/apt/sources.list.d/nvidia-ml.list \
     && rm /etc/apt/sources.list.d/cuda.list \
-    && add-apt-repository ppa:jonathonf/ffmpeg-4
+    && add-apt-repository ppa:jonathonf/ffmpeg-4 \
     && apt-get update && apt-get install --assume-yes ffmpeg
 RUN pip install --no-cache ./prednet
 

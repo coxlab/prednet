@@ -1,0 +1,2 @@
+include src/prednet/tests/resources/*
+include src/prednet/resources/*

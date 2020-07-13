@@ -7,11 +7,7 @@ FROM $BASE_IMAGE
 # Using the tensorflow base image, the current directory is /tf.
 # That is where Jupyter will open.
 # Jupyter will display it as simply / ,
-# but checking the current working directory in code will confimr it is /tf.
-
-# .dockerignore applies to COPY
-COPY ./ ./prednet
-COPY ./src/prednet/tests/resources/ ./test_videos
+# but checking the current working directory in code will confirm it is /tf.
 
 ENV http_proxy=$HTTP_PROXY
 ENV https_proxy=$HTTPS_PROXY
@@ -26,9 +22,8 @@ RUN cat /etc/apt/sources.list \
     && add-apt-repository --remove nvidia-ml.list \
     && rm /etc/apt/sources.list.d/nvidia-ml.list \
     && rm /etc/apt/sources.list.d/cuda.list \
-    && add-apt-repository "ppa:jonathonf/ffmpeg-4" \
+    # && add-apt-repository "ppa:jonathonf/ffmpeg-4" \
     && apt-get update && apt-get install --assume-yes ffmpeg
-RUN pip install --no-cache ./prednet
 
 RUN mkdir ./video_files
 RUN touch ./video_files/dummyfile
@@ -37,3 +32,8 @@ RUN touch ./video_files/dummyfile
 # https://docs.docker.com/storage/bind-mounts/#mount-into-a-non-empty-directory-on-the-container
 VOLUME /video_files
 # If any build steps change the data within the volume after it has been declared, those changes will be discarded.
+
+# .dockerignore applies to COPY
+COPY ./ ./prednet
+COPY ./src/prednet/tests/resources/ ./test_videos
+RUN pip install --no-cache ./prednet

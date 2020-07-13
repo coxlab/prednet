@@ -362,6 +362,8 @@ test:
   # check-manifest, used in tox -e check, requires git,
   # so we need to either use an image that includes git or
   # apk add git here.
+  - cat /etc/apt/sources.list
+  - ls /etc/apt/sources.list.d
   - add-apt-repository --remove 'https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64  Release'
   - add-apt-repository --remove 'https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64  Release'
   - apk add git || (apt-get update && apt-get install --assume-yes git)

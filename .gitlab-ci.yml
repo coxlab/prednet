@@ -309,7 +309,7 @@ get-latest-git-version:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD | base64)\"}}}" > /kaniko/.docker/config.json
     # --build-arg HTTP_PROXY=$http_proxy is needed for e.g. apk add, when we fetch http://dl-cdn.alpinelinux.org/alpine/v3.12/main/x86_64/APKINDEX.tar.gz
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --build-arg HTTP_PROXY=$http_proxy --build-arg HTTPS_PROXY=$https_proxy --build-arg BASE_IMAGE=tensorflow/tensorflow:1.15.0-gpu-py3-jupyter $FORMATTEDTAGLIST $IMAGE_LABELS
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --build-arg HTTP_PROXY=$http_proxy --build-arg HTTPS_PROXY=$https_proxy --build-arg NO_PROXY=$no_proxy --build-arg BASE_IMAGE=tensorflow/tensorflow:1.15.0-gpu-py3-jupyter $FORMATTEDTAGLIST $IMAGE_LABELS
 
 
 

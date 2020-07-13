@@ -1,6 +1,7 @@
 ARG BASE_IMAGE
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
+ARG NO_PROXY
 FROM $BASE_IMAGE
 
 # Using the tensorflow base image, the current directory is /tf.
@@ -14,6 +15,7 @@ COPY ./src/prednet/tests/resources/ ./test_videos
 
 ENV http_proxy=$HTTP_PROXY
 ENV https_proxy=$HTTPS_PROXY
+ENV no_proxy=$NO_PROXY
 
 RUN pip uninstall --yes enum34
 RUN pip install --no-cache ./prednet

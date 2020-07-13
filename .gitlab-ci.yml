@@ -379,6 +379,7 @@ test:
   # - pip uninstall --yes enum34
   # - pip uninstall --yes prednet || echo "PredNet is not installed."
   # - pip install .
+  - pip install pygments
   - pip install tox
   - git --version
   - python --version

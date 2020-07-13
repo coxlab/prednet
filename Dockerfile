@@ -18,6 +18,16 @@ ENV https_proxy=$HTTPS_PROXY
 ENV no_proxy=$NO_PROXY
 
 RUN pip uninstall --yes enum34
+RUN cat /etc/apt/sources.list \
+    && ls /etc/apt/sources.list.d \
+    && add-apt-repository --remove 'https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64  Release' \
+    && add-apt-repository --remove 'https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64  Release' \
+    && add-apt-repository --remove cuda.list \
+    && add-apt-repository --remove nvidia-ml.list \
+    && rm /etc/apt/sources.list.d/nvidia-ml.list \
+    && rm /etc/apt/sources.list.d/cuda.list \
+    && add-apt-repository ppa:jonathonf/ffmpeg-4
+    && apt-get update && apt-get install --assume-yes ffmpeg
 RUN pip install --no-cache ./prednet
 
 RUN mkdir ./video_files

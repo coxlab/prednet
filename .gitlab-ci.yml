@@ -368,6 +368,8 @@ test:
   - add-apt-repository --remove 'https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64  Release'
   - add-apt-repository --remove cuda.list
   - add-apt-repository --remove nvidia-ml.list
+  - rm /etc/apt/sources.list.d/nvidia-ml.list
+  - rm /etc/apt/sources.list.d/cuda.list
   - apk add git || (apt-get update && apt-get install --assume-yes git)
   # If using an image that does not include tox, we will
   # need to pip install tox here.

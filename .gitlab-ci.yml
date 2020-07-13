@@ -362,6 +362,7 @@ test:
   # check-manifest, used in tox -e check, requires git,
   # so we need to either use an image that includes git or
   # apk add git here.
+  - apk add git || apt-get install --assume-yes git
   # If using an image that does not include tox, we will
   # need to pip install tox here.
   # With --sitepackages, we can save time by installing once

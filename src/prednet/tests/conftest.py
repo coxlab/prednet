@@ -1,3 +1,4 @@
+import pytest
 import tensorflow.compat.v1
 
 @pytest.fixture(scope="session", autouse=True)

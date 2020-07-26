@@ -54,6 +54,8 @@ jupyterParser.add_argument('--jupyter-lab-arguments', nargs=argparse.REMAINDER,
 
 
 def main(args=None):
+    import tensorflow.compat.v1
+    tensorflow.compat.v1.disable_v2_behavior()
     args = parser.parse_args(args=args)
     if args.subparser_name == 'jupyter': assert 'paths_to_videos' not in vars(args)
     if 'paths_to_videos' in vars(args) and len(args.paths_to_videos) != 1 and not args.model_file:

@@ -82,6 +82,7 @@ setup(
         'requests',
         'bs4',
         'imageio',
+        'imageio-ffmpeg',
         'scipy>=1.2.0',
         'pillow',
         # 'scikit-video @ git+https://github.com/dHannasch/scikit-video.git@branch-to-install',

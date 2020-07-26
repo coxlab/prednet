@@ -90,7 +90,7 @@ def train_on_single_video(path_to_video,
         json_string = f.read()
       model = keras.models.model_from_json(json_string, custom_objects = {'PredNet': prednet.prednet.PredNet})
       model.load_weights(path_to_save_weights_hdf5)
-      model.save(path_to_save_model_file)
+      model.save(path_to_save_model_file, save_format='h5')
     return
 
   try:
@@ -242,7 +242,7 @@ Epoch 4/8
       if model_path:
         if os.path.dirname(path_to_save_model_json) != '':
           os.makedirs(os.path.dirname(model_path), exist_ok=True)
-        model.save(model_path)
+        model.save(model_path, save_format='h5')
       if os.path.dirname(path_to_save_model_json) != '' and not os.path.exists(os.path.dirname(path_to_save_model_json)):
         os.makedirs(os.path.dirname(path_to_save_model_json), exist_ok=True)
       json_string = model.to_json()

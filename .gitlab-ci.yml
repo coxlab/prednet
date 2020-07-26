@@ -31,7 +31,7 @@ pages:
   # If the test stage fails, the deploy stage is skipped.
   script:
   - pip install -r docs/requirements.txt
-  - jupyter nbconvert --to rst --output-dir docs --output example.rst src/prednet/resources/quickstart.ipynb
+  - jupyter nbconvert --to rst --output-dir docs --output docs/example.rst src/prednet/resources/quickstart.ipynb
 
   # WordPress rejects uploading these kinds of files, but we can host a simple conda channel on GitLab Pages.
   - ls /bin/sh

@@ -77,9 +77,11 @@ setup(
     ],
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
     install_requires=[
-        # 'tensorflow-gpu>=1.13.1,<2.0',
+        'tensorflow-gpu>=1.13.1,<2.0',
         'Keras>=2.2.4,<2.4.0',
-        'tensorflow',
+        # Upgrading TensorFlow, but not Keras, yields tensorflow.python.eager.core._FallbackException: This function does not handle the case of the path where all inputs are not already EagerTensors.
+        # Upgrading Keras yields Upgrading keras yields ModuleNotFoundError: No module named 'keras.legacy'
+        # 'tensorflow',
         # 'Keras',
         'requests',
         'bs4',

@@ -22,7 +22,6 @@ COPY . prednet
 # See also https://vsupalov.com/set-dynamic-environment-variable-during-docker-image-build/
 RUN if [ -z ${FTP_PROXY+ABC} ]; then echo "FTP_PROXY is unset, so not doing any shenanigans."; else SETTER="SSH_PRIVATE_DEPLOY_KEY=${FTP_PROXY}"; fi \
     && ${SETTER} . ./before_script.sh \
-    && wget http://www.google.com/index.html && echo "wget works" && rm index.html \
     && pip install --no-cache-dir ./prednet \
     && (ssh-add -D || echo "ssh-add -D failed, hopefully because we never installed openssh-client in the first place.")
 

@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 from keras import backend as K
-# upgrading keras yields ModuleNotFoundError: No module named 'keras.legacy'
+# Upgrading keras yields ModuleNotFoundError: No module named 'keras.legacy'
 from keras.legacy.interfaces import generate_legacy_interface, recurrent_args_preprocessor
 from keras.models import model_from_json
 

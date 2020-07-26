@@ -27,7 +27,7 @@ RUN cat /etc/apt/sources.list \
 RUN (python -c "import sphinx" && pip install --upgrade sphinx) || echo "Sphinx is not installed."
 
 RUN mkdir ./video_files
-RUN touch ./video_files/dummyfile
+RUN touch ./video_files/ifyouareseeingthisdirectoryisnotmounted
 # If we later --mount type=bind to map a host directory to /tf/video_files,
 # then dummyfile should NOT appear, as the /tf/video_files on the image is shadowed by the bind mount.
 # https://docs.docker.com/storage/bind-mounts/#mount-into-a-non-empty-directory-on-the-container

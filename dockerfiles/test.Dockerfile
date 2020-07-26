@@ -8,6 +8,11 @@ ARG BASE_IMAGE=dahanna/python-alpine-package:alpine-python3-dev-git
 FROM $BASE_IMAGE
 ARG ETC_ENVIRONMENT_LOCATION
 
+# Using the tensorflow base image, the current directory is /tf.
+# That is where Jupyter will open.
+# Jupyter will display it as simply / ,
+# but checking the current working directory in code will confirm it is /tf.
+
 COPY dockerfiles/before_script.sh .
 
 # .dockerignore keeps .tox and so forth out of the COPY.
@@ -25,14 +30,13 @@ RUN if [ -z ${FTP_PROXY+ABC} ]; then echo "FTP_PROXY is unset, so not doing any 
     && pip install --no-cache-dir ./prednet \
     && (ssh-add -D || echo "ssh-add -D failed, hopefully because we never installed openssh-client in the first place.")
 
-# Ideally we want assembler.py to insert appropriate EXPOSE instructions for any ports,
-# such as port 8888 for Jupyter or port 8050 for Plotly Dash.
-# However, unless you're having containers talk to other containers,
-# EXPOSE does not technically do anything you care about;
-# docker run --publish does all the heavy lifting.
-# https://www.ctl.io/developers/blog/post/docker-networking-rules
-# https://we-are.bookmyshow.com/understanding-expose-in-dockerfile-266938b6a33d
-# https://docs.docker.com/engine/reference/builder/#expose
+RUN mkdir ./video_files
+RUN touch ./video_files/ifyouareseeingthisdirectoryisnotmounted
+# If we later --mount type=bind to map a host directory to /tf/video_files,
+# then dummyfile should NOT appear, as the /tf/video_files on the image is shadowed by the bind mount.
+# https://docs.docker.com/storage/bind-mounts/#mount-into-a-non-empty-directory-on-the-container
+VOLUME /video_files
+# If any build steps change the data within the volume after it has been declared, those changes will be discarded.
 
 CMD ["python", "-m", "prednet"]
 

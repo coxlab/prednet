@@ -47,6 +47,7 @@ def exec_in_env():
     print("+ exec", python_executable, __file__, "--no-env")
     os.execv(python_executable, [python_executable, __file__, "--no-env"])
 
+
 def main():
     import jinja2
 
@@ -86,4 +87,3 @@ if __name__ == "__main__":
     else:
         print("Unexpected arguments {0}".format(args), file=sys.stderr)
         sys.exit(1)
-

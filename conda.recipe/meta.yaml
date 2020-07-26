@@ -1,0 +1,73 @@
+
+
+
+
+{% set setup_py_data = load_setup_py_data() %}
+
+package:
+  name: prednet
+  
+  version: {{ setup_py_data['get_version_for_conda_meta_yaml']() }}
+
+source:
+  path: ..
+
+build:
+  # If the installation is complex, or different between Unix and Windows, use
+  # separate bld.bat and build.sh files instead of this key.  Add the line
+  # "skip: True  # [py<35]" (for example) to limit to Python 3.5 and newer, or
+  # "skip: True  # [not win]" to limit to Windows.
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
+  # "If you run pip install without the --no-deps option, pip will often install dependencies in your conda recipe and those dependencies will become part of your package. This wastes space in the package and increases the risk of file overlap, file clobbering, and broken packages."
+  entry_points:
+    {% for entry in setup_py_data['entry_points']['console_scripts'] %}
+      - {{ entry.split('=')[0].strip() }} = {{ entry.split('=')[1].strip() }}
+    {% endfor %}
+  
+
+requirements:
+  # https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#requirements
+  # https://github.com/conda/conda-build/issues/2286
+  # you can't add channels in the meta.yaml file.  You can, however add them to condarc, and conda-build will respect that
+  # Conda 4.4 adds some very nice ways of specifying channel on a per-package basis, and conda-build will add support for those specs in meta.yaml sometime soon.
+  # https://github.com/conda/conda-build/issues/532
+  # if you need compilers, uncomment these
+  #    read more at https://docs.conda.io/projects/conda-build/en/latest/resources/compiler-tools.html
+  # build:
+  #   - {{ compilers('c') }}
+  host:
+    - python
+    - pip
+  # setuptools_scm must be in the host section, not in the build section.
+  # If setuptools_scm is not in the host section, conda build will fail with ERROR Could not find a version that satisfies the requirement setuptools_scm>=3.3.1 (from versions none)
+    - setuptools_scm>=3.3.1
+  # pytest-runner must be in the host section, not in the run section.
+  # If pytest-runner is not in the host section, conda build will fail with ERROR Could not find a version that satisfies the requirement pytest-runner (from versions none)
+    - pytest-runner
+  run:
+    - python
+    # dependencies are defined in setup.py
+    {% for dep in setup_py_data['install_requires'] %}
+    - {{ dep }}
+    {% endfor %}
+    {# raw is for ignoring templating with cookiecutter, leaving it for use with conda-build #}
+
+test:
+  source_files:
+    - tests
+  requires:
+    - pytest
+    - pytest-cov
+  commands:
+    - pytest tests
+
+# If editing this file, beware that conda build can produce some inscrutable errors.
+# For example, if you replace setup_py_data.get('license') with setup_py.get('license')
+# (representing a misspelling of a variable name you might want to add),
+# conda buidl will vomit forth TypeError: 'NoneType' object is not callable,
+# with no hint as to what NoneType object is being called or where or when or why.
+about:
+  home: https://github.com/coxlab/prednet
+  summary: Code and models accompanying Deep Predictive Coding Networks for Video Prediction and Unsupervised Learning by Bill Lotter, Gabriel Kreiman, and David Cox. The PredNet is a deep recurrent convolutional neural network that is inspired by the neuroscience concept of predictive coding (Rao and Ballard, 1999; Friston, 2005).
+  license: {{ setup_py_data.get('license') }}
+  license_file: LICENSE

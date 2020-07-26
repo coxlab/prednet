@@ -1,7 +1,6 @@
 version: '{branch}-{build}'
 build: off
 environment:
-  global:
   matrix:
     - TOXENV: check
       TOXPYTHON: C:\Python36\python.exe

@@ -2,6 +2,7 @@ import numpy as np
 
 from keras import backend as K
 from keras import activations
+# upgrading keras yields ImportError: cannot import name 'Recurrent' from 'keras.layers'
 from keras.layers import Recurrent
 from keras.layers import Conv2D, UpSampling2D, MaxPooling2D
 from keras.engine import InputSpec

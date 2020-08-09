@@ -162,7 +162,7 @@ default:
     # But setting REQUESTS_CA_BUNDLE to that PEM will cause other links to fail,
     # because the runner will only accept that PEM, not the defaults.
     # Therefore you will usually want to bundle all certificates together with
-    - python --version
+    - echo "python calls $(python --version)"
     # cat `python -c "import requests; print(requests.certs.where())"` ~/your.pem > ~/bundled.pem
     # pip uses requests, but not the normal requests.
     # pip uses a vendored version of requests, so that pip will still work if anything goes wrong with your requests installation.

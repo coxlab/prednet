@@ -56,8 +56,8 @@ echo "$PROXY_CA_PEM" > tmp-proxy-ca.pem
 PROXY_CA_PEM=tmp-proxy-ca.pem ; fi
 if command -v python; then
 python --version
-echo -e "import contextlib\nwith contextlib.suppress(AttributeError): import pip._vendor.requests\nfrom pip._vendor.requests.certs import where\nprint(where())" | python
-cat `echo -e "import contextlib\nwith contextlib.suppress(AttributeError): import pip._vendor.requests\nfrom pip._vendor.requests.certs import where\nprint(where())" | python` $PROXY_CA_PEM > bundled.pem
+python -c "import contextlib; contextManager = contextlib.suppress(AttributeError); contextManager.__enter__(); import pip._vendor.requests; contextManager.__exit__(None,None,None); from pip._vendor.requests.certs import where; print(where())"
+cat $(python -c "import contextlib; contextManager = contextlib.suppress(AttributeError); contextManager.__enter__(); import pip._vendor.requests; contextManager.__exit__(None,None,None); from pip._vendor.requests.certs import where; print(where())") ${PROXY_CA_PEM} > bundled.pem
 ls bundled.pem
 export REQUESTS_CA_BUNDLE="${PWD}/bundled.pem"
 echo "REQUESTS_CA_BUNDLE found at $(ls $REQUESTS_CA_BUNDLE)"

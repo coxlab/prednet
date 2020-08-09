@@ -172,6 +172,7 @@ default:
     # But that causes parsing of .gitlab-ci.yml to fail with "before_script config should be an array of strings",
     # so we need to wrap the entire line in ''.
     # https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/5481
+    - echo "About to try to retrieve the pip certificate bundle and merge it with the provided cert."
     - 'echo -e "import contextlib\nwith contextlib.suppress(AttributeError): import pip._vendor.requests\nfrom pip._vendor.requests.certs import where\nprint(where())" | python'
     - 'cat `echo -e "import contextlib\nwith contextlib.suppress(AttributeError): import pip._vendor.requests\nfrom pip._vendor.requests.certs import where\nprint(where())" | python` $PROXY_CA_PEM > bundled.pem'
     - ls bundled.pem

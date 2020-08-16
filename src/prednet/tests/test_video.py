@@ -95,6 +95,7 @@ def test_moving_dot(capsys):
             nt=None,
             model_file_path=prednet.train.default_path_to_save_model(filepath),
             )
+  prednet.evaluate.HTML_viewer(prednet.evaluate.default_prediction_filepath(filepath))
   predicted = prednet.evaluate.get_predicted_frames_for_single_video(filepath,
             nt=None,
             model_file_path=prednet.train.default_path_to_save_model(filepath),

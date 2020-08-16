@@ -85,6 +85,7 @@ setup(
         # 'Keras',
         'requests',
         'bs4',
+        'jinja2',
         'imageio',
         'imageio-ffmpeg',
         'scipy>=1.2.0',

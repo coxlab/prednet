@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+ <video controls>
+  <!-- https://www.w3schools.com/html/html5_video.asp -->
+  <!-- The only formats supported in-browser are .mp4, .ogg, and .webm. The type for the HTML tag is the same as the file extension in each case. -->
+  <source src="{{ path_to_video }}" type="video/{{ video_type }}">
+  If you are seeing this, your browser does not support the video tag.
+ </video>
+</body>
+</html>

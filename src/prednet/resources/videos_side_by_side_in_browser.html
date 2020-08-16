@@ -1,0 +1,43 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    .column {
+      float: left;
+      width: 50%%;
+      padding: 5px;
+      height: 300px;
+    }
+
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+ 
+    @media screen and (max-width: 600px) {
+      .column {
+        width: 100%%;
+      }
+    }
+    </style>
+</head>
+<body>
+    <div class="row">
+      <div class="column">
+        <video width="50%%" controls>
+          <source src="{{ video_file_path_1 }}" type="video/mp4">
+        </video>
+      </div>
+      <div class="column">
+        <video width="50%%" controls>
+          <source src="{{ video_file_path_1 }}" type="video/mp4">
+        </video>
+      </div>
+    </div>
+</body>
+</html>

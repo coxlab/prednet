@@ -17,6 +17,8 @@ import matplotlib.gridspec as gridspec
 
 from PIL import Image, ImageChops
 import ffmpeg
+import jinja2
+import importlib.resources
 
 from keras import backend as K
 from keras.models import Model, model_from_json
@@ -26,6 +28,7 @@ from keras.layers import Input, Dense, Flatten
 from prednet.prednet import PredNet
 from prednet.data_utils import SequenceGenerator
 import prednet.train
+import prednet.resources
 
 
 def ImageChops_on_ndarrays(distortedFrame, pristineFrame):
@@ -235,6 +238,13 @@ def save_predicted_frames_for_video_list(paths_to_videos,
     save_predicted_frames_for_single_video(path_to_video, model_file_path=model_file_path,
                                            number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, nt=nt,
                                            path_to_save_predicted_frames=path_to_save_predicted_frames)
+
+
+def HTML_viewer(path_to_video: str, video_type: str = None):
+  if video_type is None:
+    video_type = os.path.splitext(path_to_video)[1]
+  HTMLtemplate = jinja2.Template(importlib.resources.read_text(prednet.resources, 'video_in_browser.html'))
+  return HTMLtemplate.render(path_to_video=path_to_video, video_type=video_type)
 
 
 def frame_sequence_shape_required_by_trained_model(trained_model: keras.models.Model) -> typing.Tuple[int, int, int, int]:

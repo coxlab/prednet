@@ -39,7 +39,7 @@
       #Reformat Docker tags to kaniko's --destination argument:
     - FORMATTEDTAGLIST=$(echo "${FORMATTEDTAGLIST}" | sed s/\-\-tag/\-\-destination/g)
 
-    - BUILD_ARGS="$BUILD_ARGS --build-arg BASE_IMAGE=dahanna/python:3.6-tensorflow-1.15-ffmpeg-jupyter"
+    - BUILD_ARGS="$BUILD_ARGS --build-arg BASE_IMAGE=dahanna/python:3.6-tensorflow-1.15-ffmpeg"
     # For cleanliness, we would prefer to leave build-args *unset* if they are unset here.
     # Thus, we don't want to unconditionally pass --build-arg ETC_ENVIRONMENT_LOCATION=$ETC_ENVIRONMENT_LOCATION,
     # as that would set ETC_ENVIRONMENT_LOCATION to an empty string if ETC_ENVIRONMENT_LOCATION were unset here.

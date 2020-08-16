@@ -2,7 +2,7 @@
 import os
 import pytest
 
-@pytest.mark.skipif('PREDNET_TESTS_INSIST_GPU' not in os.environ)
+@pytest.mark.skipif('PREDNET_TESTS_INSIST_GPU' not in os.environ, reason='The test suite might be run on a machine that truly does not have a GPU, so this test is only run if specifically asked for.')
 def test_gpu():
   """
   This is primarily useful for testing that the Docker image is properly built to access a GPU,

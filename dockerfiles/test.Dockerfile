@@ -30,8 +30,8 @@ RUN if [ -z ${FTP_PROXY+ABC} ]; then echo "FTP_PROXY is unset, so not doing any 
     && pip install --no-cache-dir ./prednet \
     && (ssh-add -D || echo "ssh-add -D failed, hopefully because we never installed openssh-client in the first place.")
 
-RUN mkdir ./video_files
-RUN touch ./video_files/ifyouareseeingthisdirectoryisnotmounted
+RUN mkdir ./video_files \
+    && touch ./video_files/ifyouareseeingthisdirectoryisnotmounted
 # If we later --mount type=bind to map a host directory to /tf/video_files,
 # then dummyfile should NOT appear, as the /tf/video_files on the image is shadowed by the bind mount.
 # https://docs.docker.com/storage/bind-mounts/#mount-into-a-non-empty-directory-on-the-container

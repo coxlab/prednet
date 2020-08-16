@@ -108,11 +108,12 @@ def train_on_single_video(path_to_video,
       # (width, height)
       # make_reduced_video(path_to_video, (newWidth, newHeight))
   else:
-    print(json, '= ffmpeg.probe({})'.format(path_to_video))
+    pass
+    # print(json, '= ffmpeg.probe({})'.format(path_to_video))
 
-  print('train_on_single_video about to call skvideo.io.vread')
+  # print('train_on_single_video about to call skvideo.io.vread')
   array = skvideo.io.vread(path_to_video)
-  print('train_on_single_video returned from skvideo.io.vread')
+  # print('train_on_single_video returned from skvideo.io.vread')
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]
   numberOfFrames = array.shape[0]
@@ -143,6 +144,9 @@ def train_on_video_list(paths_to_videos,
                         path_to_save_model_file,
                         number_of_epochs=150, steps_per_epoch=125,
                         *args, **kwargs):
+  """
+  train_on_video_list is literally just a convenience function that calls train_on_single_video in a loop.
+  """
   for path_to_video in paths_to_videos:
     train_on_single_path(path_to_video, path_to_save_model_file=path_to_save_model_file,
                          number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
@@ -229,7 +233,7 @@ Epoch 4/8
   if save_model:
       if os.path.dirname(path_to_save_weights_hdf5) != '' and not os.path.exists(os.path.dirname(path_to_save_weights_hdf5)):
         os.makedirs(os.path.dirname(path_to_save_weights_hdf5), exist_ok=True)
-      print('Setting keras.callbacks.ModelCheckpoint for', path_to_save_weights_hdf5)
+      # print('Setting keras.callbacks.ModelCheckpoint for', path_to_save_weights_hdf5)
       callbacks.append(keras.callbacks.ModelCheckpoint(filepath=path_to_save_weights_hdf5,
                                                        monitor='val_loss', save_best_only=True))
   else:

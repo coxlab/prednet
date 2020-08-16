@@ -124,8 +124,8 @@ def get_predicted_frames_for_single_video(path_to_video,
   # path_to_scaled_video = prednet.train.make_reduced_video(path_to_video, frameShape)
 
   array = skvideo.io.vread(path_to_video)
-  print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',
-        resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+  # print('get_predicted_frames_for_single_video returned from skvideo.io.vread, memory usage',
+  #       resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
   assert array.dtype == np.uint8
   source_list = [path_to_video for frame in array]
   assert len(source_list) == array.shape[0]

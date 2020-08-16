@@ -39,8 +39,14 @@ VOLUME /video_files
 # If any build steps change the data within the volume after it has been declared, those changes will be discarded.
 
 RUN echo "import tensorflow" \
-    && python -c "import tensorflow as tf; print('asserting CUDA'); assert tf.test.is_built_with_cuda();" \
-    && python -c "import tensorflow as tf; tf.test.is_gpu_available() or print('TensorFlow cannot find a GPU. If the builder machine does not make a GPU available, then this is nothing to worry about.')"
+    && python -c "import tensorflow as tf; print('asserting CUDA'); assert tf.test.is_built_with_cuda();"
+# is_built_with_cuda() is not enough; things can go wrong where is_built_with_cuda() is True yet
+# the Docker image cannot actually access GPUs later.
+# Unfortunately, depending on how the Docker image is built, it can later fail to access the GPU.
+# Ideally we would immediately test accessing the GPU immediately as part of the build process.
+# Unfortunately, even if the gitlab-runner is set up to pass-through GPU requests,
+# the kaniko builder is not.
+# So we have to test later after the Docker image is built.
 
 CMD ["python", "-m", "prednet"]
 

@@ -1,5 +1,6 @@
 
 import os
+import pytest
 
 @pytest.mark.skipif('PREDNET_TESTS_INSIST_GPU' not in os.environ)
 def test_gpu():

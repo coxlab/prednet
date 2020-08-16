@@ -148,6 +148,18 @@ class StubCapSys:
     import contextlib
     return contextlib.suppress(*[])
 
+import sys
+import traceback
+
+class TracePrints(object):
+  def __init__(self):
+    self.stdout = sys.stdout
+  def write(self, s):
+    self.stdout.write("TracePrints writing %r\n" % s)
+    traceback.print_stack(file=self.stdout)
+  def flush(self):
+    self.stdout.flush()
+
 if __name__ == "__main__":
   """
   If having GPU problems, try running with CUDA_VISIBLE_DEVICES= to run on CPU.
@@ -160,5 +172,6 @@ if __name__ == "__main__":
   # signal.signal(signal.SIGINT, print_linenum)
   # test_load_video()
   # test_black(StubCapSys())
+  # sys.stdout = TracePrints()
   test_moving_dot(StubCapSys())
 

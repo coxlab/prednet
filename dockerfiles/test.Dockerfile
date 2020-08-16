@@ -38,5 +38,9 @@ RUN touch ./video_files/ifyouareseeingthisdirectoryisnotmounted
 VOLUME /video_files
 # If any build steps change the data within the volume after it has been declared, those changes will be discarded.
 
+RUN echo "import tensorflow" \
+    && python -c "import tensorflow as tf; print('asserting CUDA'); assert tf.test.is_built_with_cuda();" \
+    && python -c "import tensorflow as tf; tf.test.is_gpu_available() or print('TensorFlow cannot find a GPU. If the builder machine does not make a GPU available, then this is nothing to worry about.')"
+
 CMD ["python", "-m", "prednet"]
 

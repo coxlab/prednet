@@ -27,20 +27,34 @@ class SequenceGenerator(Iterator):
                  output_mode='error', sequence_start_mode='all',
                  max_num_sequences=None,
                  data_format=K.image_data_format()):
-        try:
-            self.X = hkl.load(data_file)  # X will be like (n_images, nb_cols, nb_rows, nb_channels)
-        except (hkl.hickle.FileError, ValueError):
-            assert isinstance(data_file, np.ndarray)
-            assert data_file.dtype == np.uint8
+        # Since data_file might be a file object or a string for hkl.load(),
+        # it might seem simplest to try hkl.load() first.
+        # However, hickle has an annoying habit of printing out
+        # "<class 'numpy.ndarray'>" for data_file and and "<class 'list'>" for source_file.
+        # File site-packages/hickle/hickle.py line 193, in file_opener
+        # print(f.__class__)
+        # We can give a better treatment here if we figure out more precisely
+        # what the requirements are on the types of data_file and source_file.
+        if isinstance(data_file, np.ndarray) and data_file.dtype == np.uint8:
             self.X = data_file
+        else:
+            try:
+                self.X = hkl.load(data_file)  # X will be like (n_images, nb_cols, nb_rows, nb_channels)
+            except (hkl.hickle.FileError, ValueError):
+                assert isinstance(data_file, np.ndarray)
+                assert data_file.dtype == np.uint8
+                self.X = data_file
         if self.X.shape[0] < sequence_length:
             # If sequence_length > X.shape[0], the generator will generate zero items. That is almost certainly not what the user intended.
             raise ValueError(self.X.shape[0], sequence_length)
-        try:
-            self.sources = hkl.load(source_file) # source for each image so when creating sequences can assure that consecutive frames are from same video
-        except (hkl.hickle.FileError, ValueError):
-            assert isinstance(source_file, list)
+        if isinstance(source_file, list):
             self.sources = source_file
+        else:
+            try:
+                self.sources = hkl.load(source_file) # source for each image so when creating sequences can assure that consecutive frames are from same video
+            except (hkl.hickle.FileError, ValueError):
+                assert isinstance(source_file, list)
+                self.sources = source_file
         self.sequence_length = sequence_length
         self.batch_size = batch_size
         self.data_format = data_format

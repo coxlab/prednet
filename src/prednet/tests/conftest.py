@@ -15,7 +15,15 @@ class TracePrints(object):
     self.stdout.write("Writing %r\n" % s)
     traceback.print_stack(file=self.stdout)
 
+class TraceErr(object):
+  def __init__(self):
+    self.stderr = sys.stderr
+  def write(self, s):
+    self.stderr.write("Writing %r\n" % s)
+    traceback.print_stack(file=self.stderr)
+
 @pytest.fixture(scope="session", autouse=True)
 def trace_prints():
     sys.stdout = TracePrints()
+    sys.stderr = TraceErr()
 

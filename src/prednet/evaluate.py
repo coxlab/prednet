@@ -6,7 +6,7 @@ import os
 import resource
 import numpy as np
 import skvideo.io
-# import imageio
+import imageio
 from prednet import view_diff
 from prednet.diffs import mse
 from six.moves import cPickle
@@ -219,13 +219,12 @@ def save_predicted_frames_for_single_video(path_to_video,
     skvideo.io.vwrite(path_to_save_predicted_frames, predictedFrames)
   # raise Exception(path_to_save_predicted_frames, predictedFrames.shape)
   comparisonFrames = view_diff.make_comparison_video(skvideo.io.vread(path_to_video), predictedFrames, ImageChops_on_ndarrays, mse.mse_rgb)
-  skvideo.io.vwrite(path_to_save_comparison_video, comparisonFrames)
+  # skvideo.io.vwrite(path_to_save_comparison_video, comparisonFrames)
   # For some unknown reason, the video is failing to display in a browser
   # when written with skvideo.io.vwrite but works fine with imageio.mimwrite,
   # although skvideo.io.vwrite works fine outside the browser.
   # Something to do with mp4, perhaps?
-  # imageio.mimwrite(path_to_save_comparison_video, comparisonFrames, fps=20)
-  # skvideo.io.vwrite seems to be working now.
+  imageio.mimwrite(path_to_save_comparison_video, comparisonFrames, fps=20)
 
   return comparisonFrames
 

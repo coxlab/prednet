@@ -75,6 +75,14 @@ def make_comparison_image(image: np.ndarray, referenceImage: np.ndarray,
     upperMiddleAx.margins(0)
     # upperMiddleAx.set_title('difference')
     upperMiddleAx.imshow(differenceImgFunc(image, referenceImage))
+    for ax in (upperLeftAx, upperMiddleAx):
+        # https://matplotlib.org/api/axes_api.html#ticks-and-tick-labels
+        ax.tick_params(axis='x',  # changes apply to the x-axis
+            which='both',         # both major and minor ticks are affected
+            bottom=False, top=False, labelbottom=False)
+        ax.tick_params(axis='y',  # changes apply to the x-axis
+            which='both',         # both major and minor ticks are affected
+            bottom=False, top=False, labelbottom=False)
     if numericalDifferenceVector is not None:
         bottomAx = figure.add_subplot(gridspec[1,:])
         bottomAx.margins(0)
@@ -82,6 +90,9 @@ def make_comparison_image(image: np.ndarray, referenceImage: np.ndarray,
         bottomAx.plot(numericalDifferenceVector)
         if frameIndex is not None:
             bottomAx.plot(frameIndex, numericalDifferenceVector[frameIndex], 'ro')
+        bottomAx.tick_params(axis='y',  # changes apply to the x-axis
+            which='both',               # both major and minor ticks are affected
+            bottom=False, top=False, labelbottom=False)
     data = fig2data_alt(figure)
     plt.close(figure)
     return data

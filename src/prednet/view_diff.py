@@ -93,6 +93,9 @@ def make_comparison_image(image: np.ndarray, referenceImage: np.ndarray,
         bottomAx.tick_params(axis='y',  # changes apply to the x-axis
             which='both',               # both major and minor ticks are affected
             bottom=False, top=False, labelbottom=False)
+        bottomAx.tick_params(axis='x',  # changes apply to the x-axis
+            which='both',               # both major and minor ticks are affected
+            bottom=False, top=False, labelbottom=False)
     data = fig2data_alt(figure)
     plt.close(figure)
     return data

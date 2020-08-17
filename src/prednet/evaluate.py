@@ -22,6 +22,7 @@ try:
   import importlib.resources
 except ImportError:
   import pkg_resources
+  import importlib
   importlib.resources = None
 
 from keras import backend as K

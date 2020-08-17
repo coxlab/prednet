@@ -158,13 +158,16 @@ def make_comparison_video(video: np.ndarray, referenceVideo: np.ndarray,
         If the current frame is highlighted with a red dot, then C will be 3 even if the original images are grayscale.
     """
     assert video.shape == referenceVideo.shape
+    assert video.dtype == referenceVideo.dtype
     differenceVector = numericalDifferenceFunc(referenceVideo, video)
     assert len(differenceVector.shape) == 1
     assert differenceVector.shape[0] == video.shape[0]
     numberOfFrames = video.shape[0]
-    compositeVideo = np.empty((numberOfFrames,) + combined_frame_shape(video[0], referenceVideo[0], differenceImgFunc, differenceVector, 0))
+    compositeVideo = np.empty((numberOfFrames,) + combined_frame_shape(video[0], referenceVideo[0], differenceImgFunc, differenceVector, 0), dtype=video.dtype)
     for frameIndex, (pristineFrame, distortedFrame) in enumerate(zip(referenceVideo, video)):
-        compositeVideo[frameIndex, :] = make_comparison_image(distortedFrame, pristineFrame, differenceImgFunc, differenceVector, frameIndex)
+        comparisonImage = make_comparison_image(distortedFrame, pristineFrame, differenceImgFunc, differenceVector, frameIndex)
+        assert comparisonImage.dtype == video.dtype
+        compositeVideo[frameIndex, :] = comparisonImage
     return compositeVideo
 
 

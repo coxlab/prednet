@@ -86,6 +86,7 @@ setup(
         'requests',
         'bs4',
         'jinja2',
+        'importlib_resources;python_version<"3.7"',
         'imageio',
         'imageio-ffmpeg',
         'scipy>=1.2.0',

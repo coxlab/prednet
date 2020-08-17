@@ -90,10 +90,10 @@ def make_comparison_image(image: np.ndarray, referenceImage: np.ndarray,
         bottomAx.plot(numericalDifferenceVector)
         if frameIndex is not None:
             bottomAx.plot(frameIndex, numericalDifferenceVector[frameIndex], 'ro')
-        bottomAx.tick_params(axis='y',  # changes apply to the x-axis
+        bottomAx.tick_params(axis='x',  # changes apply to the x-axis
             which='both',               # both major and minor ticks are affected
             bottom=False, top=False, labelbottom=False)
-        bottomAx.tick_params(axis='x',  # changes apply to the x-axis
+        bottomAx.tick_params(axis='y',  # changes apply to the x-axis
             which='both',               # both major and minor ticks are affected
             left=False, right=False, labelleft=False)
     data = fig2data_alt(figure)

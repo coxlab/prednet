@@ -246,7 +246,7 @@ def save_predicted_frames_for_video_list(paths_to_videos,
 
 def HTML_viewer(path_to_video: str, video_type: str = None):
   if video_type is None:
-    video_type = os.path.splitext(path_to_video)[1]
+    video_type = os.path.splitext(path_to_video)[1][1:]
   templateText = importlibresources.read_text(prednet.resources, 'video_in_browser.html')
   HTMLtemplate = jinja2.Template(templateText)
   return HTMLtemplate.render(path_to_video=path_to_video, video_type=video_type)

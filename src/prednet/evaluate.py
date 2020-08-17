@@ -19,11 +19,10 @@ from PIL import Image, ImageChops
 import ffmpeg
 import jinja2
 try:
-  import importlib.resources
+  import importlib.resources as importlibresources
 except ImportError:
-  import pkg_resources
-  import importlib
-  importlib.resources = None
+  # Try backported to PY<37 `importlib_resources`.
+  import importlib_resources as importlibresources
 
 from keras import backend as K
 from keras.models import Model, model_from_json
@@ -248,10 +247,7 @@ def save_predicted_frames_for_video_list(paths_to_videos,
 def HTML_viewer(path_to_video: str, video_type: str = None):
   if video_type is None:
     video_type = os.path.splitext(path_to_video)[1]
-  if importlib.resources:
-    templateText = importlib.resources.read_text(prednet.resources, 'video_in_browser.html')
-  else:
-    templateText = pkg_resources.resource_string(__name__, os.path.join('resources', 'video_in_browser.html'))
+  templateText = importlibresources.read_text(prednet.resources, 'video_in_browser.html')
   HTMLtemplate = jinja2.Template(templateText)
   return HTMLtemplate.render(path_to_video=path_to_video, video_type=video_type)
 

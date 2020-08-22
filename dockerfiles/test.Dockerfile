@@ -48,5 +48,6 @@ RUN echo "import tensorflow" \
 # the kaniko builder is not.
 # So we have to test later after the Docker image is built.
 
-CMD ["python", "-m", "prednet"]
+# need 0.0.0.0 to avoid OSError: [Errno 99] Cannot assign requested address
+# CMD ["python", "-m", "prednet", "jupyter", "--ip=0.0.0.0"]
 

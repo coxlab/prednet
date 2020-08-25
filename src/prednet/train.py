@@ -245,7 +245,7 @@ Epoch 4/8
 
   if save_model:
       if model_path:
-        if os.path.dirname(path_to_save_model_json) != '':
+        if os.path.dirname(model_path) != '':
           os.makedirs(os.path.dirname(model_path), exist_ok=True)
         model.save(model_path)
         # When we upgrade to TensorFlow 2, this will need to specify HDF5 format: model.save(model_path, save_format='h5')

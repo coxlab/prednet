@@ -1,5 +1,6 @@
 import skvideo.io
 import hickle
+import ffmpeg
 import os.path
 
 
@@ -30,12 +31,13 @@ def load_video(filepath, dirToSaveHKL):
     save_array_as_hickle(array, source_list, dirToSaveHKL)
 
 
-def is_video_file(filepath) -> bool:
+def is_video_file(filepath):
   try:
-    ffmpeg.probe(path_to_video)
+    ffmpeg.probe(filepath)
     return True
-  except:
-    return False
+  except Exception as ex:
+    # exception only ever says "see stderr", but in theory they might improve that
+    return ex
 
 
 def walk_videos(path):
@@ -44,12 +46,14 @@ def walk_videos(path):
   if os.path.isdir(path):
     for root, dirs, files in os.walk(path):
       for filename in files:
-        if is_video_file(os.path.join(root, filename)):
+        trueOrException = is_video_file(os.path.join(root, filename))
+        if trueOrException is True:
           yield os.path.join(root, filename)
   else:
     # os.walk will yield nothing on a plain file,
     # but we want to run on a single video if given one.
-    if not is_video_file(path):
-      raise ValueError(path)
+    trueOrException = is_video_file(path)
+    if trueOrException is not True:
+      raise trueOrException
     yield path
 

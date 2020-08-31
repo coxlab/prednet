@@ -56,8 +56,9 @@ def train_on_single_video(path_to_video,
                           number_of_epochs=150, steps_per_epoch=125,
                           batch_size=4,
                           sequence_length=8,
-                          fraction_to_use_for_validation=0.5,
+                          fraction_to_use_for_validation=0,
                           max_pixels_per_frame=None,
+                          retrain=False,
                           ):
   """
   Picking which frames to use for validation is tricky, because when using sequence_start_mode='all',
@@ -75,12 +76,12 @@ def train_on_single_video(path_to_video,
         file=open(path_to_save_settings, 'w'))
   # Better to check in the evaluate function whether training is already done.
   # If the train function gets a command to re-train (possibly on a new video), then re-train.
-  # if path_to_save_model_file and os.path.exists(path_to_save_model_file):
+  if path_to_save_model_file and os.path.exists(path_to_save_model_file) and not retrain:
     # For this special case, do not re-train if we already have a trained model.
-  #  print('train_on_single_video found', path_to_save_model_file,
-  #        'so just using that instead of re-training.')
-    # Later we should re-train here since we'll be training on multiple videos sequentially.
-  #  return
+    print('train_on_single_video found', path_to_save_model_file,
+          'so just using that instead of re-training.')
+    # Should we enable training on multiple videos sequentially?
+    return
   if os.path.exists(path_to_save_model_json) and os.path.exists(path_to_save_weights_hdf5):
     # For this special case, do not re-train if we already have a trained model.
     print('train_on_single_video found', path_to_save_model_json, 'and', path_to_save_weights_hdf5,
@@ -119,8 +120,11 @@ def train_on_single_video(path_to_video,
   numberOfFrames = array.shape[0]
   number_of_validation_sequences = int(numberOfFrames * fraction_to_use_for_validation / sequence_length)
   numberOfValidationFrames = number_of_validation_sequences * sequence_length
-  return train_on_arrays_and_sources(array[:-numberOfValidationFrames], source_list[:-numberOfValidationFrames],
-                                     array[-numberOfValidationFrames:], source_list[-numberOfValidationFrames:],
+  # numberOfValidationFrames might be zero. array[:-0] is equivalent to array[:0] which is empty.
+  numberOfTrainingFrames = array.shape[0] - numberOfValidationFrames
+  assert numberOfTrainingFrames > 0
+  return train_on_arrays_and_sources(array[:numberOfTrainingFrames], source_list[:numberOfTrainingFrames],
+                                     array[numberOfTrainingFrames:], source_list[numberOfTrainingFrames:],
                                      path_to_save_model_json=path_to_save_model_json,
                                      path_to_save_weights_hdf5=path_to_save_weights_hdf5,
                                      model_path=path_to_save_model_file,
@@ -151,6 +155,23 @@ def train_on_video_list(paths_to_videos,
     train_on_single_path(path_to_video, path_to_save_model_file=path_to_save_model_file,
                          number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
                          *args, **kwargs)
+  foundAvideo = False
+  videos = list()
+  for filepath in prednet.data_input.walk_videos(path):
+    print('PredNet training on', filepath)
+    foundAvideo = True
+    videos.append(skvideo.io.vread(filepath))
+    # train_on_single_video(path, path_to_save_model_file=path_to_save_model_file,
+    #                      number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
+    #                      *args, **kwargs)
+  if not foundAvideo:
+    raise ValueError('No videos found in ' + path)
+  concatenatedVideoPath = os.path.splitext(path_to_save_model_file)[0] + '.mp4'
+  skvideo.io.vwrite(concatenatedVideoPath, np.concatenate(videos))
+  train_on_single_video(concatenatedVideoPath, path_to_save_model_file=path_to_save_model_file,
+                        number_of_epochs=number_of_epochs, steps_per_epoch=steps_per_epoch,
+                        *args, **kwargs)
+  assert os.path.exists(path_to_save_model_file)
 
 
 def make_training_model(nt, frame_shape):
@@ -241,7 +262,10 @@ Epoch 4/8
   
   history = model.fit_generator(train_generator, steps_per_epoch, number_of_epochs,
                                 callbacks=callbacks,
-                  validation_data=val_generator, validation_steps=max_validation_sequences / batch_size)
+                  validation_data=val_generator,
+                  # validation_steps=max_validation_sequences / batch_size,
+                  # just run val_generator to exhaustion, it's already reduced to max_num_sequences
+                  )
 
   if save_model:
       if model_path:

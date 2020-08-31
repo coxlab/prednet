@@ -46,7 +46,9 @@ class SequenceGenerator(Iterator):
                 self.X = data_file
         if self.X.shape[0] < sequence_length:
             # If sequence_length > X.shape[0], the generator will generate zero items. That is almost certainly not what the user intended.
-            raise ValueError(self.X.shape[0], sequence_length)
+            # But we want to allow the validation set to be size zero if we want to just train on everything.
+            pass
+            # raise ValueError(self.X.shape[0], sequence_length)
         if isinstance(source_file, list):
             self.sources = source_file
         else:
@@ -65,7 +67,7 @@ class SequenceGenerator(Iterator):
 
         if self.data_format == 'channels_first':
             self.X = np.transpose(self.X, (0, 3, 1, 2))
-        self.im_shape = self.X[0].shape
+        self.im_shape = self.X.shape[1:]
 
         if self.sequence_start_mode == 'all':  # allow for any possible sequence, starting from any frame
             self.possible_starts = np.array([i for i in range(self.X.shape[0] - self.sequence_length + 1)
@@ -87,7 +89,7 @@ class SequenceGenerator(Iterator):
         if max_num_sequences is not None and len(self.possible_starts) > max_num_sequences:  # select a subset of sequences if want to
             self.possible_starts = self.possible_starts[:max_num_sequences]
         self.N_sequences = len(self.possible_starts)
-        assert self.N_sequences > 0
+        assert self.N_sequences >= 0
         super(SequenceGenerator, self).__init__(len(self.possible_starts), batch_size, shuffle, seed)
 
     # Something seems terribly wrong here. sequenceGenerator[idx] will ignore the index. How is this used?
@@ -168,7 +170,7 @@ class TestsetGenerator(Iterator):
 
         if self.data_format == 'channels_first':
             self.X = np.transpose(self.X, (0, 3, 1, 2))
-        self.im_shape = self.X[0].shape
+        self.im_shape = self.X.shape[1:]
 
         self.possible_starts = [0]
         current_source = self.sources[0]

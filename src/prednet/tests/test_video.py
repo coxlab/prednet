@@ -124,7 +124,7 @@ def test_moving_dot(capsys):
   # assert np.count_nonzero(predicted) == 0 # ???
   # maybe the reduced precision reduces near-zeros to zero
 
-  assert np.mean( (rightToLeftPredicted[:-1] - rightToLeft[1:])**2 ) >= np.mean( (predicted[:-1] - leftToRight[1:])**2 )
+  assert 2*np.mean( (rightToLeftPredicted[:-1] - rightToLeft[1:])**2 ) >= np.mean( (predicted[:-1] - leftToRight[1:])**2 )
 
   """
   with tempfile.TemporaryDirectory() as tempdirpath:

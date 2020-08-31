@@ -1,6 +1,7 @@
 import typing
 
 import numpy as np
+import numpy.linalg as npla
 import matplotlib.pyplot as plt
 
 
@@ -174,6 +175,15 @@ def make_comparison_video(video: np.ndarray, referenceVideo: np.ndarray,
     """
     assert video.shape == referenceVideo.shape
     assert video.dtype == referenceVideo.dtype
+    for i in range(2):
+      # The first few predicted frames are sometimes oddly dark.
+      # Even 28,000 versus 35,000 can completely dominate the mean squared error.
+      # is some lookback window in PredNet getting initialized to zeros when it should be copies of the first frame?
+      if npla.norm(referenceVideo[0]) < npla.norm(video[0])/2 or (npla.norm(video[0]) - npla.norm(referenceVideo[0]) > (npla.norm(video[1]) - npla.norm(referenceVideo[1]))*2):
+        video = video[1:]
+        referenceVideo = referenceVideo[1:]
+      else:
+        break
     differenceVector = numericalDifferenceFunc(referenceVideo, video)
     assert len(differenceVector.shape) == 1
     assert differenceVector.shape[0] == video.shape[0]

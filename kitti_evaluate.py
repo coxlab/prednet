@@ -34,6 +34,7 @@ f = open(json_file, 'r')
 json_string = f.read()
 f.close()
 train_model = model_from_json(json_string, custom_objects = {'PredNet': PredNet})
+print(weights_file)
 train_model.load_weights(weights_file)
 
 # Create testing model (to output predictions)

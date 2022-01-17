@@ -13,3 +13,4 @@ dependencies:
     - tensorflow-gpu==1.2.1
     - hickle==2.1.0
     - matplotlib
+    - scipy==1.1.0

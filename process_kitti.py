@@ -14,12 +14,11 @@ from kitti_settings import *
 
 
 desired_im_sz = (128, 160)
-categories = ['city', 'residential', 'road']
 
 # Recordings used for validation and testing.
 # Were initially chosen randomly such that one of the city recordings was used for validation and one of each category was used for testing.
 val_recordings = []
-categories = ['hermann', 'zollner', 'circle_contour', 'circle_size', 'rec_contour', 'rotation']
+categories = ['hermann', 'zollner', 'circle_contour', 'circle_size', 'rec_contour', 'rotation', 'rotation_color', 'wall']
 test_recordings = [(c, 'id0') for c in categories]
 
 if not os.path.exists(DATA_DIR): os.mkdir(DATA_DIR)
@@ -43,6 +42,7 @@ def my_process_data():
         source_list = []  # corresponds to recording that image came from
         for category, folder in splits[split]:
             im_dir = os.path.join(DATA_DIR, 'raw/', category, folder + '/') # DATA_DIR/raw/hermann/id2/
+            print(im_dir)
             files = list(os.walk(im_dir, topdown=False))[-1][-1]
             im_list += [im_dir + f for f in sorted(files)]
             source_list += [category + '-' + folder] * len(files) # for example source[i] = ['hermann-id2', 'hermann-id2', ...] the length is the number of images in the corresponding zip file

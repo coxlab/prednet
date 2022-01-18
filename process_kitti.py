@@ -7,7 +7,8 @@ import requests
 from bs4 import BeautifulSoup
 import urllib.request
 import numpy as np
-from imageio import imread
+#from imageio import imread
+from cv2 import imread
 from scipy.misc import imresize
 import hickle as hkl
 from kitti_settings import *
@@ -137,7 +138,7 @@ def my_process_data():
         print( 'Creating ' + split + ' data: ' + str(len(im_list)) + ' images')
         X = np.zeros((len(im_list),) + desired_im_sz + (3,), np.uint8)
         for i, im_file in enumerate(im_list):
-            im = imread(im_file)
+            im = imread(im_file) # this will ignore the transparency channel of the image
             print(im_file, im.shape)
             X[i] = process_im(im, desired_im_sz)
 

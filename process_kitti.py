@@ -18,9 +18,9 @@ categories = ['city', 'residential', 'road']
 
 # Recordings used for validation and testing.
 # Were initially chosen randomly such that one of the city recordings was used for validation and one of each category was used for testing.
-val_recordings = [('hermann', 'id0')]
-test_recordings = [('hermann', 'id1')]
-categories = ['hermann']
+val_recordings = []
+categories = ['hermann', 'zollner', 'circle_contour', 'circle_size', 'rec_contour', 'rotation']
+test_recordings = [(c, 'id0') for c in categories]
 
 if not os.path.exists(DATA_DIR): os.mkdir(DATA_DIR)
 

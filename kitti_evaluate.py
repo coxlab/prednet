@@ -20,9 +20,9 @@ from data_utils import SequenceGenerator
 from kitti_settings import *
 
 
-n_plot = 40
+n_plot = 40 # number of groups of predictions
+nt = 5 # each prediction group contains nt images
 batch_size = 10
-nt = 10
 
 weights_file = os.path.join(WEIGHTS_DIR, 'tensorflow_weights/prednet_kitti_weights.hdf5')
 json_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_model.json')
@@ -75,12 +75,12 @@ for i in plot_idx:
     for t in range(nt):
         plt.subplot(gs[t])
         plt.imshow(X_test[i,t], interpolation='none')
-        plt.tick_params(axis='both', which='both', bottom='off', top='off', left='off', right='off', labelbottom='off', labelleft='off')
+        plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)
         if t==0: plt.ylabel('Actual', fontsize=10)
 
         plt.subplot(gs[t + nt])
         plt.imshow(X_hat[i,t], interpolation='none')
-        plt.tick_params(axis='both', which='both', bottom='off', top='off', left='off', right='off', labelbottom='off', labelleft='off')
+        plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)
         if t==0: plt.ylabel('Predicted', fontsize=10)
 
     plt.savefig(plot_save_dir +  'plot_' + str(i) + '.png')

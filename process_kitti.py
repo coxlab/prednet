@@ -8,7 +8,8 @@ from bs4 import BeautifulSoup
 import urllib.request
 import numpy as np
 #from imageio import imread
-from cv2 import imread, resize
+from cv2 import imread
+from scipy.misc import imresize
 import hickle as hkl
 from kitti_settings import *
 
@@ -18,7 +19,8 @@ desired_im_sz = (128, 160)
 # Recordings used for validation and testing.
 # Were initially chosen randomly such that one of the city recordings was used for validation and one of each category was used for testing.
 val_recordings = []
-categories = ['hermann', 'zollner', 'circle_contour', 'circle_size', 'rec_contour', 'rotation', 'rotation_color', 'wall']
+#categories = ['hermann', 'zollner', 'circle_contour', 'circle_size', 'rec_contour', 'rotation', 'rotation_color', 'wall']
+categories = ['hermann']
 test_recordings = [(c, 'id0') for c in categories]
 
 if not os.path.exists(DATA_DIR): os.mkdir(DATA_DIR)
@@ -51,10 +53,29 @@ def my_process_data():
         X = np.zeros((len(im_list),) + desired_im_sz + (3,), np.uint8)
         for i, im_file in enumerate(im_list):
             im = imread(im_file) # this will ignore the transparency channel of the image
-            X[i] = resize(im, (desired_im_sz[1], desired_im_sz[0]))
+            X[i] = process_im(im, desired_im_sz)
 
         hkl.dump(X, os.path.join(DATA_DIR, 'my_X_' + split + '.hkl'))
         hkl.dump(source_list, os.path.join(DATA_DIR, 'my_sources_' + split + '.hkl'))
+
+# resize and crop image
+def process_im(im, desired_sz):
+    '''
+    First step: 
+    '''
+    if im.shape[0] / im.shape[1] > desired_sz[0] / desired_sz[1]:
+        target_ds = float(desired_sz[1])/im.shape[1]
+        im = imresize(im, (int(np.round(target_ds * im.shape[0])), desired_sz[1]))
+        d = int((im.shape[0] - desired_sz[0]) / 2)
+        im = im[d:d+desired_sz[0], :]
+    else:
+        target_ds = float(desired_sz[0])/im.shape[0]
+        im = imresize(im, (desired_sz[0], int(np.round(target_ds * im.shape[1]))))
+        d = int((im.shape[1] - desired_sz[1]) / 2)
+        im = im[:, d:d+desired_sz[1]]
+
+
+    return im
 
 if __name__ == '__main__':
     my_process_data()

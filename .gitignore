@@ -93,3 +93,6 @@ ENV/
 .ropeproject
 
 kitti_results/
+
+# figures
+figs/

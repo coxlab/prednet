@@ -20,9 +20,9 @@ from data_utils import SequenceGenerator
 from kitti_settings import *
 
 
-n_plot = 40 # number of groups of predictions
+n_plot = 9 # number of groups of predictions
 nt = 5 # each prediction group contains nt images
-batch_size = 10
+batch_size = 9
 
 weights_file = os.path.join(WEIGHTS_DIR, 'tensorflow_weights/prednet_kitti_weights.hdf5')
 json_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_model.json')
@@ -83,5 +83,5 @@ for i in plot_idx:
         plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)
         if t==0: plt.ylabel('Predicted', fontsize=10)
 
-    plt.savefig(plot_save_dir +  'plot_' + str(i) + '.png')
+    plt.savefig(plot_save_dir +  'plot_' + str(i) + '.png', dpi=300)
     plt.clf()

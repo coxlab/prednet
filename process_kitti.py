@@ -19,9 +19,15 @@ desired_im_sz = (128, 160)
 # Recordings used for validation and testing.
 # Were initially chosen randomly such that one of the city recordings was used for validation and one of each category was used for testing.
 val_recordings = []
-#categories = ['hermann', 'zollner', 'circle_contour', 'circle_size', 'rec_contour', 'rotation', 'rotation_color', 'wall']
-categories = ['hermann']
+#categories = ['hermann', 'zollner', 'circle_contour', 'circle_size', 'rec_contour', 'rotation', 'wall', 'hermann_w', 'hermann_l']
+#categories = ['group_dis', 'group_conti']
+#categories = ['vh', 'square']
+categories = ['baby_orange', 'after_image'] # please use nt = 9
 test_recordings = [(c, 'id0') for c in categories]
+
+categories = ['hermann_diff_size']
+test_recordings = [(c, 'id' + str(idi)) for c in categories for idi in range(9)]
+print(test_recordings)
 
 if not os.path.exists(DATA_DIR): os.mkdir(DATA_DIR)
 
@@ -63,6 +69,7 @@ def process_im(im, desired_sz):
     '''
     First step: 
     '''
+    im_temp = im.copy()
     if im.shape[0] / im.shape[1] > desired_sz[0] / desired_sz[1]:
         target_ds = float(desired_sz[1])/im.shape[1]
         im = imresize(im, (int(np.round(target_ds * im.shape[0])), desired_sz[1]))
@@ -73,7 +80,6 @@ def process_im(im, desired_sz):
         im = imresize(im, (desired_sz[0], int(np.round(target_ds * im.shape[1]))))
         d = int((im.shape[1] - desired_sz[1]) / 2)
         im = im[:, d:d+desired_sz[1]]
-
 
     return im
 

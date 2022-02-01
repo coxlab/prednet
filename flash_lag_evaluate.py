@@ -21,8 +21,9 @@ from kitti_settings import *
 
 
 n_plot = 1 # number of groups of predictions
-nt = 5 # each prediction group contains nt images
+nt = 64 # each prediction group contains nt images
 batch_size = 8
+st, ed = 35, 45
 
 weights_file = os.path.join(WEIGHTS_DIR, 'tensorflow_weights/prednet_kitti_weights.hdf5')
 json_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_model.json')
@@ -65,23 +66,24 @@ f.close()
 
 # Plot some predictions
 aspect_ratio = float(X_hat.shape[2]) / X_hat.shape[3]
-plt.figure(figsize = (nt, 2*aspect_ratio))
-gs = gridspec.GridSpec(2, nt)
+plt.figure(figsize = (ed-st, 2*aspect_ratio))
+gs = gridspec.GridSpec(2, ed - st)
 gs.update(wspace=0., hspace=0.)
 plot_save_dir = os.path.join(RESULTS_SAVE_DIR, 'prediction_plots/')
 if not os.path.exists(plot_save_dir): os.mkdir(plot_save_dir)
 plot_idx = np.random.permutation(X_test.shape[0])[:n_plot]
 for i in plot_idx:
-    for t in range(nt):
+    #for t in range(nt):
+    for t in range(ed - st):
         plt.subplot(gs[t])
-        plt.imshow(X_test[i,t], interpolation='none')
+        plt.imshow(X_test[i,t + st], interpolation='none')
         plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)
         if t==0: plt.ylabel('Actual', fontsize=10)
 
-        plt.subplot(gs[t + nt])
-        plt.imshow(X_hat[i,t], interpolation='none')
+        plt.subplot(gs[t + ed - st])
+        plt.imshow(X_hat[i,t + st], interpolation='none')
         plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)
         if t==0: plt.ylabel('Predicted', fontsize=10)
 
-    plt.savefig(plot_save_dir +  'plot_' + str(i) + '.png', dpi=300)
+    plt.savefig(plot_save_dir +  'plot_' + str(i) + '.png', dpi=1000)
     plt.clf()

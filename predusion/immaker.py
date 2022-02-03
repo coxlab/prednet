@@ -7,9 +7,10 @@ from imageio import imsave
 
 
 class Immaker():
-    def __init__(self, imshape=(128, 160)):
+    def __init__(self, imshape=(128, 160), background=255):
         self.imshape = imshape
         self.im = []
+        self.background = background
 
     def save_fig(self, save_path='./out.png'):
         imsave(save_path, self.im)
@@ -57,7 +58,7 @@ class Square(Grid):
 
         assert (x0 > 0) & (y0 > 0), 'The square is too large'
 
-        im = np.ones((*self.imshape, 3), dtype=np.uint8) * 255
+        im = np.ones((*self.imshape, 3), dtype=np.uint8) * self.background
 
 
         try:

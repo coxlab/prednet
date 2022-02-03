@@ -129,7 +129,7 @@ def lab2rgb(lab, is_upscaled=False):
         sRGB_sample = colorcv.convert_color(lab_instance, colorob.sRGBColor)
         if is_upscaled:
             sRGB_sample = sRGB_sample.get_upscaled_value_tuple()
-            RGB[i] = sRGB_sample
+            RGB[i] = [ min(rgb, 255) for rgb in sRGB_sample ] # clamp to 0 to 255
         else:
             RGB[i] = sRGB_sample.clamped_rgb_r, sRGB_sample.clamped_rgb_g, sRGB_sample.clamped_rgb_b
     return RGB

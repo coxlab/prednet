@@ -64,7 +64,6 @@ for color in color_list:
     #plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)
     #plt.show()
 
-
     ##### collecting tuning data and example dynamics
     r1 = sub.output(seq_repeat, output_mode='R1') # if output is not prediction, the output shape would be (number of images in a seq, a 3d tensor represent neural activation)
     r1 = r1.reshape(r1.shape[0], -1)

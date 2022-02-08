@@ -15,6 +15,9 @@ class Immaker():
     def save_fig(self, save_path='./out.png'):
         imsave(save_path, self.im)
 
+    def get_im(self):
+        return self.im.copy()
+
 class Grid(Immaker):
 
     def set_grid(self, offset=[0, 0], frac_d=5, ratio_db=1.5, rgb_color=[0, 0, 0]):
@@ -45,6 +48,19 @@ class Grid(Immaker):
 
 class Square(Grid):
 
+    def set_full_square(self, color=[0, 0, 0]):
+        '''
+        obtain a full colored square with self.imshape
+        color (numeric array [3]): the value of color should within 0 to 255
+        '''
+        self.im = np.ones((*self.imshape, 3), dtype=np.uint8)
+
+        self.im[:, :, 0] = np.uint8(color[0]) # add the color
+        self.im[:, :, 1] = np.uint8(color[1])
+        self.im[:, :, 2] = np.uint8(color[2])
+
+        return self.im.copy()
+
     def set_square(self, center=None, width=None, rgb_color=(0, 0, 0)):
         '''
         center [arr like, 2, numerical]: the center of the square. Measured using pixel, with the left upper coner as (0, 0). None means center of the image
@@ -60,7 +76,6 @@ class Square(Grid):
 
         im = np.ones((*self.imshape, 3), dtype=np.uint8) * self.background
 
-
         try:
             im[x0:x0+width, y0:y0+width] = rgb_color
         except:
@@ -69,6 +84,22 @@ class Square(Grid):
             im[x0:x_end, y0:y_end] = rgb_color
 
         self.im = im
+
+        return self.im.copy()
+
+class Seq_gen():
+    '''
+    generate image sequence as input to the prednet
+    '''
+
+    @staticmethod
+    def repeat(im, n):
+        '''
+        repeat images for n times
+        im (numpy array, numeric, [width, height, 3]): the final 3 channels are the RGB values of the image
+        '''
+        return np.repeat(im[None, :, :], int(n), axis=0)
+
 
 
 if __name__ == '__main__':

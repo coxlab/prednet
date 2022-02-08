@@ -41,14 +41,14 @@ layer_config = train_model.layers[1].get_config()
 layer_config['output_mode'] = 'prediction'
 data_format = layer_config['data_format'] if 'data_format' in layer_config else layer_config['dim_ordering']
 test_prednet = PredNet(weights=train_model.layers[1].get_weights(), **layer_config)
-input_shape = list(train_model.layers[0].batch_input_shape[1:])
+input_shape = list(train_model.layers[0].batch_input_shape[1:]) # (number of images, 3 channels, imshape[0], imshape[1]) if the channel_first = True
 input_shape[0] = nt
 inputs = Input(shape=tuple(input_shape))
 predictions = test_prednet(inputs)
 test_model = Model(inputs=inputs, outputs=predictions)
 
 test_generator = SequenceGenerator(test_file, test_sources, nt, sequence_start_mode='unique', data_format=data_format)
-X_test = test_generator.create_all()
+X_test = test_generator.create_all() # (number of sequences, number of images in each squence, imshape[0], imshape[1], 3 channels), or the last three dimenstion could be 3 channels, imshape[0], imshape[1], if the channel_first is true
 X_hat = test_model.predict(X_test, batch_size)
 if data_format == 'channels_first':
     X_test = np.transpose(X_test, (0, 1, 3, 4, 2))

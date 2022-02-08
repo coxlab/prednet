@@ -1,7 +1,4 @@
-'''
-Code for downloading and processing KITTI data (Geiger et al. 2013, http://www.cvlibs.net/datasets/kitti/)
-'''
-
+''' image is saved with RGB ranges 0 to 255'''
 import os
 import requests
 from bs4 import BeautifulSoup
@@ -54,7 +51,7 @@ def my_process_data():
 # resize and crop image
 def process_im(im, desired_sz):
     '''
-    First step: 
+    crop the images to desired_sz
     '''
     im_temp = im.copy()
     if im.shape[0] / im.shape[1] > desired_sz[0] / desired_sz[1]:

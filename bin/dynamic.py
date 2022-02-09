@@ -35,9 +35,9 @@ seq_gen = immaker.Seq_gen()
 
 ##### Collecting one example dynamics
 im = square.set_full_square(color=color_list[eg_color_id])
-seq_repeat = seq_gen.repeat(im, n_repeat)
+seq_repeat = seq_gen.repeat(im, n_repeat)[None, ...] # add a new axis to show there's only one squence
 
-fea_map = sub.output(seq_repeat, output_mode='E0') # if output is not prediction, the output shape would be (number of images in a seq, a 3d tensor represent neural activation)
+fea_map = sub.output(seq_repeat, output_mode='E0')[0] # if output is not prediction, the output shape would be (number of images in a seq, a 3d tensor represent neural activation)
 fea_map = fea_map.reshape(fea_map.shape[0], -1)
 
 eg_neuron_id = np.linspace(0, fea_map.shape[-1], n_eg_neuron, endpoint=False).astype(int) # uniformly sampled from all neurons
@@ -62,7 +62,7 @@ gs.update(wspace=0., hspace=0.)
 
 seq_pred = sub.output(seq_repeat)
 
-for t, sq_p, sq_r in zip(range(n_repeat), seq_pred, seq_repeat):
+for t, sq_p, sq_r in zip(range(n_repeat), seq_pred[0], seq_repeat[0]):
     plt.subplot(gs[t])
     plt.imshow(sq_r.astype(int))
     plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)

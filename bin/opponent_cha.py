@@ -25,55 +25,105 @@ n_image, n_image_w = 4, 4
 imshape = (128, 160)
 
 l, a, b, r = 80, 22, 14, 70
-n_deg = 20
-n_repeat = 5
+n_deg = 50
+n_repeat = 10
 center = 10
 width = int(imshape[0] / 2)
 bg = 150 # backgound color for the square
-neuron_t = 3 # obtain neural activity at the 4th time step
-eg_neuron_id = 10 # example neuron id
-eg_color_id = 10
+neuron_t = 7 # obtain neural activity at the 4th time step
+n_eg_neuron = 50 # example neuron id
+plot_save_dir = os.path.join(RESULTS_SAVE_DIR, 'tuning/')
+batch_size = 20
+
+if not os.path.exists(plot_save_dir): os.makedirs(plot_save_dir)
 
 deg_color = Degree_color(center_l=l, center_a=a, center_b=b, radius=r)
-
 
 degree = np.linspace(0, 360, n_deg)
 color_list = deg_color.out_color(degree, fmat='RGB', is_upscaled=True)
 square = immaker.Square(imshape, background=bg)
 seq_gen = immaker.Seq_gen()
 
-#### Start testing
-eg_tuning = [] # collecting response of one example neuron
-eg_color_i = -1
+def get_runing_module(output_mode='E0'):
+    '''
+    get example tuning in a specific module
+    input:
+      name (str): module name
+    output:
+      eg_tuning
+    '''
+    seq_list = []
+    for color in color_list:
 
-for color in color_list:
-    eg_color_i += 1
+        r, g, b = color
+        im = square.set_full_square(color=color)
+        seq_repeat = seq_gen.repeat(im, n_repeat)
+        seq_list.append(seq_repeat)
 
-    r, g, b = color
-    im = square.set_full_square(color=color)
-    seq_repeat = seq_gen.repeat(im, n_repeat)
-
-    #seq_pred = sub.output(seq_repeat)
-
-    ##### plot out the prediction
-    #f, ax = plt.subplots(2, n_repeat, sharey=True, sharex=True)
-    #for i, sq_p, sq_r in zip(range(n_repeat), seq_pred, seq_repeat):
-    #    ax[0][i].imshow(sq_r.astype(int))
-    #    ax[1][i].imshow(sq_p.astype(int))
-
-    #plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)
-    #plt.show()
-
+    seq_list = np.array(seq_list)
     ##### collecting tuning data and example dynamics
-    r1 = sub.output(seq_repeat, output_mode='R1') # if output is not prediction, the output shape would be (number of images in a seq, a 3d tensor represent neural activation)
-    r1 = r1.reshape(r1.shape[0], -1)
+    r1 = sub.output(seq_list, output_mode=output_mode, batch_size=batch_size) # if output is not prediction, the output shape would be (number of images in a seq, a 3d tensor represent neural activation)
+    r1 = r1.reshape(r1.shape[0], r1.shape[1], -1)
 
-    # grap one example neuron at time = 5
-    eg_r1 = r1[neuron_t, eg_neuron_id]
-    eg_tuning.append(eg_r1)
+    eg_neuron_id = np.linspace(0, r1.shape[-1], n_eg_neuron, endpoint=False).astype(int) # uniformly sampled from all neurons
+    eg_tuning = r1[:, neuron_t, eg_neuron_id]
+    eg_tuning = np.array(eg_tuning).T
 
-    ##### collecting example neural dynamics to one color
+    all_tuning = r1[:, neuron_t, :]
+    all_tuning = np.array(all_tuning).T
 
-plt.figure()
-plt.plot(degree, eg_tuning)
-plt.show()
+    return eg_tuning, all_tuning
+
+n_layer = 4
+output_mode_list = [key + str(l) for key in ['E', 'R', 'A', 'Ahat'] for l in range(n_layer)]
+
+data = {}
+
+for output_mode in output_mode_list:
+    data[output_mode + '_eg'], data[output_mode + '_all'] = get_runing_module(output_mode=output_mode)
+
+    plt.figure()
+    for neuron in data[output_mode + '_eg']:
+        plt.plot(degree, neuron)
+    plt.title(output_mode)
+    plt.savefig(plot_save_dir + output_mode  + '.png')
+    print('{0} tuning saved'.format(output_mode))
+
+print(sub.get_config()) # print out the config of the prednet
+
+#r0_all = data['R0_all']
+
+#from sklearn.manifold import TSNE
+#r0_embedded = TSNE(n_components=2, learning_rate=200, init='random').fit_transform(r0_all)
+#
+#plt.figure()
+#plt.scatter(r0_embedded[:, 0], r0_embedded[:, 1])
+#plt.show()
+
+
+##### Plot out colorbar
+#import matplotlib.gridspec as gridspec
+#
+#imshape = (160 * 5, 160)
+#
+#square = immaker.Square(imshape, background=bg)
+#
+#seq_list = []
+#for color in color_list:
+#    r, g, b = color
+#    im = square.set_full_square(color=color)
+#    seq_list.append(im)
+#
+#seq_list = np.array(seq_list)
+#n_color = color_list.shape[0]
+#
+#plt.figure(figsize = (n_color, imshape[0]/imshape[1]))
+#gs = gridspec.GridSpec(1, n_color)
+#gs.update(wspace=0., hspace=0.)
+#
+#for t, sq in zip(range(n_color), seq_list):
+#    plt.subplot(gs[t])
+#    plt.imshow(sq.astype(int))
+#    plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)
+#plt.savefig(plot_save_dir + 'xbar'  + '.png')
+#plt.show()

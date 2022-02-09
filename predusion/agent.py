@@ -21,45 +21,48 @@ class Agent():
         self.train_model = model_from_json(json_string, custom_objects = {'PredNet': PredNet})
         self.train_model.load_weights(weights_file)
 
-    def _build_test_prednet(self, output_mode):
+    def _build_test_prednet(self, output_mode='prediction'):
         # Create testing model (to output predictions)
         layer_config = self.train_model.layers[1].get_config()
         layer_config['output_mode'] = output_mode
         data_format = layer_config['data_format'] if 'data_format' in layer_config else layer_config['dim_ordering']
-        test_prednet = PredNet(weights=self.train_model.layers[1].get_weights(), **layer_config)
+        self.test_prednet = PredNet(weights=self.train_model.layers[1].get_weights(), **layer_config)
 
-        return test_prednet
+        return self.test_prednet
 
-    def output(self, seq, cha_first=False, is_upscaled=True, output_mode='prediction'):
+    def output(self, seq_batch, cha_first=False, is_upscaled=True, output_mode='prediction', batch_size=10):
         '''
         input:
-          seq (np array, numeric, [number of images in each sequence, imshape[0], imshape[1], 3 channels]): if cha_first is false, the final three dimension should be imshape[0], imshape[1], 3 channels; if cha_first is ture, the final three dimensions should be 3 channels, imshape[0], imshape[1].
+          seq (np array, numeric, [number of sequences, number of images in each sequence, imshape[0], imshape[1], 3 channels]): if cha_first is false, the final three dimension should be imshape[0], imshape[1], 3 channels; if cha_first is ture, the final three dimensions should be 3 channels, imshape[0], imshape[1].
           is_upscaled (bool): True means the RGB value in the seq ranges from 0 to 255 and need to be normalized. The output seq_hat RGB values are in the same range as the input seq.
         '''
-        test_prednet = self._build_test_prednet(output_mode)
+        self.test_prednet = self._build_test_prednet(output_mode)
 
         input_shape = list(self.train_model.layers[0].batch_input_shape[1:]) # find the input shape, (number of images, 3 channels, imshape[0], imshape[1]) if the channel_first = True
-        input_shape[0] = seq.shape[0]
+        input_shape[0] = seq_batch.shape[1]
         inputs = Input(shape=tuple(input_shape))
-        predictions = test_prednet(inputs)
+        predictions = self.test_prednet(inputs)
         test_model = Model(inputs=inputs, outputs=predictions)
 
-        seq_wrapper = seq[None, ...] # the first dimension is the number of sequence which is one
+        seq_wrapper = seq_batch
 
         if is_upscaled:
             seq_wrapper = seq_wrapper / 255
 
         if cha_first:
-            seq_hat = test_model.predict(seq_wrapper, batch_size=1)
+            seq_hat = test_model.predict(seq_wrapper, batch_size=batch_size)
         else:
             seq_tran = np.transpose(seq_wrapper, (0, 1, 4, 2, 3)) # make it channel first
-            seq_hat = test_model.predict(seq_tran, batch_size=1)
+            seq_hat = test_model.predict(seq_tran, batch_size=batch_size)
             seq_hat = np.transpose(seq_hat, (0, 1, 3, 4, 2)) # convert to original shape
 
         if is_upscaled:
             seq_hat = seq_hat * 255
 
-        return seq_hat[0]
+        return seq_hat
+
+    def get_config(self):
+        return self.test_prednet.get_config()
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
@@ -74,7 +77,7 @@ if __name__ == '__main__':
     seq_gener = immaker.Seq_gen()
 
     im = square.set_full_square(color=[255, 0, 0])
-    seq_repeat = seq_gener.repeat(im, 4)
+    seq_repeat = seq_gener.repeat(im, 4)[None, ...] # broacast one axis
 
     sub = Agent()
     sub.read_from_json(json_file, weights_file)
@@ -82,7 +85,7 @@ if __name__ == '__main__':
     ##### show the prediction
     seq_pred = sub.output(seq_repeat)
     f, ax = plt.subplots(2, 3, sharey=True, sharex=True)
-    for i, sq_p, sq_r in zip(range(3), seq_pred, seq_repeat):
+    for i, sq_p, sq_r in zip(range(3), seq_pred[0], seq_repeat[0]):
         ax[0][i].imshow(sq_r.astype(int))
         ax[1][i].imshow(sq_p.astype(int))
 

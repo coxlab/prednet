@@ -54,21 +54,7 @@ plt.ylabel('Example neural activity')
 plt.show()
 
 #### plot out the prediction
-import matplotlib.gridspec as gridspec
-
-plt.figure(figsize = (n_repeat, 2))
-gs = gridspec.GridSpec(2, n_repeat)
-gs.update(wspace=0., hspace=0.)
-
+from predusion.ploter import Ploter
 seq_pred = sub.output(seq_repeat)
-
-for t, sq_p, sq_r in zip(range(n_repeat), seq_pred[0], seq_repeat[0]):
-    plt.subplot(gs[t])
-    plt.imshow(sq_r.astype(int))
-    plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)
-
-    plt.subplot(gs[t + n_repeat])
-    plt.imshow(sq_p.astype(int))
-    plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)
-
+fig, gs = Ploter().plot_seq_prediction(seq_repeat[0], seq_pred[0])
 plt.show()

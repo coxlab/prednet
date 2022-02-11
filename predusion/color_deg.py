@@ -28,6 +28,8 @@ class Degree_color():
         '''
         self.center_l, self.center_a, self.center_b = center_l, center_a, center_b
         self.radius = radius
+
+
     def out_color(self, degree, fmat='LAB', is_upscaled=False):
         '''
         input:

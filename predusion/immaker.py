@@ -91,7 +91,6 @@ class Seq_gen():
     '''
     generate image sequence as input to the prednet
     '''
-
     @staticmethod
     def repeat(im, n):
         '''
@@ -100,9 +99,46 @@ class Seq_gen():
         '''
         return np.repeat(im[None, :, :], int(n), axis=0)
 
+class Batch_gen():
 
+    @staticmethod
+    def color_noise_full(imshape, n_image=1, batch_size=1, is_upscaled=True):
+        '''
+        generate color white noise square, each pixel follows the uniform distribution
+        input:
+          n_image (int): the number of images
+          imshape (array, int, [width, height])
+        output:
+          w_square (array, float, [batch_size, n_image, imshape[0], imshape[1], 3]): is upscaled means the value of each pixel ranges from 0 to 255, otherwise 0 to 1
+        '''
+        w_image = np.random.uniform(size=(batch_size, n_image, *imshape, 3))
+        if is_upscaled:
+            return np.uint8(w_image * 255)
+        else:
+            return w_image
+
+    @staticmethod
+    def grey_noise_full(imshape, n_image=1, batch_size=1, is_upscaled=True):
+        '''
+        generate color white noise square, each pixel follows the uniform distribution
+        input:
+          n_image (int): the number of images
+          imshape (array, int, [width, height])
+          batch_size (int)
+        output:
+          w_square (array, float, [n_image, imshape[0], imshape[1], 3]): is upscaled means the value of each pixel ranges from 0 to 255, otherwise 0 to 1
+        '''
+        w_image = np.random.uniform(size=(batch_size, n_image, *imshape, 1))
+        w_image = np.repeat(w_image, 3, axis=4)
+
+        if is_upscaled:
+            return np.uint8(w_image * 255)
+        else:
+            return w_image
 
 if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+
     n_image = 5
 
     frac_d = 2
@@ -124,3 +160,19 @@ if __name__ == '__main__':
     for i in range(n_image):
         save_path = './figs/square_{0}_{1}_{2}.png'.format(center, width, i)
         square.save_fig(save_path=save_path)
+
+    # generate color noise images
+    w_img = Batch_gen().color_noise_full(imshape, 3, 2)
+
+    plt.figure()
+    for im in w_img[1]:
+        plt.imshow(im)
+        plt.show()
+
+    # generate grey noise images
+    w_img = Batch_gen().grey_noise_full(imshape, 3, 2)
+
+    plt.figure()
+    for im in w_img[1]:
+        plt.imshow(im)
+        plt.show()

@@ -1,4 +1,4 @@
-name: prednet
+name: prednet_test
 channels:
   - conda-forge/label/gcc7
   - anaconda

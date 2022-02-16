@@ -5,7 +5,7 @@
 name: prednet
 
 dependencies:
-  - python=2.7
+  - python=3.6.13
 
   - pip:
     - keras==2.0.6

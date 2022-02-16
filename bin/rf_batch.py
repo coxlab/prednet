@@ -19,14 +19,14 @@ sub.read_from_json(json_file, weights_file)
 print(sub.get_config)
 
 ###### generate images
-n_image = 20 # number of images per trial
+n_image = 40 # number of images per trial
 batch_size = 20 # number of trials
 imshape = (128, 160)
 n_tao = min(3, n_image) # the number of of correlation time steps you want to see
 n_eg_neuron = 1
 crop_start = 3
-epoch = 1
-output_mode = 'R1'
+epoch = 10
+output_mode = 'E0'
 
 for ep in range(epoch):
     color_w_im = immaker.Batch_gen().color_noise_full(imshape, n_image, batch_size)
@@ -50,9 +50,9 @@ for ep in range(epoch):
     qij = tensor_sta(output_proc, color_w_im_proc, n_tao)
 
     if ep == 0:
-        qtot = qij
+        qtot = qij / epoch
     else:
-        qtot = qij + qtot
+        qtot = qij / epoch + qtot
 
     print('epoch = {}'.format(ep))
 

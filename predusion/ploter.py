@@ -1,6 +1,7 @@
 # functions for plotting different figures
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+import numpy as np
 
 class Ploter():
 
@@ -29,6 +30,26 @@ class Ploter():
             plt.imshow(sq_p.astype(int))
             plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)
 
+        return fig, gs
+
+    def plot_seq(seq):
+        '''
+        plot a sequence
+        input:
+          seq (n_image, *imshape, 3): rgb color
+        output:
+          fig, ax
+        '''
+
+        n_image = seq.shape[0]
+        fig = plt.figure(figsize = (n_image, 1))
+        gs = gridspec.GridSpec(1, n_image)
+        gs.update(wspace=0., hspace=0.)
+
+        for t, sq in zip(range(n_image), seq):
+            plt.subplot(gs[t])
+            plt.imshow(sq.astype(np.uint8))
+            plt.tick_params(axis='both', which='both', bottom=False, top=False, left=False, right=False, labelbottom=False, labelleft=False)
         return fig, gs
 
 ##### Plot out colorbar

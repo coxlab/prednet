@@ -19,22 +19,22 @@ sub.read_from_json(json_file, weights_file)
 print(sub.get_config)
 
 ###### generate images
-n_image = 40 # number of images per trial
+n_image = 20 # number of images per trial
 batch_size = 20 # number of trials
 imshape = (128, 160)
 n_tao = min(3, n_image) # the number of of correlation time steps you want to see
 n_eg_neuron = 1
 crop_start = 3
-epoch = 10
+epoch = 1
+output_mode = 'R1'
 
-#color_w_im = immaker.Batch_gen().color_noise_full(imshape, n_image, batch_size)
 for ep in range(epoch):
-    grey_w_im = immaker.Batch_gen().grey_noise_full(imshape, n_image, batch_size)
-    color_w_im = grey_w_im
+    color_w_im = immaker.Batch_gen().color_noise_full(imshape, n_image, batch_size)
+    #grey_w_im = immaker.Batch_gen().grey_noise_full(imshape, n_image, batch_size)
+    #color_w_im = grey_w_im
 
     ##### Record the neural activity
 
-    output_mode = 'R0'
     output = sub.output(color_w_im, output_mode=output_mode, batch_size=batch_size) # if output is not prediction, the output shape would be (batch_size, number of images in a seq, a 3d tensor represent neural activation)
 
     ##### Processing images
@@ -57,10 +57,16 @@ for ep in range(epoch):
     print('epoch = {}'.format(ep))
 
 qtot = qtot / epoch
+
 plt.figure(1)
 for i in range(1, n_tao + 1):
-    plt.subplot(3, 4, i)
+    plt.subplot(3, 3, i)
+    plt.imshow(qij[i - 1, 0, :, :, 0])
+    plt.subplot(3, 3, i + 3)
     plt.imshow(qij[i - 1, 0, :, :, 1])
+    plt.subplot(3, 3, i + 6)
+    plt.imshow(qij[i - 1, 0, :, :, 2])
+plt.savefig('./figs/rf.pdf', format='pdf', dpi=1000)
 plt.show()
 
 #from predusion.ploter import Ploter

@@ -4,6 +4,7 @@ Create a series of static images to the target folder
 import numpy as np
 import matplotlib.pyplot as plt
 from imageio import imsave
+from scipy.ndimage import gaussian_filter
 
 
 class Immaker():
@@ -102,7 +103,7 @@ class Seq_gen():
 class Batch_gen():
 
     @staticmethod
-    def color_noise_full(imshape, n_image=1, batch_size=1, is_upscaled=True):
+    def color_noise_full(imshape, n_image=1, batch_size=1, is_upscaled=True, sig=None):
         '''
         generate color white noise square, each pixel follows the uniform distribution
         input:
@@ -112,29 +113,45 @@ class Batch_gen():
           w_square (array, float, [batch_size, n_image, imshape[0], imshape[1], 3]): is upscaled means the value of each pixel ranges from 0 to 255, otherwise 0 to 1
         '''
         w_image = np.random.uniform(size=(batch_size, n_image, *imshape, 3))
+        w_image = Batch_gen()._gaussian_filter(w_image, sig)
         if is_upscaled:
             return np.uint8(w_image * 255)
         else:
             return w_image
 
     @staticmethod
-    def grey_noise_full(imshape, n_image=1, batch_size=1, is_upscaled=True):
+    def grey_noise_full(imshape, n_image=1, batch_size=1, is_upscaled=True, sig=None):
         '''
         generate color white noise square, each pixel follows the uniform distribution
         input:
           n_image (int): the number of images
           imshape (array, int, [width, height])
           batch_size (int)
+          sig (array like, float, [3]): see decription in low pass filter to the images _gaussian_filter(). If None means do not filt
         output:
           w_square (array, float, [n_image, imshape[0], imshape[1], 3]): is upscaled means the value of each pixel ranges from 0 to 255, otherwise 0 to 1
         '''
         w_image = np.random.uniform(size=(batch_size, n_image, *imshape, 1))
         w_image = np.repeat(w_image, 3, axis=4)
+        w_image = Batch_gen()._gaussian_filter(w_image, sig)
 
         if is_upscaled:
             return np.uint8(w_image * 255)
         else:
             return w_image
+
+    @staticmethod
+    def _gaussian_filter(img, sig=None):
+        '''
+        spatial temporal filter of a batch
+        images (numpy array, float, same shape as the output of grey_noise_full):
+        sig (array like, float, [3]): the sd of the gaussian filter. The first correponds to the temporal filter, final two elements correspond to the spatial part. If None means do not filt
+        '''
+        if sig is None:
+            return img
+        else:
+            img_filt = gaussian_filter(img, sigma=(0, *sig, 0))
+            return img_filt
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
@@ -171,6 +188,15 @@ if __name__ == '__main__':
 
     # generate grey noise images
     w_img = Batch_gen().grey_noise_full(imshape, 3, 2)
+
+    plt.figure()
+    for im in w_img[1]:
+        plt.imshow(im)
+        plt.show()
+
+    imshape = (128, 160)
+    # generate grey noise images
+    w_img = Batch_gen().grey_noise_full(imshape, 3, 2, sig=(0, 2, 2))
 
     plt.figure()
     for im in w_img[1]:

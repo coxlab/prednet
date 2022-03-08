@@ -62,6 +62,7 @@ class Agent():
         return seq_hat
 
     def get_config(self):
+        self._build_test_prednet()
         return self.test_prednet.get_config()
 
 if __name__ == '__main__':

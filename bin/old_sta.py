@@ -6,8 +6,8 @@ from scipy.io import loadmat
 from scipy.linalg import toeplitz
 
 m = loadmat('./bin/ganglion.mat')
-stim = m['stim'][:, :, :400]
-counts = m['counts'].flatten()[:400]
+stim = m['stim']
+counts = m['counts'].flatten()
 nsta = 12
 
 nullArr = np.zeros(nsta)
@@ -43,5 +43,6 @@ plt.figure(1)
 for i in range(1, nsta + 1):
     plt.subplot(3, 4, i)
     plt.imshow(qij[i-1, :, :])
+    plt.title(i)
 plt.show()
 

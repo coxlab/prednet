@@ -11,7 +11,12 @@ def tensor_sta(fir_rate, stimuli, n_tao):
       qij (numpy array, float, [n_tao, *fir_rate.shape[1:], *stimuli.shape[1:]]): the tensor dot of the fir_rate and stimuli
     '''
     fir_rate_proc = fir_rate[n_tao:] # avoid end effect
-    fir_rate_proc = fir_rate_proc / np.sum(fir_rate_proc, axis=0)
+    norm = np.sum(fir_rate_proc, axis=0)
+    try:
+        norm[np.abs(norm) < 1e-10] = 1 # we don't care the norm is no firing rate, the firing rate are all 0s.
+    except:
+        pass
+    fir_rate_proc = fir_rate_proc / norm
     fir_rate_n_time = fir_rate_proc.shape[0]
     qij = [] # the correlation function
     for tao in range(n_tao):
